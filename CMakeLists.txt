@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(gameutils)
+project(poke)
 set(EXECUTABLE_OUTPUT_PATH "out")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "lib")
 
@@ -46,6 +46,6 @@ target_include_directories(glad PUBLIC ./external/glad/include/)
 #target_include_directories(gameutils PUBLIC source/)
 
 set_target_properties(MyCode PROPERTIES SUFFIX ".html")
-set_target_properties(MyCode PROPERTIES LINK_FLAGS "-Werror -O0 -g4 -s WASM=1 -s USE_GLFW=3 -s USE_WEBGL2=1 -s BINARYEN_METHOD='native-wasm'")
+set_target_properties(MyCode PROPERTIES LINK_FLAGS "-Werror -s WASM=1 -s USE_GLFW=3 -s USE_WEBGL2=1 -s BINARYEN_METHOD='native-wasm'")
 
 target_link_libraries(MyCode glad glm)
