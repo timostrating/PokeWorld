@@ -5,16 +5,14 @@ set(EXECUTABLE_OUTPUT_PATH "out")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "lib")
 
 file(GLOB_RECURSE source src/*)
-#add_library(gameutils ${source})
-add_executable(MyCode ${source})
-#set_target_properties(gameutils PROPERTIES LINKER_LANGUAGE CXX)
-set_target_properties(MyCode PROPERTIES LINKER_LANGUAGE CXX)
+add_executable(make_emscripten ${source})
 
-#set_property(TARGET gameutils PROPERTY CXX_STANDARD 17)
-#set_property(TARGET gameutils PROPERTY CXX_STANDARD_REQUIRED ON)
+set_target_properties(make_emscripten PROPERTIES LINKER_LANGUAGE CXX)
 
-set_property(TARGET MyCode PROPERTY CXX_STANDARD 17)
-set_property(TARGET MyCode PROPERTY CXX_STANDARD_REQUIRED ON)
+set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE) # https://stackoverflow.com/questions/12264299/cmake-on-linux-target-platform-does-not-support-dynamic-linking
+
+set_property(TARGET make_emscripten PROPERTY CXX_STANDARD 17)
+set_property(TARGET make_emscripten PROPERTY CXX_STANDARD_REQUIRED ON)
 
 find_package(OpenGL REQUIRED)
 
@@ -45,7 +43,9 @@ target_include_directories(glad PUBLIC ./external/glad/include/)
 #target_link_libraries(gameutils glad glfw glm)
 #target_include_directories(gameutils PUBLIC source/)
 
-set_target_properties(MyCode PROPERTIES SUFFIX ".html")
-set_target_properties(MyCode PROPERTIES LINK_FLAGS "-Werror -s WASM=1 -s USE_GLFW=3 -s USE_WEBGL2=1 -s BINARYEN_METHOD='native-wasm'")
+#add_custom_command(OUTPUT ${CMAKE_CURRENT_SOURCE_DIR} POST_BUILD COMMAND bash -c "echo 'JHEEE\nJHEEE\nJHEEE\nJHEEE\nJHEEE\nJHEEE'" VERBATIM)
 
-target_link_libraries(MyCode glad glm)
+set_target_properties(make_emscripten PROPERTIES SUFFIX ".html")
+set_target_properties(make_emscripten PROPERTIES LINK_FLAGS "-Werror -s WASM=1 -s USE_GLFW=3 -s USE_WEBGL2=1 -s BINARYEN_METHOD='native-wasm'")
+
+target_link_libraries(make_emscripten glad glm)
