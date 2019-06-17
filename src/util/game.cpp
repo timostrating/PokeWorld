@@ -12,20 +12,12 @@
 #include <iostream>
 
 #include "game.h"
+#include "gl_debug.cpp"
 
 
 namespace game {
     GLFWwindow *g_window;
     Screen *screen;
-
-    void printContext()
-    {
-        std::cout << "[OpenGL] " << glGetString(GL_VERSION) << std::endl;
-        std::cout << "[Vendor] " << glGetString(GL_VENDOR) << std::endl;
-        std::cout << "[Renderer] " << glGetString(GL_RENDERER) << std::endl;
-        std::cout << "[GLSL] " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-//    std::cout << " [Extensions] " << glGetString(GL_EXTENSIONS) << std::endl;
-    }
 
     bool init()
     {
@@ -54,17 +46,31 @@ namespace game {
             return -1;
         }
 
-        printContext();
+        gl_debug::enableGLDebug();
+        gl_debug::printContext();
 
         return true;
     }
 
+
     double prevTime = 0;
+    int framesInSecond = 0;
+    double timeTowardsSecond = 999;
 
     void tick()
     {
         double curTime = glfwGetTime();
         double deltaTime = curTime - prevTime;
+
+        framesInSecond++;
+
+        if ((timeTowardsSecond += deltaTime) > 1)
+        {
+            std::string fps = std::to_string(framesInSecond) + " fps";
+            glfwSetWindowTitle(g_window, fps.c_str());
+            framesInSecond = 0;
+            timeTowardsSecond -= 1;
+        }
 
         if (screen)
             screen->render(deltaTime);
@@ -72,7 +78,7 @@ namespace game {
         glfwSwapBuffers(g_window);
         glfwPollEvents();
 
-        prevTime = glfwGetTime();
+        prevTime = curTime;
     }
 
 
