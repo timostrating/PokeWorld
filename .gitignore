@@ -6,6 +6,8 @@ cmake-build-debug
 CMakeCache.txt
 cmake_install.cmake
 Makefile
+bindir
+bindir2
 *.cbp
 
 # Prerequisites
