@@ -11,6 +11,7 @@ bindir2
 *.cbp
 
 .idea
+.vscode
 
 # Prerequisites
 *.d
