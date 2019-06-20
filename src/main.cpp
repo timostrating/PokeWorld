@@ -3,6 +3,7 @@
 //
 
 #include "screens/triangle_test_screen.cpp"
+#include "screens/imgui_test_screen.cpp"
 #include "util/game.h"
 
 int main(void)
@@ -10,7 +11,7 @@ int main(void)
     if (!game::init())
         return -1;
 
-    TriangleTestScreen screen;
+    ImGuiTestScreen screen;
     game::setScreen(&screen);
 
     game::run();

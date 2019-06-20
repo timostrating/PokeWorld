@@ -10,6 +10,8 @@ bindir
 bindir2
 *.cbp
 
+.idea
+
 # Prerequisites
 *.d
 
