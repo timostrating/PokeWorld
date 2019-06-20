@@ -10,7 +10,7 @@ set(__EMSCRIPTEN__ (CMAKE_CURRENT_SOURCE_DIR MATCHES "/build_emscripten")) # MAT
 
 # --------------------------------------------------------SOURCE--------------------------------------------------------
 
-file(GLOB_RECURSE source ../src/*)
+file(GLOB_RECURSE source ../../src/*)
 
 # https://stackoverflow.com/questions/12264299/cmake-on-linux-target-platform-does-not-support-dynamic-linking
 set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
@@ -27,20 +27,20 @@ if (NOT ${__EMSCRIPTEN__})
     set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
-    add_subdirectory(../external/glfw-3.2.1 ./bindir)
-    include_directories(../external/glfw-3.2.1)
+    add_subdirectory(../../external/glfw-3.2.1 ./bindir)
+    include_directories(../../external/glfw-3.2.1)
 endif ()
 
 
 # ---------------------------------------------------------GLM----------------------------------------------------------
 
-add_subdirectory(../external/glm-0.9.9.5/glm ./bindir2)
-include_directories(../external/glm-0.9.9.5/glm)
+add_subdirectory(../../external/glm-0.9.9.5/glm ./bindir2)
+include_directories(../../external/glm-0.9.9.5/glm)
 
 
 # ---------------------------------------------------------ImGUI--------------------------------------------------------
 
-set(IMGUI_DIR ../external/imgui-1.71)
+set(IMGUI_DIR ../../external/imgui-1.71)
 include_directories(${IMGUI_DIR})
 
 if (NOT ${__EMSCRIPTEN__})
@@ -51,8 +51,8 @@ endif ()
 
 # --------------------------------------------------------GLAD----------------------------------------------------------
 
-add_library(glad ../external/glad/include/glad/glad.h ../external/glad/src/glad.c)
-target_include_directories(glad PUBLIC ../external/glad/include/)
+add_library(glad ../../external/glad/include/glad/glad.h ../../external/glad/src/glad.c)
+target_include_directories(glad PUBLIC ../../external/glad/include/)
 
 
 # ---------------------------------------------------------END----------------------------------------------------------

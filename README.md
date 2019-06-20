@@ -17,15 +17,15 @@ OPTIONAL: Setup [Emscpriten](https://emscripten.org/)
 
 Build the Emscpriten version
 
-`$ cd build_emscripten` <br/>
+`$ cd build/emscripten` <br/>
 `$ emconfigure cmake ./` <br/>
 `$ make` <br/>
 `$ emrun out/TinyPokemonWorld.html` <br/>
 
 
-Or Build the normal desktop version
+Or build the normal desktop version
 
-`$ cd build_normal` <br/>
+`$ cd build/desktop` <br/>
 `$ cmake ./` <br/>
 `$ make` <br/>
 
