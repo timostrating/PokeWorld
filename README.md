@@ -20,7 +20,7 @@ Build the Emscpriten version
 `$ cd build_emscripten` <br/>
 `$ emconfigure cmake ./` <br/>
 `$ make` <br/>
-`$ emrun out/make_emscripten.html` <br/>
+`$ emrun out/TinyPokemonWorld.html` <br/>
 
 
 Or Build the normal desktop version
