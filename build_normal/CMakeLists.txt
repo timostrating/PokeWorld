@@ -29,7 +29,7 @@ include_directories(../external/glm-0.9.9.5/glm)
 set(IMGUI_DIR ../external/imgui-1.71)
 include_directories(${IMGUI_DIR})
 
-add_compile_definitions(IMGUI_IMPL_OPENGL_LOADER_GLAD) # IMGUI recuires that we say that we use glad on the desktop
+add_definitions(-DIMGUI_IMPL_OPENGL_LOADER_GLAD) # IMGUI recuires that we say that we use glad on the desktop
 # ImGui detects EMSCRIPTEN automaticly and use #include <GLES2/gl2.h> instead
 
 
