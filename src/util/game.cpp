@@ -86,7 +86,7 @@ namespace game {
 
         glfwWindowHint(GLFW_RESIZABLE , 1);
         /* Create a windowed mode window and its OpenGL context */
-        g_window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+        g_window = glfwCreateWindow(1200, 800, "Hello World", NULL, NULL);
         if (!g_window)
         {
             glfwTerminate();
@@ -103,7 +103,7 @@ namespace game {
             return -1;
         }
 
-        enableGLDebug();
+//        enableGLDebug();
         printContext();
 
         return true;

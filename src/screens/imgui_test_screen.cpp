@@ -10,7 +10,7 @@
 #include "screen.h"
 
 #include <examples/imgui_impl_glfw.h>
-#include "../util/imgui/imgui_impl_opengl3.h" // We had to change some of the code in this file so we load our version
+#include <examples/imgui_impl_opengl3.h>
 
 class ImGuiTestScreen : public Screen
 {
@@ -29,7 +29,6 @@ public:
         // TODO: Fill optional fields of the io structure later.
         // TODO: Load TTF/OTF fonts if you don't want to use the default font.
 
-        // GL 3.0 + GLSL 130     #version 130         // TODO: #version 300 es may be overkill  version 130 is all we need
         const char* glsl_version = "#version 300 es"; // TODO: We should not hardcoded that here
 
         // Initialize helper Platform and Renderer bindings (here we are using imgui_impl_win32 and imgui_impl_dx11)

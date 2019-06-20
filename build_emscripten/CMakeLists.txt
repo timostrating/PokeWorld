@@ -6,7 +6,7 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "lib")
 
 file(GLOB_RECURSE source ../src/*)
 
-set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE) # https://stackoverflow.com/questions/12264299/cmake-on-linux-target-platform-does-not-support-dynamic-linking
+#set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE) # https://stackoverflow.com/questions/12264299/cmake-on-linux-target-platform-does-not-support-dynamic-linking
 
 find_package(OpenGL REQUIRED)
 
@@ -29,6 +29,9 @@ include_directories(../external/glm-0.9.9.5/glm)
 set(IMGUI_DIR ../external/imgui-1.71)
 include_directories(${IMGUI_DIR})
 
+#add_compile_definitions(IMGUI_IMPL_OPENGL_LOADER_GLAD) # IMGUI recuires that we say that we use glad on the desktop
+# ImGui detects EMSCRIPTEN automaticly and use #include <GLES2/gl2.h> instead
+
 
 # ---GLAD---
 add_library(glad ../external/glad/include/glad/glad.h ../external/glad/src/glad.c)
@@ -36,8 +39,14 @@ target_include_directories(glad PUBLIC ../external/glad/include/)
 
 
 # ---END---
-# ${IMGUI_DIR}/examples/imgui_impl_opengl3.cpp  // We hard copied an edited version of this file into the project
-add_executable(make_emscripten ${source} ${IMGUI_DIR}/imgui.cpp ${IMGUI_DIR}/examples/imgui_impl_glfw.cpp      ${IMGUI_DIR}/imgui_draw.cpp ${IMGUI_DIR}/imgui_demo.cpp ${IMGUI_DIR}/imgui_widgets.cpp)
+add_executable(make_emscripten
+            ${source}
+            ${IMGUI_DIR}/imgui.cpp
+            ${IMGUI_DIR}/examples/imgui_impl_glfw.cpp
+            ${IMGUI_DIR}/examples/imgui_impl_opengl3.cpp
+            ${IMGUI_DIR}/imgui_draw.cpp
+            ${IMGUI_DIR}/imgui_demo.cpp
+            ${IMGUI_DIR}/imgui_widgets.cpp)
 
 set_target_properties(make_emscripten PROPERTIES LINKER_LANGUAGE CXX)
 set_property(TARGET make_emscripten PROPERTY CXX_STANDARD 17)
