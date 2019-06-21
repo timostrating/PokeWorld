@@ -5,7 +5,7 @@ set(EXECUTABLE_OUTPUT_PATH "out")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "lib")
 
 # Detect if we use emscripten. Use it like so if (${__EMSCRIPTEN__})   OR   if (NOT ${__EMSCRIPTEN__})
-set(__EMSCRIPTEN__ (CMAKE_CURRENT_SOURCE_DIR MATCHES "/build_emscripten")) # MATCHES does a regex on the uri
+set(__EMSCRIPTEN__ (CMAKE_CURRENT_SOURCE_DIR MATCHES "/build/emscripten")) # MATCHES does a regex on the uri
 
 
 # --------------------------------------------------------SOURCE--------------------------------------------------------
