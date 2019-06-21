@@ -10,7 +10,7 @@
 class Screen
 {
 public:
-    virtual void setup(GLFWwindow* window) = 0;
+    virtual void setup(GLFWwindow* window) {};
     virtual void render(double deltaTime) = 0;
 };
 
