@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(poke)
+project(TinyPokemonWorld)
 set(EXECUTABLE_OUTPUT_PATH "out")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "lib")
 
 # Detect if we use emscripten. Use it like so if (${__EMSCRIPTEN__})   OR   if (NOT ${__EMSCRIPTEN__})
 set(__EMSCRIPTEN__ (CMAKE_CURRENT_SOURCE_DIR MATCHES "/build/emscripten")) # MATCHES does a regex on the uri
-
+set(EXTERNAL_DIR ../../external)
+set(PROJECT_NAME TinyPokemonWorld)
 
 # --------------------------------------------------------SOURCE--------------------------------------------------------
 
@@ -27,20 +28,20 @@ if (NOT ${__EMSCRIPTEN__})
     set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
-    add_subdirectory(../../external/glfw-3.2.1 ./bindir)
-    include_directories(../../external/glfw-3.2.1)
+    add_subdirectory(${EXTERNAL_DIR}/glfw-3.2.1 ./bindir)
+    include_directories(${EXTERNAL_DIR}/glfw-3.2.1)
 endif ()
 
 
 # ---------------------------------------------------------GLM----------------------------------------------------------
 
-add_subdirectory(../../external/glm-0.9.9.5/glm ./bindir2)
-include_directories(../../external/glm-0.9.9.5/glm)
+add_subdirectory(${EXTERNAL_DIR}/glm-0.9.9.5/glm ./bindir2)
+include_directories(${EXTERNAL_DIR}/glm-0.9.9.5/glm)
 
 
 # ---------------------------------------------------------ImGUI--------------------------------------------------------
 
-set(IMGUI_DIR ../../external/imgui-1.71)
+set(IMGUI_DIR ${EXTERNAL_DIR}/imgui-1.71)
 include_directories(${IMGUI_DIR})
 
 if (NOT ${__EMSCRIPTEN__})
@@ -51,13 +52,13 @@ endif ()
 
 # --------------------------------------------------------GLAD----------------------------------------------------------
 
-add_library(glad ../../external/glad/include/glad/glad.h ../../external/glad/src/glad.c)
-target_include_directories(glad PUBLIC ../../external/glad/include/)
+add_library(glad ${EXTERNAL_DIR}/glad/include/glad/glad.h ${EXTERNAL_DIR}/glad/src/glad.c)
+target_include_directories(glad PUBLIC ${EXTERNAL_DIR}/glad/include/)
 
 
 # ---------------------------------------------------------END----------------------------------------------------------
 
-add_executable(TinyPokemonWorld
+add_executable(${PROJECT_NAME}
         ${source}
         ${IMGUI_DIR}/imgui.cpp
         ${IMGUI_DIR}/examples/imgui_impl_glfw.cpp
@@ -66,20 +67,20 @@ add_executable(TinyPokemonWorld
         ${IMGUI_DIR}/imgui_demo.cpp
         ${IMGUI_DIR}/imgui_widgets.cpp)
 
-set_target_properties(TinyPokemonWorld PROPERTIES LINKER_LANGUAGE CXX)
-set_property(TARGET TinyPokemonWorld PROPERTY CXX_STANDARD 17)
-set_property(TARGET TinyPokemonWorld PROPERTY CXX_STANDARD_REQUIRED ON)
+set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD_REQUIRED ON)
 
 
 if (${__EMSCRIPTEN__})
 
-    set_target_properties(TinyPokemonWorld PROPERTIES SUFFIX ".html")
-    set_target_properties(TinyPokemonWorld PROPERTIES LINK_FLAGS "-Werror -s WASM=1 -s USE_GLFW=3 -s USE_WEBGL2=1 -s BINARYEN_METHOD='native-wasm' -s ASSERTIONS=2")
-    target_link_libraries(TinyPokemonWorld glad glm)
+    set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".html")
+    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-Werror -s WASM=1 -s USE_GLFW=3 -s USE_WEBGL2=1 -s BINARYEN_METHOD='native-wasm' -s ASSERTIONS=2")
+    target_link_libraries(${PROJECT_NAME} glad glm)
 
 else()
 
-    target_link_libraries(TinyPokemonWorld glad glm glfw)
+    target_link_libraries(${PROJECT_NAME} glad glm glfw)
 
     # -no-pie is used to get 'application/x-application' as mime type instead of 'application/x-sharedlib'
     set(CMAKE_CXX_FLAGS  "-no-pie -O3")
