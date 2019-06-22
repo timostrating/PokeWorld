@@ -2,8 +2,7 @@
 // Created by sneeuwpop on 20-6-19.
 //
 
-#ifndef POKE_SHADER_PROGRAM_H
-#define POKE_SHADER_PROGRAM_H
+#pragma once
 
 class ShaderProgram
 {
@@ -20,6 +19,3 @@ private:
     GLuint programId; // TODO lookup what the standards are about private variables
 
 };
-
-
-#endif //POKE_SHADER_PROGRAM_H

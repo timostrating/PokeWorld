@@ -2,8 +2,7 @@
 // Created by sneeuwpop on 21-6-19.
 //
 
-#ifndef POKE_FILE_H
-#define POKE_FILE_H
+#pragma once
 
 #include <string>
 
@@ -15,6 +14,3 @@ public:
 private:
     static std::string readString(std::string *path);
 };
-
-
-#endif //POKE_FILE_H

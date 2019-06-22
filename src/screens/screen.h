@@ -2,8 +2,7 @@
 // Created by sneeuwpop on 16-6-19.
 //
 
-#ifndef POKE_SCREEN_H
-#define POKE_SCREEN_H
+#pragma once
 
 #include <GLFW/glfw3.h>
 
@@ -13,5 +12,3 @@ public:
     virtual void setup(GLFWwindow* window) {};
     virtual void render(double deltaTime) = 0;
 };
-
-#endif //POKE_SCREEN_H
