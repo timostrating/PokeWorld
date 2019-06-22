@@ -14,9 +14,11 @@ public:
     ~ShaderProgram();
 
     void use();
+    GLuint getId() { return programId; }
 
 private:
-    GLuint programId;
+    GLuint programId; // TODO lookup what the standards are about private variables
+
 };
 
 

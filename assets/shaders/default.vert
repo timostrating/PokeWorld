@@ -1,6 +1,7 @@
-attribute vec4 apos;
-varying vec4 color;
+attribute vec3 a_pos;
+
+uniform mat4 MVP;
 
 void main() {
-    gl_Position = apos;
+    gl_Position = MVP * vec4(a_pos, 1.0);
 }

@@ -1,12 +1,13 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(TinyPokemonWorld)
+project(poke)
 set(EXECUTABLE_OUTPUT_PATH "out")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "lib")
 
 # Detect if we use emscripten. Use it like so if (${__EMSCRIPTEN__})   OR   if (NOT ${__EMSCRIPTEN__})
 set(__EMSCRIPTEN__ (CMAKE_CURRENT_SOURCE_DIR MATCHES "/build/emscripten")) # MATCHES does a regex on the uri
 set(EXTERNAL_DIR ../../external)
+set(ASSETS_DIR ../../assets)
 set(PROJECT_NAME TinyPokemonWorld)
 
 # --------------------------------------------------------SOURCE--------------------------------------------------------
@@ -75,7 +76,7 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD_REQUIRED ON)
 if (${__EMSCRIPTEN__})
 
     set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".html")
-    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-Werror -s WASM=1 -s USE_GLFW=3 -s USE_WEBGL2=1 -s BINARYEN_METHOD='native-wasm' -s ASSERTIONS=2")
+    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-Werror -s WASM=1 -s USE_GLFW=3 -s USE_WEBGL2=1 -s BINARYEN_METHOD='native-wasm' --preload-file ${ASSETS_DIR}")
     target_link_libraries(${PROJECT_NAME} glad glm)
 
 else()
