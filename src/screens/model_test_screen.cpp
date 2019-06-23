@@ -9,14 +9,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 
-#include "screen.h"
+#include "../util/interfaces/screen.h"
 #include "../graphics/shader_program.h"
 #include "../graphics/camera.h"
 
 
 class ModelTestScreen : public Screen
 {
-
 public:
     Camera camera = Camera();
     GLint MVPLocation;
@@ -77,5 +76,10 @@ public:
         );
 
         glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle;
+    }
+
+    void resize(int width, int height)
+    {
+        camera.resize(width, height);
     }
 };

@@ -10,7 +10,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
-#include "../screens/screen.h"
+#include "../util/interfaces/screen.h"
 #include "gl_debug.h"
 
 namespace game {
@@ -80,16 +80,27 @@ namespace game {
         prevTime = curTime;
     }
 
+    void framebuffer_size_callback(GLFWwindow* _, int width, int height)
+    {
+//        std::cout << "framebuffer_size_callback " << width << " " << height << "\n";
+        glViewport(0, 0, width, height);
+        if (screen)
+            screen->resize(width, height);
+    }
 
     void run()
     {
         prevTime = glfwGetTime();
+
+        glfwSetFramebufferSizeCallback(g_window, framebuffer_size_callback);  // https://www.glfw.org/docs/latest/window_guide.html#window_fbsize
 
 #ifdef __EMSCRIPTEN__ // Main loop
         emscripten_set_main_loop(tick, 0, 1);
 #else
         while (!glfwWindowShouldClose(g_window)) { tick(); }
 #endif
+
+        glfwDestroyWindow(g_window);
     }
 
     void setScreen(Screen *newScreen)

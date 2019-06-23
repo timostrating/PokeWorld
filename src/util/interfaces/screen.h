@@ -5,10 +5,13 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
+#include "resizeable.h"
 
-class Screen
+
+class Screen : Resizeable
 {
 public:
     virtual void setup(GLFWwindow* window) {};
     virtual void render(double deltaTime) = 0;
+    virtual void resize(int width, int height) {};
 };

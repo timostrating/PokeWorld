@@ -4,7 +4,7 @@
 
 #include <glad/glad.h>
 #include <iostream>
-#include "screen.h"
+#include "../util/interfaces/screen.h"
 #include "glm/glm.hpp"
 
 class TriangleTestScreen : public Screen {

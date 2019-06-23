@@ -23,7 +23,7 @@ void Camera::update() {
     );
     projection = perspective(
             radians(45.0),  // Field of View
-            16.0 / 9.0,     // Aspect Ratio
+            double(width) / double(height),     // Aspect Ratio
             0.1,            // near clipping plane
             100.0           // far clipping plane
     );

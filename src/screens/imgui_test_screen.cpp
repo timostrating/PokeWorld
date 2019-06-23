@@ -7,7 +7,7 @@
 #include <glm/glm.hpp>
 #include <GLFW/glfw3.h>
 
-#include "screen.h"
+#include "../util/interfaces/screen.h"
 
 #include <examples/imgui_impl_glfw.h>
 #include <examples/imgui_impl_opengl3.h>
