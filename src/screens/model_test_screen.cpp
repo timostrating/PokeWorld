@@ -10,13 +10,13 @@
 
 #include "../util/interfaces/screen.h"
 #include "../graphics/shader_program.h"
-#include "../graphics/camera.h"
-
+#include "../graphics/flying_camera.h"
+#include "../util/input/keyboard.h"
 
 class ModelTestScreen : public Screen
 {
 public:
-    Camera camera = Camera();
+    FlyingCamera camera = FlyingCamera();
     GLint MVPLocation;
 
     ModelTestScreen() {
@@ -51,9 +51,11 @@ public:
         glBindAttribLocation(shaderProgram.getId(), 0, "a_pos");
 
         MVPLocation = glGetUniformLocation(shaderProgram.getId(), "MVP");
+        camera.position = glm::vec3(0,0,2);
     }
 
     double time = 0;
+    bool anyKeyPressed = false;
     glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0)); // identity matrix
 
     void render(double deltaTime) {
@@ -62,9 +64,17 @@ public:
         glClearColor(135.0/255.0, 206.0/255.0, 235.0/255.0, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        camera.position = vec3(sin(time * 0.5) *2,  0,  cos(time * 0.5) *2);
-        camera.lookAt(VEC3::ZERO);
-        camera.update();
+        if (anyKeyPressed)
+            camera.update(deltaTime);
+        else {
+            if (INPUT::KEYBOARD::anyKeyEverPressed())
+                anyKeyPressed = true;
+            camera.position = vec3(sin(time * 0.5) *2,  0,  cos(time * 0.5) *2);
+            camera.lookAt(VEC3::ZERO);
+            camera.Camera::update();
+        }
+
+
 
         mat4 mvp = camera.combined * modelMatrix;
 

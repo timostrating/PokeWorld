@@ -7,7 +7,9 @@
 #include <GLFW/glfw3.h>
 
 
-namespace Input::Keyboard
+namespace INPUT::KEYBOARD
 {
     void setup(GLFWwindow *window);
+    bool pressed(int keyCode);
+    bool anyKeyEverPressed();
 }

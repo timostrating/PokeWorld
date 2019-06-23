@@ -23,7 +23,6 @@ public:
         nearClippingPlane = nearClipping;
         farClippingPlane = farClipping;
     }
-    ~Camera();
 
     int width = 16, height = 9;
     double fov = 45;

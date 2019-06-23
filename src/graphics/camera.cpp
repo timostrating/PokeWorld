@@ -62,7 +62,3 @@ void Camera::rotate(vec3 axis, float degrees) {
 void Camera::translate(vec3 target) {
     position += target;
 }
-
-Camera::~Camera() {
-
-}

@@ -48,7 +48,7 @@ namespace GAME {
         }
 
 
-        Input::Keyboard::setup(g_window);
+        INPUT::KEYBOARD::setup(g_window);
 
 //        GLDEBUG::enableGLDebug();
         GLDEBUG::printContext();
