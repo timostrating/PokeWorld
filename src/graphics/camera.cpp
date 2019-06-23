@@ -35,8 +35,6 @@ void Camera::update() {
             farClippingPlane                // far clipping plane
     );
 
-    std::cout << MAT4::toString(view) << "\n";
-
     combined = projection * view; // Remember, matrix multiplication is the other way around
 }
 

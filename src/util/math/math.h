@@ -8,7 +8,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <string>
 
-#define S(X) std::to_string(X)
+#define S(X) std::to_string(X).substr(0, 4)
 
 
 namespace MATH
