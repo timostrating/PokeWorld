@@ -12,8 +12,10 @@
 
 #include "../util/interfaces/screen.h"
 #include "gl_debug.h"
+#include "input/keyboard.h"
 
-namespace game {
+
+namespace GAME {
     GLFWwindow *g_window;
     Screen *screen;
 
@@ -45,8 +47,11 @@ namespace game {
             return -1;
         }
 
-//        glDebug::enableGLDebug();
-        glDebug::printContext();
+
+        Input::Keyboard::setup(g_window);
+
+//        GLDEBUG::enableGLDebug();
+        GLDEBUG::printContext();
 
         return true;
     }

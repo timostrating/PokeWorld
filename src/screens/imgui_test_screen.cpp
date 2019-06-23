@@ -34,9 +34,6 @@ public:
         // Initialize helper Platform and Renderer bindings (here we are using imgui_impl_win32 and imgui_impl_dx11)
         ImGui_ImplGlfw_InitForOpenGL(window, true);
         ImGui_ImplOpenGL3_Init(glsl_version);
-
-        // Shutdown
-//       ImGui_ImplGlfw_Shutdown();  // TODO implement that that we can destroy the frame
     }
 
     void render(double deltaTime) {
@@ -56,5 +53,10 @@ public:
         glClearColor(fmod(time, 1), 0.0f, fmod(time * 2, 1), 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    }
+
+    ~ImGuiTestScreen()
+    {
+        ImGui_ImplGlfw_Shutdown();
     }
 };

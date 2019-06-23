@@ -7,7 +7,7 @@
 #include <GLFW/glfw3.h>
 #include "../util/interfaces/screen.h"
 
-namespace game
+namespace GAME
 {
     bool init();
     void run();

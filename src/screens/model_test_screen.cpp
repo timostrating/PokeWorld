@@ -8,7 +8,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-
 #include "../util/interfaces/screen.h"
 #include "../graphics/shader_program.h"
 #include "../graphics/camera.h"
@@ -64,6 +63,7 @@ public:
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         camera.position = vec3(sin(time * 0.5) *2,  0,  cos(time * 0.5) *2);
+        camera.lookAt(VEC3::ZERO);
         camera.update();
 
         mat4 mvp = camera.combined * modelMatrix;

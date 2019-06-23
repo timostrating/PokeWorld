@@ -9,13 +9,13 @@
 
 int main(void)
 {
-    if (!game::init())
+    if (!GAME::init())
         return -1;
 
     ModelTestScreen screen;
-    game::setScreen(&screen);
+    GAME::setScreen(&screen);
 
-    game::run();
+    GAME::run();
 
     return 0;
 }
