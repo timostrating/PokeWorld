@@ -14,7 +14,7 @@ using namespace glm;
 
 
 Camera::Camera() {
-    glEnable(GL_DEPTH_TEST); // TODO permanent place
+    glEnable(GL_DEPTH_TEST);
 }
 
 void Camera::update() {

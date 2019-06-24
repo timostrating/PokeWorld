@@ -40,4 +40,8 @@ namespace INPUT::KEYBOARD
     bool anyKeyEverPressed() {
         return firstKeyPressed;
     }
+
+    void lateUpdate() {
+        // TODO: implement this
+    }
 }

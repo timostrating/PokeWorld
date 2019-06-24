@@ -13,6 +13,7 @@
 #include "../util/interfaces/screen.h"
 #include "gl_debug.h"
 #include "input/keyboard.h"
+#include "input/mouse.h"
 
 
 namespace GAME {
@@ -49,6 +50,7 @@ namespace GAME {
 
 
         INPUT::KEYBOARD::setup(g_window);
+        INPUT::MOUSE::setup(g_window);
 
 //        GLDEBUG::enableGLDebug();
         GLDEBUG::printContext();
@@ -81,6 +83,9 @@ namespace GAME {
 
         glfwSwapBuffers(g_window);
         glfwPollEvents();
+
+        INPUT::KEYBOARD::lateUpdate();
+        INPUT::MOUSE::lateUpdate();
 
         prevTime = curTime;
     }

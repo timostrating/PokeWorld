@@ -10,6 +10,8 @@
 namespace INPUT::KEYBOARD
 {
     void setup(GLFWwindow *window);
+    void lateUpdate();
+
     bool pressed(int keyCode);
     bool anyKeyEverPressed();
 }

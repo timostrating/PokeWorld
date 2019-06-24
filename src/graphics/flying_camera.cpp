@@ -2,15 +2,17 @@
 // Created by sneeuwpop on 24-6-19.
 //
 
+#include <iostream>
 #include "flying_camera.h"
 #include "../util/input/keyboard.h"
+#include "../util/input/mouse.h"
 using namespace INPUT;
 
 ///
 /// CREDIT TO: https://github.com/hilkojj/cpp-game-utils/blob/master/source/utils/camera/flying_camera_controller.cpp
 ///
 void FlyingCamera::update(float deltaTime) {
-//    speedMultiplier += MouseInput::yScroll * .5; // TODO: add a
+    speedMultiplier += MOUSE::getScrollDelta() * .5;
     if (speedMultiplier < 0) speedMultiplier = 0;
 
     if (KEYBOARD::pressed(GLFW_KEY_W))
@@ -38,11 +40,11 @@ void FlyingCamera::update(float deltaTime) {
     if (KEYBOARD::pressed(GLFW_KEY_SPACE))
         position.y += deltaTime * speedMultiplier;
 
-//    if (MouseInput::deltaMouseX != 0)
-//        rotate(MouseInput::deltaMouseX / gu::width * -100 * mouseSensivity, mu::Y);
+//    if (MOUSE::deltaMouseX != 0)
+//        rotate(MOUSE::deltaMouseX / gu::width * -100 * mouseSensivity, VEC3::Y);
 //
-//    if (MouseInput::deltaMouseY != 0)
-//        rotate(MouseInput::deltaMouseY / gu::height * -100 * mouseSensivity, right);
+//    if (MOUSE::deltaMouseY != 0)
+//        rotate(MOUSE::deltaMouseY / gu::height * -100 * mouseSensivity, right);
 
     Camera::update();
 }
