@@ -4,7 +4,7 @@
 
 #include "keyboard.h"
 #include <iostream>
-#include <hash_map>
+#include <map>
 
 // REMEMBER: we import this from  <GLFW/glfw3.h>
 //
@@ -16,7 +16,7 @@
 namespace INPUT::KEYBOARD
 {
 
-    __gnu_cxx::hash_map<int, int> keyMap;
+    std::map<int, int> keyMap;
     bool firstKeyPressed = false;
 
     static void key_callback(GLFWwindow* window, int keyCode, int scancode, int action, int mods)
