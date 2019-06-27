@@ -61,7 +61,6 @@ public:
 
 
 
-
         GLuint vertex_buffer;
         glGenBuffers(1, &vertex_buffer);
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
@@ -76,7 +75,6 @@ public:
                 (void*)0        // array buffer offset
         );
         glEnableVertexAttribArray(0);
-        glBindAttribLocation(shaderProgram.getId(), 0, "a_pos");
 
         GLuint color_buffer;
         glGenBuffers(1, &color_buffer);
@@ -92,7 +90,6 @@ public:
                 (void*)0        // array buffer offset
         );
         glEnableVertexAttribArray(1);
-        glBindAttribLocation(shaderProgram.getId(), 1, "a_color");
 
         MVPLocation = glGetUniformLocation(shaderProgram.getId(), "MVP");
         camera.position = glm::vec3(0,0,5);
@@ -129,7 +126,7 @@ public:
                 &mvp[0][0]     // we share the pointer to the first value, 4fv knows to where it needs to go
         );
 
-        glDrawArrays(GL_TRIANGLES, 0, sizeof(g_vertex_buffer_data)); // Starting from vertex 0; 3 vertices total -> 1 triangle;
+        glDrawArrays(GL_TRIANGLES, 0, 6*2*3); // Starting from vertex 0; a cube had 6 sides, 2 triangles per side and 3 points per triangle;
     }
 
     void resize(int width, int height)
