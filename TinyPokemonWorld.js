@@ -196,7 +196,7 @@ Module['FS_createPath']('/assets', 'shaders', true, true);
   }
 
  }
- loadPackage({"files": [{"start": 0, "audio": 0, "end": 1856, "filename": "/assets/models/cube.glb"}, {"start": 1856, "audio": 0, "end": 5515, "filename": "/assets/models/cube.gltf"}, {"start": 5515, "audio": 0, "end": 5665, "filename": "/assets/shaders/3dcube.frag"}, {"start": 5665, "audio": 0, "end": 5890, "filename": "/assets/shaders/3dcube.vert"}, {"start": 5890, "audio": 0, "end": 6022, "filename": "/assets/shaders/default.vert"}, {"start": 6022, "audio": 0, "end": 6147, "filename": "/assets/shaders/default.frag"}], "remote_package_size": 6147, "package_uuid": "b2cc2db4-8c93-425e-b6e2-7d322a829671"});
+ loadPackage({"files": [{"start": 0, "audio": 0, "end": 1856, "filename": "/assets/models/cube.glb"}, {"start": 1856, "audio": 0, "end": 5515, "filename": "/assets/models/cube.gltf"}, {"start": 5515, "audio": 0, "end": 5664, "filename": "/assets/shaders/3dcube.frag"}, {"start": 5664, "audio": 0, "end": 5889, "filename": "/assets/shaders/3dcube.vert"}, {"start": 5889, "audio": 0, "end": 6021, "filename": "/assets/shaders/default.vert"}, {"start": 6021, "audio": 0, "end": 6146, "filename": "/assets/shaders/default.frag"}], "remote_package_size": 6146, "package_uuid": "ef660368-23e4-4da7-8cde-6fd07492b4be"});
 
 })();
 
@@ -1401,11 +1401,11 @@ function updateGlobalBufferViews() {
 
 
 var STATIC_BASE = 1024,
-    STACK_BASE = 48224,
+    STACK_BASE = 49040,
     STACKTOP = STACK_BASE,
-    STACK_MAX = 5291104,
-    DYNAMIC_BASE = 5291104,
-    DYNAMICTOP_PTR = 48192;
+    STACK_MAX = 5291920,
+    DYNAMIC_BASE = 5291920,
+    DYNAMICTOP_PTR = 49008;
 
 assert(STACK_BASE % 16 === 0, 'stack must start aligned');
 assert(DYNAMIC_BASE % 16 === 0, 'heap must start aligned');
@@ -1885,7 +1885,7 @@ var ASM_CONSTS = [];
 
 
 
-// STATICTOP = STATIC_BASE + 47200;
+// STATICTOP = STATIC_BASE + 48016;
 /* global initializers */  __ATINIT__.push({ func: function() { globalCtors() } });
 
 
@@ -1896,7 +1896,7 @@ var ASM_CONSTS = [];
 
 
 /* no memory initializer */
-var tempDoublePtr = 48208
+var tempDoublePtr = 49024
 assert(tempDoublePtr % 8 == 0);
 
 function copyTempFloat(ptr) { // functions, because inlining this code increases code size too much
@@ -8676,7 +8676,6 @@ function copyTempDouble(ptr) {
         throw 'SimulateInfiniteLoop';
       }
     }
-
 
   
   var ENV={};function _getenv(name) {
