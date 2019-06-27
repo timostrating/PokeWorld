@@ -76,7 +76,7 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD_REQUIRED ON)
 if (${__EMSCRIPTEN__})
 
     set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".html")
-    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-Werror -s WASM=1 -s USE_GLFW=3 -s USE_WEBGL2=1 -s BINARYEN_METHOD='native-wasm' --preload-file ${ASSETS_DIR}")
+    set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-Werror -s WASM=1 -s USE_GLFW=3 -s USE_WEBGL2=1 -s BINARYEN_METHOD='native-wasm' --preload-file ${ASSETS_DIR} --shell-file ../helpers/index.html")
     target_link_libraries(${PROJECT_NAME} glad glm)
 
 else()

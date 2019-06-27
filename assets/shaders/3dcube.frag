@@ -1,7 +1,10 @@
 #version 300 es
-precision lowp float;
+precision mediump float;
 
-varying vec3 fragmentColor;
+in vec3 fragmentColor;
+
+out vec4 outputColor;
+
 
 void main() {
     gl_FragColor = vec4(fragmentColor, 1.0);

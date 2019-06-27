@@ -48,7 +48,7 @@ public:
                 (void*)0        // array buffer offset
         );
         glEnableVertexAttribArray(0);
-        glBindAttribLocation(shaderProgram.getId(), 0, "a_pos");
+//        glBindAttribLocation(shaderProgram.getId(), 0, "a_pos");
 
         MVPLocation = glGetUniformLocation(shaderProgram.getId(), "MVP");
         camera.position = glm::vec3(0,0,2);

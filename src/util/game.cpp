@@ -105,6 +105,7 @@ namespace GAME {
         glfwSetFramebufferSizeCallback(g_window, framebuffer_size_callback);  // https://www.glfw.org/docs/latest/window_guide.html#window_fbsize
 
 #ifdef __EMSCRIPTEN__ // Main loop
+        emscripten_set_main_loop_timing(EM_TIMING_RAF, 1);
         emscripten_set_main_loop(tick, 0, 1);
 #else
         while (!glfwWindowShouldClose(g_window)) { tick(); }

@@ -13,7 +13,7 @@ int main(void)
     if (!GAME::init())
         return -1;
 
-    ModelIndecesTestScreen screen;
+    ModelTestScreen screen;
     GAME::setScreen(&screen);
 
     GAME::run();
