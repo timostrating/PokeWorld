@@ -81,6 +81,7 @@ namespace GAME {
         if (screen)
             screen->render(deltaTime);
 
+        glfwSwapInterval(1);
         glfwSwapBuffers(g_window);
         glfwPollEvents();
 

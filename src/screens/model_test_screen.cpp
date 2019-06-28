@@ -11,13 +11,16 @@
 #include "../util/interfaces/screen.h"
 #include "../graphics/shader_program.h"
 #include "../graphics/flying_camera.h"
+#include "../graphics/mesh.h"
 #include "../util/input/keyboard.h"
+
 
 class ModelTestScreen : public Screen
 {
 public:
     FlyingCamera camera = FlyingCamera();
     GLint MVPLocation;
+    Mesh mesh = Mesh();
 
     ModelTestScreen() {
 
@@ -25,30 +28,13 @@ public:
         ShaderProgram shaderProgram = ShaderProgram::fromAssetFiles("shaders/default.vert", "shaders/default.frag");
         shaderProgram.use();
 
-        static const float vertices[] = {
-            //  x,     y,    z
-            -0.6f, -0.6f, 0.0f,
-             0.6f, -0.6f, 0.0f,
-             0.0f,  0.6f, 0.0f,
-        };
-
-
-        // VBO
-        GLuint vbo;
-        glGenBuffers(1, &vbo);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-        glVertexAttribPointer(
-                0,              // attribute 0. No particular reason for 0, but must match the layout in the shader.
-                3,              // size
-                GL_FLOAT,       // type
-                GL_FALSE,       // normalized?
-                0,              // stride
-                (void*)0        // array buffer offset
-        );
-        glEnableVertexAttribArray(0);
-//        glBindAttribLocation(shaderProgram.getId(), 0, "a_pos");
+        mesh.vertices.insert(mesh.vertices.begin(), {
+                //  x,     y,    z
+                -0.6f, -0.6f, 0.0f,
+                 0.6f, -0.6f, 0.0f,
+                 0.0f,  0.6f, 0.0f,
+        });
+        mesh.doVBOstuff();
 
         MVPLocation = glGetUniformLocation(shaderProgram.getId(), "MVP");
         camera.position = glm::vec3(0,0,2);
@@ -85,7 +71,7 @@ public:
                 &mvp[0][0]     // we share the pointer to the first value, 4fv knows to where it needs to go
         );
 
-        glDrawArrays(GL_TRIANGLES, 0, 3); // Starting from vertex 0; 3 vertices total -> 1 triangle;
+        mesh.render();
     }
 
     void resize(int width, int height)

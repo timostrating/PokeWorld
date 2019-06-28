@@ -100,7 +100,7 @@ public:
     glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0)); // identity matrix
 
     void render(double deltaTime) {
-        time += deltaTime;
+        time += 0.016;
 
         glClearColor(135.0/255.0, 206.0/255.0, 235.0/255.0, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
