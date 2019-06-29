@@ -12,6 +12,7 @@
 #include "../graphics/shader_program.h"
 #include "../graphics/flying_camera.h"
 #include "../graphics/mesh.h"
+#include "../graphics/vertex_buffer.h"
 #include "../util/input/keyboard.h"
 
 
@@ -22,11 +23,11 @@ public:
     GLint MVPLocation;
     Mesh mesh = Mesh();
 
-    ModelTestScreen() {
-
-        // SHADER PROGRAM
+    ModelTestScreen()
+    {
+        // Shader Program
         ShaderProgram shaderProgram = ShaderProgram::fromAssetFiles("shaders/default.vert", "shaders/default.frag");
-        shaderProgram.use();
+        shaderProgram.begin();
 
         mesh.vertices.insert(mesh.vertices.begin(), {
                 //  x,     y,    z
@@ -34,8 +35,13 @@ public:
                  0.6f, -0.6f, 0.0f,
                  0.0f,  0.6f, 0.0f,
         });
-        mesh.doVBOstuff();
 
+        // Vertex Buffer
+        VertexBuffer vertexBuffer = VertexBuffer();
+        vertexBuffer.add(&mesh);
+        vertexBuffer.upload();
+
+        // Model View Projection
         MVPLocation = glGetUniformLocation(shaderProgram.getId(), "MVP");
         camera.position = glm::vec3(0,0,2);
     }
@@ -44,7 +50,8 @@ public:
     bool anyKeyPressed = false;
     glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0)); // identity matrix
 
-    void render(double deltaTime) {
+    void render(double deltaTime)
+    {
         time += deltaTime;
 
         glClearColor(135.0/255.0, 206.0/255.0, 235.0/255.0, 1.0f);
@@ -59,8 +66,6 @@ public:
             camera.lookAt(VEC3::ZERO);
             camera.Camera::update();
         }
-
-
 
         mat4 mvp = camera.combined * modelMatrix;
 

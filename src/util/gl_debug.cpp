@@ -18,7 +18,7 @@ namespace GLDEBUG
         std::cout << "[Extensions] " << glGetString(GL_EXTENSIONS) << std::endl;
     }
 
-    // https://blog.nobel-joergensen.com/2013/02/17/debugging-opengl-part-2-using-gldebugmessagecallback/
+    // CREDITS TO: https://blog.nobel-joergensen.com/2013/02/17/debugging-opengl-part-2-using-gldebugmessagecallback/
     void APIENTRY openglCallbackFunction(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam){
 
         std::cout << "---------------------opengl-callback-start------------" << std::endl;

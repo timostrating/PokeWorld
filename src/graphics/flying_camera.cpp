@@ -8,9 +8,8 @@
 #include "../util/input/mouse.h"
 using namespace INPUT;
 
-///
-/// CREDIT TO: https://github.com/hilkojj/cpp-game-utils/blob/master/source/utils/camera/flying_camera_controller.cpp
-///
+
+// CREDIT TO: https://github.com/hilkojj/cpp-game-utils/blob/master/source/utils/camera/flying_camera_controller.cpp
 void FlyingCamera::update(float deltaTime) {
     speedMultiplier += MOUSE::getScrollDelta() * .5;
     if (speedMultiplier < 0) speedMultiplier = 0;

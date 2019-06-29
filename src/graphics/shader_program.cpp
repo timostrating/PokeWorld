@@ -7,6 +7,7 @@
 #include <vector>
 #include "shader_program.h"
 #include "../util/io/file.h"
+#include "../util/nice_error.h"
 
 
 void validateShader(GLint shaderId)
@@ -79,9 +80,19 @@ ShaderProgram ShaderProgram::fromAssetFiles(const char *vertPath, const char *fr
     return ShaderProgram(vertCode.c_str(), fragCode.c_str());
 }
 
-void ShaderProgram::use()
+void ShaderProgram::begin()
 {
+    if (anyShaderActive)
+        throw nice_err("you should have called .end() on your last Shader before you begin a new shader. \n");
+
+    anyShaderActive = true;
     glUseProgram(programId);
+}
+
+void ShaderProgram::end()
+{
+    anyShaderActive = false;
+    glUseProgram(0);
 }
 
 ShaderProgram::~ShaderProgram()

@@ -12,10 +12,12 @@ public:
     ShaderProgram(const char* vertexSource, const char* fragSource);
     ~ShaderProgram();
 
-    void use();
+    void begin();
+    void end();
     GLuint getId() { return programId; }
 
 private:
     GLuint programId; // TODO lookup what the standards are about private variables
+    static inline bool anyShaderActive = false;
 
 };

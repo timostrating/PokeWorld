@@ -57,7 +57,7 @@ public:
 
         // SHADER PROGRAM
         ShaderProgram shaderProgram = ShaderProgram::fromAssetFiles("shaders/3dcube.vert", "shaders/3dcube.frag");
-        shaderProgram.use();
+        shaderProgram.begin();
 
 
 
