@@ -83,7 +83,7 @@ ShaderProgram ShaderProgram::fromAssetFiles(const char *vertPath, const char *fr
 void ShaderProgram::begin()
 {
     if (anyShaderActive)
-        throw nice_err("you should have called .end() on your last Shader before you begin a new shader. \n");
+        throw nice_error("you should have called .end() on your last Shader before you begin a new shader. \n");
 
     anyShaderActive = true;
     glUseProgram(programId);

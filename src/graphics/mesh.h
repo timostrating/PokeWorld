@@ -6,19 +6,24 @@
 
 #include <glad/glad.h>
 #include <vector>
+#include <memory>
 
+
+class Mesh;
+typedef std::shared_ptr<Mesh> SharedMesh;
 
 class Mesh
 {
 
 public:
-    std::vector<float> vertices;
+    Mesh(unsigned int nrOfVerts);
+
+
+    std::vector<float> vertices = {};
     GLenum renderMode = GL_TRIANGLES;
-    GLenum drawType = GL_STATIC_DRAW;
 
-    inline void render()
-    {
-        glDrawArrays(renderMode, 0, vertices.size()); // Starting from vertex 0; 3 vertices total -> 1 triangle;
-    }
+    unsigned int nrOfVerts = 0;
 
+
+    void render();
 };

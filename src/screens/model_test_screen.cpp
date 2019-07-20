@@ -21,7 +21,7 @@ class ModelTestScreen : public Screen
 public:
     FlyingCamera camera = FlyingCamera();
     GLint MVPLocation;
-    Mesh mesh = Mesh();
+    SharedMesh mesh = SharedMesh(new Mesh(3));
 
     ModelTestScreen()
     {
@@ -29,7 +29,7 @@ public:
         ShaderProgram shaderProgram = ShaderProgram::fromAssetFiles("shaders/default.vert", "shaders/default.frag");
         shaderProgram.begin();
 
-        mesh.vertices.insert(mesh.vertices.begin(), {
+        mesh->vertices.insert(mesh->vertices.begin(), {
                 //  x,     y,    z
                 -0.6f, -0.6f, 0.0f,
                  0.6f, -0.6f, 0.0f,
@@ -38,7 +38,7 @@ public:
 
         // Vertex Buffer
         VertexBuffer vertexBuffer = VertexBuffer();
-        vertexBuffer.add(&mesh);
+        vertexBuffer.add(mesh);
         vertexBuffer.upload();
 
         // Model View Projection
@@ -76,7 +76,7 @@ public:
                 &mvp[0][0]     // we share the pointer to the first value, 4fv knows to where it needs to go
         );
 
-        mesh.render();
+        mesh->render();
     }
 
     void resize(int width, int height)
