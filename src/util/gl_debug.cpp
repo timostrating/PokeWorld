@@ -15,7 +15,7 @@ namespace GLDEBUG
         std::cout << "[Vendor] " << glGetString(GL_VENDOR) << std::endl;
         std::cout << "[Renderer] " << glGetString(GL_RENDERER) << std::endl;
         std::cout << "[GLSL] " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
-        std::cout << "[Extensions] " << glGetString(GL_EXTENSIONS) << std::endl;
+        // std::cout << "[Extensions] " << glGetString(GL_EXTENSIONS) << std::endl;
     }
 
     // CREDITS TO: https://blog.nobel-joergensen.com/2013/02/17/debugging-opengl-part-2-using-gldebugmessagecallback/

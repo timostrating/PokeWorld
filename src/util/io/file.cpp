@@ -4,17 +4,21 @@
 
 #include "file.h"
 #include <string>
+#include <iostream>
 #include <fstream>
 #include <sstream>
+#include "../nice_error.h"
 
 std::string File::readAssetAsString(const char *path) {
-    return readString(&std::string("../../../../assets/").append(path));
+    return readString(&std::string("../../assets/").append(path));
 }
 
 std::string File::readString(std::string *path) {
+    std::cout << "READING: " << path->c_str() << std::endl;
+    
     std::ifstream fileStream(path->c_str(), std::ios::in);
     if (!fileStream.is_open())
-        perror("error while opening file");
+        nice_error("error while opening file: " + *path);
 
     std::string returnValue;
 
@@ -24,7 +28,7 @@ std::string File::readString(std::string *path) {
     fileStream.close();
 
     if (fileStream.bad())
-        perror("error while reading file");
+        nice_error("error while reading file");
 
     return returnValue;
 }

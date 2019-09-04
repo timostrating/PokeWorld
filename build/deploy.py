@@ -1,9 +1,14 @@
+""" 
+This is a script to deploy and start the webbuild
+
+python3 deploy.py           ;; just do it again
+python3 deploy.py fresh     ;; remove cache/MakeFiles and do it again    NOTION: This may take a while
+python3 deploy.py push      ;; deploy and push to github pages
+
+"""
+
 import os
 import sys
-
-
-""" This may take a while before it is finished """
-
 
 def shell(str):
     if os.system(str) != 0:

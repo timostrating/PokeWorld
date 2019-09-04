@@ -21,7 +21,7 @@ class ModelTestScreen : public Screen
 public:
     FlyingCamera camera = FlyingCamera();
     GLint MVPLocation;
-    SharedMesh mesh = SharedMesh(new Mesh(12*3));
+    SharedMesh mesh = SharedMesh(new Mesh(3));
 
     ModelTestScreen()
     {
@@ -30,19 +30,10 @@ public:
         shaderProgram.begin();
 
         mesh->vertices.insert(mesh->vertices.begin(), {
-            //  x,    y,    z       x,    y,    z       x,    y,    z
-            -1.0f,-1.0f,-1.0f,  -1.0f,-1.0f, 1.0f,  -1.0f, 1.0f, 1.0f,
-             1.0f, 1.0f,-1.0f,  -1.0f,-1.0f,-1.0f,  -1.0f, 1.0f,-1.0f,
-             1.0f,-1.0f, 1.0f,  -1.0f,-1.0f,-1.0f,   1.0f,-1.0f,-1.0f,
-             1.0f, 1.0f,-1.0f,   1.0f,-1.0f,-1.0f,  -1.0f,-1.0f,-1.0f,
-            -1.0f,-1.0f,-1.0f,  -1.0f, 1.0f, 1.0f,  -1.0f, 1.0f,-1.0f,
-             1.0f,-1.0f, 1.0f,  -1.0f,-1.0f, 1.0f,  -1.0f,-1.0f,-1.0f,
-            -1.0f, 1.0f, 1.0f,  -1.0f,-1.0f, 1.0f,   1.0f,-1.0f, 1.0f,
-             1.0f, 1.0f, 1.0f,   1.0f,-1.0f,-1.0f,   1.0f, 1.0f,-1.0f,
-             1.0f,-1.0f,-1.0f,   1.0f, 1.0f, 1.0f,   1.0f,-1.0f, 1.0f,
-             1.0f, 1.0f, 1.0f,   1.0f, 1.0f,-1.0f,  -1.0f, 1.0f,-1.0f,
-             1.0f, 1.0f, 1.0f,  -1.0f, 1.0f,-1.0f,  -1.0f, 1.0f, 1.0f,
-             1.0f, 1.0f, 1.0f,  -1.0f, 1.0f, 1.0f,   1.0f,-1.0f, 1.0f
+                //  x,     y,    z
+                -0.6f, -0.6f, 0.0f,
+                 0.6f, -0.6f, 0.0f,
+                 0.0f,  0.6f, 0.0f,
         });
 
         // Vertex Buffer
@@ -71,7 +62,7 @@ public:
         else {
             if (INPUT::KEYBOARD::anyKeyEverPressed())
                 anyKeyPressed = true;
-            camera.position = vec3(sin(time * 0.5) *5,  0,  cos(time * 0.5) *5);
+            camera.position = vec3(sin(time * 0.5) *2,  0,  cos(time * 0.5) *2);
             camera.lookAt(VEC3::ZERO);
             camera.Camera::update();
         }
