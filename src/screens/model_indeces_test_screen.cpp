@@ -23,11 +23,6 @@ public:
 
     // https://www.opengl-tutorial.org/beginners-tutorials/tutorial-4-a-colored-cube/
     constexpr static const GLfloat g_vertex_buffer_data[] = {
-//            -1.0f, -1.0f, 0.0f,
-//            1.0f, -1.0f, 0.0f,
-//            1.0f,  1.0f, 0.0f,
-//            -1.0f,  1.0f, 0.0f
-
             -1, -1, 0,
             -1,  1, 0,
             1,  1, 0,
@@ -43,9 +38,7 @@ public:
             0.014f, 0.327f, 0.771f,
     };
 
-//    constexpr static const GLushort g_indices[6] = {0, 1, 2, 0, 2, 3};
     constexpr static const GLushort g_indices[] = {2, 1, 0, 0, 3, 2};
-//    std::vector<unsigned short> g_indices = {2, 1, 0, 0, 3, 2};
 
 
     GLuint vaoId;
@@ -131,7 +124,6 @@ public:
         );
 
 //        glDrawArrays(GL_TRIANGLES, 0, 6*2*3); // Starting from vertex 0; a cube had 6 sides, 2 triangles per side and 3 points per triangle;
-//        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, element_buffer);
         glDrawElements(GL_TRIANGLES, sizeof(g_indices), GL_UNSIGNED_SHORT, (void*)0);
 
 //        glDisableVertexAttribArray(0); TODO we are not disabeling it
