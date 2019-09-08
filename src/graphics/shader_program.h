@@ -13,7 +13,7 @@ public:
     ~ShaderProgram();
 
     void begin();
-    void end();
+    void end(); // TODO: end is not really required
     GLuint getId() { return programId; }
 
 private:

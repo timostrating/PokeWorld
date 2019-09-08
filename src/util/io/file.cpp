@@ -10,7 +10,7 @@
 #include "../nice_error.h"
 
 std::string File::readAssetAsString(const char *path) {
-    return readString(&std::string("../../assets/").append(path));
+    return readString(&std::string("../../../assets/").append(path));  // TODO: This is not universal.
 }
 
 std::string File::readString(std::string *path) {
@@ -18,7 +18,7 @@ std::string File::readString(std::string *path) {
     
     std::ifstream fileStream(path->c_str(), std::ios::in);
     if (!fileStream.is_open())
-        nice_error("error while opening file: " + *path);
+        throw nice_error("error while opening file: " + *path);
 
     std::string returnValue;
 
@@ -28,7 +28,7 @@ std::string File::readString(std::string *path) {
     fileStream.close();
 
     if (fileStream.bad())
-        nice_error("error while reading file");
+        throw nice_error("error while reading file");
 
     return returnValue;
 }
