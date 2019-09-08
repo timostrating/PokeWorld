@@ -15,7 +15,7 @@
 #include "../util/input/keyboard.h"
 
 
-class ModelIndecesTestScreen : public Screen
+class ModelIndicesTestScreen : public Screen
 {
 public:
     FlyingCamera camera = FlyingCamera();
@@ -44,7 +44,7 @@ public:
     GLuint vaoId;
     GLuint vertex_buffer, element_buffer;
 
-    ModelIndecesTestScreen() {
+    ModelIndicesTestScreen() {
 
         // SHADER PROGRAM
         ShaderProgram shaderProgram = ShaderProgram::fromAssetFiles("shaders/3dcube.vert", "shaders/3dcube.frag");
