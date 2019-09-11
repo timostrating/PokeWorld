@@ -22,13 +22,13 @@ class VertexBuffer
 private:
     std::vector<std::weak_ptr<Mesh>> meshes = {};
 
-    GLuint vboId, iboId;
+    GLuint vaoId, vboId, iboId;
 
     unsigned int totalNrOfVerts = 0;
+    unsigned int totalNrOfIndicies = 0;
 
 
     int VERTSIZE = 3;  // TODO: using vertex Attributes
-
 
 public:
     inline VertexBuffer() {}

@@ -16,14 +16,15 @@ class Mesh
 {
 
 public:
-    Mesh(unsigned int nrOfVerts);
-
+    Mesh(unsigned int nrOfVerts, unsigned int nrOfIndices);
 
     std::vector<float> vertices = {};
+    std::vector<unsigned short> indicies = {};
+
     GLenum renderMode = GL_TRIANGLES;
 
     unsigned int nrOfVerts = 0;
-
+    unsigned int nrOfIndices = 0;
 
     void render();
 };

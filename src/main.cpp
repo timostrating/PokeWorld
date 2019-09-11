@@ -6,6 +6,7 @@
 #include "screens/imgui_test_screen.cpp"
 #include "screens/model_test_screen.cpp"
 #include "screens/model_indices_test_screen.cpp"
+#include "screens/quad_model_test_screen.cpp"
 #include "util/game.h"
 
 int main(void)
@@ -13,7 +14,7 @@ int main(void)
     if (!GAME::init())
         return -1;
 
-    ModelIndicesTestScreen screen;
+    QuadModelTestScreen screen;
     GAME::setScreen(&screen);
 
     GAME::run();

@@ -16,25 +16,31 @@
 #include "../util/input/keyboard.h"
 
 
-class ModelTestScreen : public Screen
+class QuadModelTestScreen : public Screen
 {
 public:
     FlyingCamera camera = FlyingCamera();
     GLint MVPLocation;
-    SharedMesh mesh = SharedMesh(new Mesh(3));
+    SharedMesh mesh = SharedMesh(new Mesh(4, 6));
 
-    ModelTestScreen()
+    QuadModelTestScreen()
     {
         // Shader Program
         ShaderProgram shaderProgram = ShaderProgram::fromAssetFiles("shaders/default.vert", "shaders/default.frag");
         shaderProgram.begin();
 
         mesh->vertices.insert(mesh->vertices.begin(), {
-                //  x,     y,    z
-                -0.6f, -0.6f, 0.0f,
-                 0.6f, -0.6f, 0.0f,
-                 0.0f,  0.6f, 0.0f,
+                -1, -1, 0,
+                -1,  1, 0,
+                1,  1, 0,
+                1, -1, 0,
+
+//                //  x,     y,    z
+//                -0.6f, -0.6f, 0.0f,
+//                 0.6f, -0.6f, 0.0f,
+//                 0.0f,  0.6f, 0.0f,
         });
+        mesh->indicies.insert(mesh->indicies.begin(), /*{0,1,2}*/ {2, 1, 0, 0, 3, 2});
 
         // Vertex Buffer
         VertexBuffer vertexBuffer = VertexBuffer();
