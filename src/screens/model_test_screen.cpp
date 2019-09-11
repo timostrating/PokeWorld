@@ -21,7 +21,7 @@ class ModelTestScreen : public Screen
 public:
     FlyingCamera camera = FlyingCamera();
     GLint MVPLocation;
-    SharedMesh mesh = SharedMesh(new Mesh(12*3, 12*3)); // TODO: remove some verts
+    SharedMesh mesh = SharedMesh(new Mesh(12*3, 0, false)); // TODO: remove some verts
 
     ModelTestScreen()
     {
