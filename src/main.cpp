@@ -7,6 +7,7 @@
 #include "screens/model_test_screen.cpp"
 #include "screens/model_indices_test_screen.cpp"
 #include "screens/quad_model_test_screen.cpp"
+#include "screens/tree_screen.cpp"
 #include "util/game.h"
 
 int main(void)
@@ -14,7 +15,7 @@ int main(void)
     if (!GAME::init())
         return -1;
 
-    ModelTestScreen screen;
+    TreeScreen screen;
     GAME::setScreen(&screen);
 
     GAME::run();
