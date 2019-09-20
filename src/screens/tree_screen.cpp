@@ -11,9 +11,9 @@
 #include "../graphics/shader_program.h"
 #include "../graphics/flying_camera.h"
 #include "../graphics/mesh.h"
-#include "../graphics/vertex_buffer.h"
 #include "../util/input/keyboard.h"
-#include "../game/LSystem.h"
+#include "../game/lsystem.h"
+#include "../util/BufferLineDrawer.h"
 
 
 class TreeScreen : public Screen
@@ -21,7 +21,8 @@ class TreeScreen : public Screen
 public:
     FlyingCamera camera = FlyingCamera();
     GLint MVPLocation;
-    SharedMesh mesh = SharedMesh(new Mesh(4, 6));
+
+    BufferLineDrawer lineDrawer = BufferLineDrawer();
 
     TreeScreen()
     {
@@ -29,18 +30,12 @@ public:
         ShaderProgram shaderProgram = ShaderProgram::fromAssetFiles("shaders/default.vert", "shaders/default.frag");
         shaderProgram.begin();
 
-        mesh->vertices.insert(mesh->vertices.begin(), {
-                -1, 0, -1,
-                -1, 0,  1,
-                1, 0,  1,
-                1, 0, -1,
-        });
-        mesh->indicies.insert(mesh->indicies.begin(), {2, 1, 0, 0, 3, 2});
-
-        // Vertex Buffer
-        VertexBuffer vertexBuffer = VertexBuffer();
-        vertexBuffer.add(mesh);
-        vertexBuffer.upload();
+        lineDrawer.drawLine(glm::vec3(-1.0,  0.5, -1.1), glm::vec3(-1.1,  0.2,  1.3));
+        lineDrawer.drawLine(VEC3::Z, VEC3::Y);
+        lineDrawer.drawLine(VEC3::Y, VEC3::ONE);
+        lineDrawer.drawLine(VEC3::ZERO, VEC3::ONE);
+        lineDrawer.drawLine(VEC3::Y, VEC3::X);
+        lineDrawer.upload();
 
         // Model View Projection
         MVPLocation = glGetUniformLocation(shaderProgram.getId(), "MVP");
@@ -66,11 +61,10 @@ public:
             camera.Camera::update();
         }
 
-
         mat4 mvp = camera.combined * modelMatrix;
         glUniformMatrix4fv( MVPLocation, 1, GL_FALSE, &mvp[0][0]);
 
-        mesh->render();
+        lineDrawer.render();
     }
 
     void resize(int width, int height)

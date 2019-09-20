@@ -59,7 +59,7 @@ namespace GLDEBUG
                                   GL_DONT_CARE, // all severity(ies)
                                   0, // count
                                   nullptr, // If count​ is zero then the value of ids​ is ignored
-                                  true); // enable of disable
+                                  true); // enable or disable
         }
         else {
             std::cout << "_!_ glDebugMessageCallback not available _!_" << std::endl;

@@ -61,7 +61,7 @@ namespace GAME {
 
     double prevTime = 0;
     int framesInSecond = 0;
-    double timeTowardsSecond = 999;
+    double timeTowardsSecond = 0;
 
     void tick()
     {
