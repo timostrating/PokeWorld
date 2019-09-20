@@ -2,7 +2,7 @@
 // Created by sneeuwpop on 20-09-19.
 //
 
-#include "BufferLineDrawer.h"
+#include "buffer_line_drawer.h"
 
 
 BufferLineDrawer::BufferLineDrawer()

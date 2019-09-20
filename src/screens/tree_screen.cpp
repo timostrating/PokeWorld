@@ -3,9 +3,9 @@
 //
 
 #include <glad/glad.h>
-#include <iostream>
 #include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include "glm/gtx/rotate_vector.hpp"
+#include <stack>
 
 #include "../util/interfaces/screen.h"
 #include "../graphics/shader_program.h"
@@ -13,8 +13,8 @@
 #include "../graphics/mesh.h"
 #include "../util/input/keyboard.h"
 #include "../game/lsystem.h"
-#include "../util/BufferLineDrawer.h"
-
+#include "../util/buffer_line_drawer.h"
+using namespace glm;
 
 class TreeScreen : public Screen
 {
@@ -23,6 +23,7 @@ public:
     GLint MVPLocation;
 
     BufferLineDrawer lineDrawer = BufferLineDrawer();
+    float rotation = 25; // in degrees
 
     TreeScreen()
     {
@@ -30,11 +31,28 @@ public:
         ShaderProgram shaderProgram = ShaderProgram::fromAssetFiles("shaders/default.vert", "shaders/default.frag");
         shaderProgram.begin();
 
-        lineDrawer.drawLine(glm::vec3(-1.0,  0.5, -1.1), glm::vec3(-1.1,  0.2,  1.3));
-        lineDrawer.drawLine(VEC3::Z, VEC3::Y);
-        lineDrawer.drawLine(VEC3::Y, VEC3::ONE);
-        lineDrawer.drawLine(VEC3::ZERO, VEC3::ONE);
-        lineDrawer.drawLine(VEC3::Y, VEC3::X);
+        LSystem lSystem = LSystem("X");
+        lSystem.addPattern('X', "F[-X][+X],FX");
+
+        vec3 curPoint = VEC3::ZERO, oldPoint = VEC3::ZERO;
+        vec3 direction = vec3(0, 0.2f, 0);
+
+        std::stack<vec3> memory = std::stack<vec3>();
+
+        lSystem.applyNtimes(5);
+
+        std::string str = lSystem.getStr();
+        for (int i = 0; i < str.length(); i++) {
+            switch (str[i]) {
+                case 'F': oldPoint = vec3(curPoint); curPoint += (direction); lineDrawer.drawLine(oldPoint, curPoint); break;
+                case '+': direction = glm::rotate(direction, radians(rotation), VEC3::Z); break;
+                case '-': direction = glm::rotate(direction, -radians(rotation), VEC3::Z); break;
+                case '[': memory.push(curPoint); memory.push(direction); break;
+                case ']': direction = memory.top(); memory.pop();
+                          curPoint = memory.top(); memory.pop(); break;
+            }
+        }
+
         lineDrawer.upload();
 
         // Model View Projection
@@ -43,7 +61,7 @@ public:
 
     double time = 0;
     bool anyKeyPressed = false;
-    glm::mat4 modelMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0)); // identity matrix
+    mat4 modelMatrix = translate(mat4(1.0f), vec3(0, 0, 0)); // identity matrix
 
     void render(double deltaTime)
     {
@@ -56,8 +74,8 @@ public:
         else {
             if (INPUT::KEYBOARD::anyKeyEverPressed())
                 anyKeyPressed = true;
-            camera.position = vec3(sin(time * 0.5) *2,  2,  cos(time * 0.5) *2);
-            camera.lookAt(VEC3::ZERO);
+            camera.position = vec3(sin(time * 0.5) *3,  1,  cos(time * 0.5) *3);
+            camera.lookAt(VEC3::Y);
             camera.Camera::update();
         }
 
