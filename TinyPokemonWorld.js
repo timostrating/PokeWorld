@@ -196,7 +196,7 @@ Module['FS_createPath']('/assets', 'shaders', true, true);
   }
 
  }
- loadPackage({"files": [{"start": 0, "audio": 0, "end": 1856, "filename": "/assets/models/cube.glb"}, {"start": 1856, "audio": 0, "end": 5515, "filename": "/assets/models/cube.gltf"}, {"start": 5515, "audio": 0, "end": 5664, "filename": "/assets/shaders/3dcube.frag"}, {"start": 5664, "audio": 0, "end": 5889, "filename": "/assets/shaders/3dcube.vert"}, {"start": 5889, "audio": 0, "end": 6021, "filename": "/assets/shaders/default.vert"}, {"start": 6021, "audio": 0, "end": 6146, "filename": "/assets/shaders/default.frag"}], "remote_package_size": 6146, "package_uuid": "ef660368-23e4-4da7-8cde-6fd07492b4be"});
+ loadPackage({"files": [{"start": 0, "audio": 0, "end": 1856, "filename": "/assets/models/cube.glb"}, {"start": 1856, "audio": 0, "end": 5515, "filename": "/assets/models/cube.gltf"}, {"start": 5515, "audio": 0, "end": 5664, "filename": "/assets/shaders/3dcube.frag"}, {"start": 5664, "audio": 0, "end": 5889, "filename": "/assets/shaders/3dcube.vert"}, {"start": 5889, "audio": 0, "end": 6021, "filename": "/assets/shaders/default.vert"}, {"start": 6021, "audio": 0, "end": 6146, "filename": "/assets/shaders/default.frag"}], "remote_package_size": 6146, "package_uuid": "4c867799-aa40-43d7-96bf-25c526cfda3d"});
 
 })();
 
@@ -1401,11 +1401,11 @@ function updateGlobalBufferViews() {
 
 
 var STATIC_BASE = 1024,
-    STACK_BASE = 49040,
+    STACK_BASE = 47648,
     STACKTOP = STACK_BASE,
-    STACK_MAX = 5291920,
-    DYNAMIC_BASE = 5291920,
-    DYNAMICTOP_PTR = 49008;
+    STACK_MAX = 5290528,
+    DYNAMIC_BASE = 5290528,
+    DYNAMICTOP_PTR = 47616;
 
 assert(STACK_BASE % 16 === 0, 'stack must start aligned');
 assert(DYNAMIC_BASE % 16 === 0, 'heap must start aligned');
@@ -1862,8 +1862,8 @@ Module['asm'] = function(global, env, providedBuffer) {
   ;
   // import table
   env['table'] = wasmTable = new WebAssembly.Table({
-    'initial': 28360,
-    'maximum': 28360,
+    'initial': 28432,
+    'maximum': 28432,
     'element': 'anyfunc'
   });
   // With the wasm backend __memory_base and __table_base and only needed for
@@ -1885,7 +1885,7 @@ var ASM_CONSTS = [];
 
 
 
-// STATICTOP = STATIC_BASE + 48016;
+// STATICTOP = STATIC_BASE + 46624;
 /* global initializers */  __ATINIT__.push({ func: function() { globalCtors() } });
 
 
@@ -1896,7 +1896,7 @@ var ASM_CONSTS = [];
 
 
 /* no memory initializer */
-var tempDoublePtr = 49024
+var tempDoublePtr = 47632
 assert(tempDoublePtr % 8 == 0);
 
 function copyTempFloat(ptr) { // functions, because inlining this code increases code size too much
@@ -9508,8 +9508,6 @@ function copyTempDouble(ptr) {
       GLFW.hints[target] = hint;
     }
 
-   
-
   var _llvm_cos_f32=Math_cos;
 
   var _llvm_cos_f64=Math_cos;
@@ -9532,6 +9530,10 @@ function copyTempDouble(ptr) {
       }
       self.LLVM_SAVEDSTACKS.push(stackSave());
       return self.LLVM_SAVEDSTACKS.length-1;
+    }
+
+  function _llvm_trap() {
+      abort('trap!');
     }
 
   
@@ -10417,6 +10419,7 @@ var asmLibraryArg = {
   "_llvm_sin_f64": _llvm_sin_f64,
   "_llvm_stackrestore": _llvm_stackrestore,
   "_llvm_stacksave": _llvm_stacksave,
+  "_llvm_trap": _llvm_trap,
   "_pthread_cond_wait": _pthread_cond_wait,
   "_strftime": _strftime,
   "_strftime_l": _strftime_l,
@@ -10481,13 +10484,6 @@ asm["_free"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
   return real__free.apply(null, arguments);
-};
-
-var real__llvm_bswap_i32 = asm["_llvm_bswap_i32"];
-asm["_llvm_bswap_i32"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return real__llvm_bswap_i32.apply(null, arguments);
 };
 
 var real__main = asm["_main"];
@@ -10607,12 +10603,6 @@ var _free = Module["_free"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
   return Module["asm"]["_free"].apply(null, arguments)
-};
-
-var _llvm_bswap_i32 = Module["_llvm_bswap_i32"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["_llvm_bswap_i32"].apply(null, arguments)
 };
 
 var _main = Module["_main"] = function() {
