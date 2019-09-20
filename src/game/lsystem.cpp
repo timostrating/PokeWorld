@@ -4,34 +4,34 @@
 
 #include <sstream>
 #include <assert.h>
-#include "LSystem.h"
+#include "Lsystem.h"
 
 #define str std::string
 
 
-void LSystem::addPattern(char key, std::string value) {
+void Lsystem::addPattern(char key, std::string value) {
     patterns[key] = value;
 }
 
-std::string LSystem::getStr() {
+std::string Lsystem::getStr() {
     return str_value;
 }
 
-void LSystem::apply() {
+void Lsystem::apply() {
     std::string newString;
     for (char c : str_value)
         newString.append( (patterns.find(c) != patterns.end()) ? str(patterns[c]) : str(1, c));
     str_value = newString;
 }
 
-void LSystem::applyNtimes(int n) {
+void Lsystem::applyNtimes(int n) {
     for (int i=0; i < n; i++)
         apply();
 }
 
 int test()
 {
-    LSystem lSystem = LSystem("X");
+    Lsystem lSystem = Lsystem("X");
     lSystem.addPattern('X', "F[-X][+X],FX");
     assert(lSystem.getStr() == "X");
     lSystem.apply();

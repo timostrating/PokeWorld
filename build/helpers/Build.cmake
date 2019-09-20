@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(poke)
+project(poke CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+
 set(EXECUTABLE_OUTPUT_PATH "out")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "lib")
 
@@ -29,14 +32,14 @@ if (NOT ${__EMSCRIPTEN__})
     set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
-    add_subdirectory(${EXTERNAL_DIR}/glfw-3.2.1 ./bindir)
+    add_subdirectory(${EXTERNAL_DIR}/glfw-3.2.1 ./bin/glfw)
     include_directories(${EXTERNAL_DIR}/glfw-3.2.1)
 endif ()
 
 
 # ---------------------------------------------------------GLM----------------------------------------------------------
 
-add_subdirectory(${EXTERNAL_DIR}/glm-0.9.9.5/glm ./bindir2)
+add_subdirectory(${EXTERNAL_DIR}/glm-0.9.9.5/glm ./bin/glm)
 include_directories(${EXTERNAL_DIR}/glm-0.9.9.5/glm)
 
 
