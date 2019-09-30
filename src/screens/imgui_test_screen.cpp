@@ -23,8 +23,9 @@ public:
    }
 
     void setup(GLFWwindow* window) {
+        IMGUI_CHECKVERSION();
         ImGui::CreateContext();
-        ImGuiIO& io = ImGui::GetIO();
+        ImGuiIO& io = ImGui::GetIO(); (void)io;
         // TODO: Set optional io.ConfigFlags values, e.g. 'io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard' to enable keyboard controls.
         // TODO: Fill optional fields of the io structure later.
         // TODO: Load TTF/OTF fonts if you don't want to use the default font.
@@ -36,6 +37,10 @@ public:
         ImGui_ImplOpenGL3_Init(glsl_version);
     }
 
+    bool my_tool_active = true;
+    bool showDemoWindow = true;
+
+
     void render(double deltaTime) {
         time += deltaTime;
 
@@ -44,8 +49,14 @@ public:
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
+
+        ImGui::Begin("Another Window", &my_tool_active);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+        ImGui::Text("Hello from another window!");
+        if (ImGui::Button("Close Me"))
+            my_tool_active = false;
+        ImGui::End();
+
         // Any application code here
-        bool showDemoWindow = true;
         ImGui::ShowDemoWindow(&showDemoWindow);
 
         // Render dear imgui into screen

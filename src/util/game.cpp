@@ -11,7 +11,7 @@
 #include <iostream>
 
 #include "../util/interfaces/screen.h"
-#include "gl_debug.h"
+#include "debug/gl_debug.h"
 #include "input/keyboard.h"
 #include "input/mouse.h"
 
@@ -53,7 +53,7 @@ namespace GAME {
         INPUT::MOUSE::setup(g_window);
 
 //        GLDEBUG::enableGLDebug();
-        GLDEBUG::printContext();
+        GL_DEBUG::printContext();
 
         return true;
     }

@@ -4,14 +4,16 @@
 
 #include <iostream>
 #include "vertex_buffer.h"
-#include "../util/nice_error.h"
+#include "../util/debug/nice_error.h"
 
-void VertexBuffer::add(SharedMesh mesh)
+VertexBuffer* VertexBuffer::add(SharedMesh mesh)
 {
     meshes.push_back(mesh);
 
     totalNrOfVerts += mesh->nrOfVerts;
     totalNrOfIndicies += mesh->nrOfIndices;
+
+    return this;
 }
 
 void glBufferSubData_test(GLenum target, long targetSize)
@@ -27,6 +29,7 @@ void glBufferSubData_test(GLenum target, long targetSize)
     }
 }
 
+void VertexBuffer::uploadSingleMesh(SharedMesh mesh) { (new VertexBuffer())->add(mesh)->upload(); }
 void VertexBuffer::upload()
 {
     // Vertex Array
@@ -36,12 +39,12 @@ void VertexBuffer::upload()
     // Vertex Buffer
     glGenBuffers(1, &vboId);
     glBindBuffer(GL_ARRAY_BUFFER, vboId);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GL_FLOAT) * totalNrOfVerts * VERTSIZE, NULL, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GL_FLOAT) * totalNrOfVerts * VERTSIZE, NULL, GL_DYNAMIC_DRAW);
 
     // Index Buffer
     glGenBuffers(1, &iboId);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * totalNrOfIndicies, NULL, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * totalNrOfIndicies, NULL, GL_DYNAMIC_DRAW);
 
     // Vertex Buffer
     for (const std::weak_ptr<Mesh>& m : meshes)
@@ -71,4 +74,13 @@ void VertexBuffer::upload()
     glEnableVertexAttribArray(0);
     // END FOR EACH
 
+}
+
+VertexBuffer::VertexBuffer(bool dynamic) : dynamic(dynamic) {}
+VertexBuffer::~VertexBuffer()
+{
+    // TODO test if it is safe to delete the buffer
+    glDeleteVertexArrays(1, &vaoId);
+    glDeleteBuffers(1, &vboId);
+    glDeleteBuffers(1, &iboId);
 }

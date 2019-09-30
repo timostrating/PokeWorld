@@ -6,7 +6,7 @@
 #include <iostream>
 
 
-namespace GLDEBUG
+namespace GL_DEBUG
 {
 
     void printContext()

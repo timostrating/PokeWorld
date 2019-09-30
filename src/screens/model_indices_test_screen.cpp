@@ -48,7 +48,7 @@ public:
 
         // SHADER PROGRAM
         ShaderProgram shaderProgram = ShaderProgram::fromAssetFiles("shaders/3dcube.vert", "shaders/3dcube.frag");
-        shaderProgram.begin();
+        shaderProgram.use();
 
         glGenVertexArrays(1, &vaoId);
         glBindVertexArray(vaoId);

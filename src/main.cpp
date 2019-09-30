@@ -8,7 +8,7 @@
 #include "screens/model_indices_test_screen.cpp"
 #include "screens/quad_model_test_screen.cpp"
 #include "screens/tree_screen.cpp"
-#include "util/game.h"
+#include "util/interfaces/game.h"
 
 int main(void)
 {

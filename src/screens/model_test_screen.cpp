@@ -27,7 +27,7 @@ public:
     {
         // Shader Program
         ShaderProgram shaderProgram = ShaderProgram::fromAssetFiles("shaders/default.vert", "shaders/default.frag");
-        shaderProgram.begin();
+        shaderProgram.use();
 
         mesh->vertices.insert(mesh->vertices.begin(), {
             //  x,    y,    z       x,    y,    z       x,    y,    z

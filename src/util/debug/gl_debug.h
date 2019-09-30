@@ -4,7 +4,7 @@
 
 #pragma once
 
-namespace GLDEBUG
+namespace GL_DEBUG
 {
     void printContext();
     void enableGLDebug();

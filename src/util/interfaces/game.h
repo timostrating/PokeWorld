@@ -5,7 +5,7 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
-#include "../util/interfaces/screen.h"
+#include "screen.h"
 
 namespace GAME
 {

@@ -7,10 +7,10 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include "../nice_error.h"
+#include "../debug/nice_error.h"
 
 std::string File::readAssetAsString(const char *path) {
-    return readString(&std::string("../../../assets/").append(path));  // TODO: This is not universal.
+    return readString(&std::string("../../../../assets/").append(path));  // TODO: This is not universal.
 }
 
 std::string File::readString(std::string *path) {
