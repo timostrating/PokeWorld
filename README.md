@@ -11,8 +11,7 @@ OPTIONAL: Setup [Emscpriten](https://emscripten.org/)
 3. Download [GLFW3 3.2.1](https://github.com/glfw/glfw/releases/download/3.2.1/glfw-3.2.1.zip) and place the unzipped files in `./external/glfw-3.2.1`
 4. Download [GLM 0.9.9.5](https://github.com/g-truc/glm/releases/download/0.9.9.5/glm-0.9.9.5.zip) and place the unzipped files in `./external/glm-0.9.9.5`
 5. Download [ImGui v1.71](https://github.com/ocornut/imgui/archive/v1.71.zip) and place the unzipped files in `./external/imgui-1.71` 
-6. Download [json.hpp](https://github.com/nlohmann/json/releases/tag/v3.6.1) an place it in `./external`  
-7. Download [catch.hpp](https://github.com/catchorg/Catch2/releases/tag/v2.9.2) an place it in `./external`  
+6. Download [unit_test.hpp](https://github.com/timostrating/unit_test) an place it in `./external/unit_test`  
 
 ## Building it
 

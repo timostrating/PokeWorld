@@ -24,6 +24,11 @@ set(OpenGL_GL_PREFERENCE "GLVND") # We dont want the legacy openGl
 find_package(OpenGL REQUIRED)
 
 
+# -----------------------------------------------------UNIT-TESTING---------------------------------------------------------
+
+include_directories(${EXTERNAL_DIR}/unit_test)
+
+
 # ---------------------------------------------------------GLFW---------------------------------------------------------
 
 if (NOT ${__EMSCRIPTEN__})
@@ -64,8 +69,6 @@ target_include_directories(glad PUBLIC ${EXTERNAL_DIR}/glad/include/)
 
 add_executable(${PROJECT_NAME}
         ${source}
-        ${EXTERNAL_DIR}/catch.hpp
-        ${EXTERNAL_DIR}/json.hpp
         ${IMGUI_DIR}/imgui.cpp
         ${IMGUI_DIR}/examples/imgui_impl_glfw.cpp
         ${IMGUI_DIR}/examples/imgui_impl_opengl3.cpp

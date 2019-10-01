@@ -3,7 +3,7 @@
 //
 
 #include "lsystem.h"
-#include "../../external/catch.hpp"
+#include "../../external/unit_test/unit_test.hpp"
 
 #define str std::string
 
@@ -29,9 +29,9 @@ void LSystem::applyNtimes(int n) {
 }
 
 
-TEST_CASE("LSystem", "basic test") {
+TEST(FirstTest,
     LSystem l = LSystem("X");
     l.addPattern('X', "FX");
     l.apply();
-    REQUIRE(l.getStr() == "FX");
-}
+    ASSERT_EQ(l.getStr(), "FX");
+)
