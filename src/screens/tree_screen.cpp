@@ -58,7 +58,7 @@ public:
     bool anyKeyPressed = false;
     mat4 modelMatrix = translate(mat4(1.0f), vec3(0, 0, 0)); // identity matrix
 
-    std::string buf = std::string("F[-X][+X],FX") + std::string(20, '\0');
+    std::string buf = std::string("F[-X][+X]") + std::string(20, '\0');
 
     void render(double deltaTime)
     {
@@ -70,7 +70,7 @@ public:
         if (anyKeyPressed)
             camera.update(deltaTime);
         else {
-            if (INPUT::KEYBOARD::anyKeyEverPressed())
+            if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB))
                 anyKeyPressed = true;
             camera.position = vec3(sin(time * 0.5) *3,  1,  cos(time * 0.5) *3);
             camera.lookAt(VEC3::Y);
@@ -95,7 +95,7 @@ public:
         lSystem.applyNtimes(5);
         std::string str = lSystem.getStr();
         for (int i = 0; i < str.length(); i++) {
-            switch (str[i]) {
+            switch (toupper(str[i])) {
                 case 'F': oldPoint = vec3(curPoint); curPoint += (direction); gizmos.drawLine(oldPoint, curPoint); break;
                 case '+': direction = glm::rotate(direction, rotation, VEC3::Z); break;
                 case '-': direction = glm::rotate(direction, -rotation, VEC3::Z); break;
@@ -111,9 +111,19 @@ public:
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::Begin("Lsystem pattern");   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+        ImGui::Begin("LSystem pattern");   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
         ImGui::Text("Change the text and see what happens");
-//        char *buf = new char[10];
+        ImGui::Dummy(ImVec2(0.0f, 10.0f));
+        ImGui::Separator();
+        ImGui::Dummy(ImVec2(0.0f, 10.0f));
+        ImGui::Text(" F : Move forward");
+        ImGui::Text(" + : Rotate right \n - : Rotate left");
+        ImGui::Text(" [ : Store current location \n ] : Pop last stored location");
+        ImGui::Dummy(ImVec2(0.0f, 10.0f));
+        ImGui::Separator();
+        ImGui::Dummy(ImVec2(0.0f, 10.0f));
+
+        //        char *buf = new char[10];
         ImGui::InputText("string", &buf[0], buf.size()+ 1 );
         ImGui::End();
 

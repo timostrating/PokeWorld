@@ -18,8 +18,10 @@ std::string LSystem::getStr() {
 
 void LSystem::apply() {
     std::string newString;
-    for (char c : str_value)
+    for (char c : str_value) {
+        c = toupper(c);
         newString.append( (patterns.find(c) != patterns.end()) ? str(patterns[c]) : str(1, c));
+    }
     str_value = newString;
 }
 

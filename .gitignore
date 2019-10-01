@@ -7,6 +7,7 @@ cmake-build-debug
 CMakeCache.txt
 cmake_install.cmake
 Makefile
+bin
 bindir
 bindir2
 *.cbp

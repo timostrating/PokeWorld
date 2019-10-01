@@ -33,10 +33,10 @@ void FlyingCamera::update(float deltaTime) {
         rotate(VEC3::Y, -rotationSpeed * deltaTime);
 
 
-    if (KEYBOARD::pressed(GLFW_KEY_LEFT_SHIFT))
+    if (KEYBOARD::pressed(GLFW_KEY_F))
         position.y -= deltaTime * speedMultiplier;
 
-    if (KEYBOARD::pressed(GLFW_KEY_SPACE))
+    if (KEYBOARD::pressed(GLFW_KEY_R))
         position.y += deltaTime * speedMultiplier;
 
 //    if (MOUSE::deltaMouseX != 0)
