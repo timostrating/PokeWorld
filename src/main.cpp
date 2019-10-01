@@ -10,8 +10,12 @@
 #include "screens/tree_screen.cpp"
 #include "util/interfaces/game.h"
 
-int main(void)
+#define CATCH_CONFIG_RUNNER
+#include "../external/catch.hpp"
+
+int main(int argc, char* argv[])
 {
+    int result = Catch::Session().run( argc, argv );
     if (!GAME::init())
         return -1;
 
@@ -20,5 +24,5 @@ int main(void)
 
     GAME::run();
 
-    return 0;
+    return result;
 }

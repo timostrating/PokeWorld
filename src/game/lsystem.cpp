@@ -3,6 +3,7 @@
 //
 
 #include "lsystem.h"
+#include "../../external/catch.hpp"
 
 #define str std::string
 
@@ -25,4 +26,12 @@ void LSystem::apply() {
 void LSystem::applyNtimes(int n) {
     for (int i=0; i < n; i++)
         apply();
+}
+
+
+TEST_CASE("LSystem", "basic test") {
+    LSystem l = LSystem("X");
+    l.addPattern('X', "FX");
+    l.apply();
+    REQUIRE(l.getStr() == "FX");
 }
