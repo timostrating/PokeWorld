@@ -27,17 +27,17 @@ class TreeScreen : public Screen
 public:
     FlyingCamera camera = FlyingCamera();
     GLint MVPLocation;
+    ShaderProgram defaultShaderProgram = ShaderProgram::fromAssetFiles("shaders/default.vert", "shaders/default.frag");
 
     Gizmos gizmos;
 
     TreeScreen()
     {
         // Shader Program
-        ShaderProgram shaderProgram = ShaderProgram::fromAssetFiles("shaders/default.vert", "shaders/default.frag");
-        shaderProgram.use();
+        defaultShaderProgram.use();
 
         // Model View Projection
-        MVPLocation = glGetUniformLocation(shaderProgram.getId(), "MVP");
+        MVPLocation = glGetUniformLocation(defaultShaderProgram.getId(), "MVP");
     }
 
     void setup(GLFWwindow* window) {
@@ -67,6 +67,9 @@ public:
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////// CAMERA
+
+        defaultShaderProgram.use(); // imgui may have changed the current shader
+
         if (anyKeyPressed)
             camera.update(deltaTime);
         else {

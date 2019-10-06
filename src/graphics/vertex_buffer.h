@@ -27,16 +27,16 @@ private:
     unsigned int totalNrOfVerts = 0;
     unsigned int totalNrOfIndicies = 0;
 
-    bool dynamic = false;
     int VERTSIZE = 3;  // TODO: using vertex Attributes
 
 public:
     // try not to use this. It is more efficient to put more meshes (with the same VertAttributes) in 1 VertBuffer
     static void uploadSingleMesh(SharedMesh mesh);
 
-    explicit VertexBuffer(bool dynamic = false);
-    ~VertexBuffer();
+//    explicit VertexBuffer(bool dynamic = false);
+//    ~VertexBuffer();
 
+    static VertexBuffer* with();
     VertexBuffer* add(SharedMesh mesh);
 
     void upload();

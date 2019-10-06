@@ -16,11 +16,11 @@ void validateShader(GLint shaderId)
     GLint logLength = 0;
     glGetShaderiv(shaderId, GL_COMPILE_STATUS, &isCompiled);
     glGetShaderiv(shaderId, GL_INFO_LOG_LENGTH, &logLength);
-    if (!isCompiled || logLength > 0)
+    if (!isCompiled || logLength > 1) // A driver may append a null terminator to a log in case there is no log
     {
         std::vector<char> logText(logLength+1);
         glGetShaderInfoLog(shaderId, logLength, NULL, &logText[0]);
-        printf("validateShader() ERROR: %s\n", &logText[0]);
+        std::cout << "validateShader() ERROR: isCompiled = "<< ((isCompiled)?"TRUE":"FALSE") <<"; log = " << &logText[0] << "\n";
     }
 }
 
@@ -30,11 +30,11 @@ void validateProgram(GLint programId)
     GLint logLength = 0;
     glGetProgramiv(programId, GL_LINK_STATUS, &isCompiled);
     glGetProgramiv(programId, GL_INFO_LOG_LENGTH, &logLength);
-    if (!isCompiled || logLength > 0)
+    if (!isCompiled || logLength > 1) // A driver may append a null terminator to a log in case there is no log
     {
         std::vector<char> logText(logLength+1);
         glGetProgramInfoLog(programId, logLength, NULL, &logText[0]);
-        printf("validateProgram() ERROR: %s\n", &logText[0]);
+        std::cout << "validateProgram() ERROR: isCompiled = "<< ((isCompiled)?"TRUE":"FALSE") <<"; log = '" << &logText[0] << "'\n";
     }
 }
 
