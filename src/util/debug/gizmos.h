@@ -5,14 +5,23 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include "../../graphics/mesh.h"
+#include "../../graphics/shader_program.h"
+#include "../math/math.h"
+
 using namespace glm;
 
 class Gizmos
 {
 private:
+    ShaderProgram shaderProgram;
+    SharedMesh mesh;
+    GLint fromId, toId, mvpId, colorId;
 
 public:
-    void drawLine(const vec3 &from, const vec3 &to);
+    Gizmos();
+
+    void drawLine(const vec3 &from, const vec3 &to, const vec4 &color = COLOR::DEFAULT);
 };
 
 

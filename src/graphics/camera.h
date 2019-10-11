@@ -5,10 +5,10 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <memory>
 #include "../util/interfaces/resizeable.h"
 #include "../util/math/math.h"
 using namespace glm;
-
 
 class Camera : Resizeable
 {
@@ -23,6 +23,8 @@ public:
         nearClippingPlane = nearClipping;
         farClippingPlane = farClipping;
     }
+
+    static Camera *main;
 
     int width = 16, height = 9;
     double fov = 45;

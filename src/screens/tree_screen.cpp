@@ -29,7 +29,7 @@ public:
     GLint MVPLocation;
     ShaderProgram defaultShaderProgram = ShaderProgram::fromAssetFiles("shaders/default.vert", "shaders/default.frag");
 
-    Gizmos gizmos;
+    Gizmos gizmos = Gizmos();
 
     TreeScreen()
     {
@@ -99,7 +99,7 @@ public:
         std::string str = lSystem.getStr();
         for (int i = 0; i < str.length(); i++) {
             switch (toupper(str[i])) {
-                case 'F': oldPoint = vec3(curPoint); curPoint += (direction); gizmos.drawLine(oldPoint, curPoint); break;
+                case 'F': oldPoint = vec3(curPoint); curPoint += (direction); gizmos.drawLine(oldPoint, curPoint, COLOR::BLACK); break;
                 case '+': direction = glm::rotate(direction, rotation, VEC3::Z); break;
                 case '-': direction = glm::rotate(direction, -rotation, VEC3::Z); break;
                 case '[': memory.push(curPoint); memory.push(direction); break;

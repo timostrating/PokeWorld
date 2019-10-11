@@ -7,12 +7,17 @@
 #include <glm/glm.hpp>
 #include "glm/gtx/rotate_vector.hpp"
 #include <glad/glad.h>
+#include <iostream>
 
 using namespace glm;
 
 
+Camera *Camera::main = 0;
+
 Camera::Camera() {
     glEnable(GL_DEPTH_TEST);
+    if (!main)
+        main = this;
 }
 
 void Camera::update() {

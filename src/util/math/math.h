@@ -31,6 +31,20 @@ namespace VEC3
     }
 }
 
+namespace COLOR
+{
+    const glm::vec4
+            DEFAULT    = glm::vec4(1,0,1,1), // pink is the default
+            BLACK      = glm::vec4(0,0,0,1),
+            WHITE      = glm::vec4(1,1,1,1),
+            RED        = glm::vec4(1,0,0,1),
+            GREEN      = glm::vec4(0,1,0,1),
+            BLUE       = glm::vec4(0,0,1,1),
+            YELLOW     = glm::vec4(1,1,0,1),
+            PINK       = glm::vec4(1,0,1,1),
+            LIGHT_BLUE = glm::vec4(0,1,1,1);
+}
+
 namespace MAT4
 {
     const glm::mat4 IDENTITY = glm::mat4(1.0);
