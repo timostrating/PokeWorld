@@ -58,7 +58,8 @@ public:
     bool anyKeyPressed = false;
     mat4 modelMatrix = translate(mat4(1.0f), vec3(0, 0, 0)); // identity matrix
 
-    std::string buf = std::string("F[-X][+X]") + std::string(20, '\0');
+    std::string buf = std::string("F[-x[+x]++x]") + std::string(10, '\0');
+    int applyNtimes = 5;
 
     void render(double deltaTime)
     {
@@ -95,7 +96,7 @@ public:
         float speed = 5;
         float rotation = radians(mod(time * speed, 30.0) + 5.0);
 
-        lSystem.applyNtimes(5);
+        lSystem.applyNtimes(applyNtimes);
         std::string str = lSystem.getStr();
         for (int i = 0; i < str.length(); i++) {
             switch (toupper(str[i])) {
@@ -103,7 +104,9 @@ public:
                 case '+': direction = glm::rotate(direction, rotation, VEC3::Z); break;
                 case '-': direction = glm::rotate(direction, -rotation, VEC3::Z); break;
                 case '[': memory.push(curPoint); memory.push(direction); break;
-                case ']': direction = memory.top(); memory.pop();
+                case ']':
+                    if (memory.empty()) break;
+                    direction = memory.top(); memory.pop();
                     curPoint = memory.top(); memory.pop(); break;
             }
         }
@@ -120,6 +123,7 @@ public:
         ImGui::Separator();
         ImGui::Dummy(ImVec2(0.0f, 10.0f));
         ImGui::Text(" F : Move forward");
+        ImGui::Text(" X : Replace this X with the pattern");
         ImGui::Text(" + : Rotate right \n - : Rotate left");
         ImGui::Text(" [ : Store current location \n ] : Pop last stored location");
         ImGui::Dummy(ImVec2(0.0f, 10.0f));
@@ -127,7 +131,9 @@ public:
         ImGui::Dummy(ImVec2(0.0f, 10.0f));
 
         //        char *buf = new char[10];
-        ImGui::InputText("string", &buf[0], buf.size()+ 1 );
+        ImGui::InputText("pattern", &buf[0], buf.size()+ 1 );
+        ImGui::Text("Times to apply pattern");
+        ImGui::SliderInt("times", &applyNtimes, 1, 6);
         ImGui::End();
 
         // Render dear imgui into screen
