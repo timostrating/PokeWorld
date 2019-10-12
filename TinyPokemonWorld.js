@@ -196,7 +196,7 @@ Module['FS_createPath']('/assets', 'shaders', true, true);
   }
 
  }
- loadPackage({"files": [{"start": 0, "audio": 0, "end": 1856, "filename": "/assets/models/cube.glb"}, {"start": 1856, "audio": 0, "end": 5515, "filename": "/assets/models/cube.gltf"}, {"start": 5515, "audio": 0, "end": 5664, "filename": "/assets/shaders/3dcube.frag"}, {"start": 5664, "audio": 0, "end": 5889, "filename": "/assets/shaders/3dcube.vert"}, {"start": 5889, "audio": 0, "end": 6021, "filename": "/assets/shaders/default.vert"}, {"start": 6021, "audio": 0, "end": 6146, "filename": "/assets/shaders/default.frag"}], "remote_package_size": 6146, "package_uuid": "aec8e26a-a342-4e0c-b1b3-b8f4d9bb7e61"});
+ loadPackage({"files": [{"start": 0, "audio": 0, "end": 1856, "filename": "/assets/models/cube.glb"}, {"start": 1856, "audio": 0, "end": 5515, "filename": "/assets/models/cube.gltf"}, {"start": 5515, "audio": 0, "end": 5664, "filename": "/assets/shaders/3dcube.frag"}, {"start": 5664, "audio": 0, "end": 5889, "filename": "/assets/shaders/3dcube.vert"}, {"start": 5889, "audio": 0, "end": 6021, "filename": "/assets/shaders/default.vert"}, {"start": 6021, "audio": 0, "end": 6146, "filename": "/assets/shaders/default.frag"}], "remote_package_size": 6146, "package_uuid": "5b01ee21-5445-415c-ac28-6e3c56e7c7f8"});
 
 })();
 
@@ -1401,11 +1401,11 @@ function updateGlobalBufferViews() {
 
 
 var STATIC_BASE = 1024,
-    STACK_BASE = 78736,
+    STACK_BASE = 80400,
     STACKTOP = STACK_BASE,
-    STACK_MAX = 5321616,
-    DYNAMIC_BASE = 5321616,
-    DYNAMICTOP_PTR = 78704;
+    STACK_MAX = 5323280,
+    DYNAMIC_BASE = 5323280,
+    DYNAMICTOP_PTR = 80368;
 
 assert(STACK_BASE % 16 === 0, 'stack must start aligned');
 assert(DYNAMIC_BASE % 16 === 0, 'heap must start aligned');
@@ -1885,7 +1885,7 @@ var ASM_CONSTS = [];
 
 
 
-// STATICTOP = STATIC_BASE + 77712;
+// STATICTOP = STATIC_BASE + 79376;
 /* global initializers */  __ATINIT__.push({ func: function() { globalCtors() } });
 
 
@@ -1896,7 +1896,7 @@ var ASM_CONSTS = [];
 
 
 /* no memory initializer */
-var tempDoublePtr = 78720
+var tempDoublePtr = 80384
 assert(tempDoublePtr % 8 == 0);
 
 function copyTempFloat(ptr) { // functions, because inlining this code increases code size too much
