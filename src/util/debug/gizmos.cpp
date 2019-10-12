@@ -28,7 +28,6 @@ char fragSource[] = "#version 300 es\n"
     "}";
 
 
-// TODO: the vertexbuffer has a hardcoded attribute count
 Gizmos::Gizmos() : shaderProgram(ShaderProgram(vertSource, fragSource))
 {
     mesh = SharedMesh(new Mesh(2,0, false));

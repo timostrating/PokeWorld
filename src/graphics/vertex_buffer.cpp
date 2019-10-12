@@ -6,8 +6,14 @@
 #include "vertex_buffer.h"
 #include "../util/debug/nice_error.h"
 
+GLuint VertexBuffer::activeVaoId = 0;
+
 VertexBuffer* VertexBuffer::add(SharedMesh mesh)
 {
+    if (mesh->vertexBuffer)
+        throw nice_error("This mesh is already added to a vertexBuffer");
+
+    mesh->vertexBuffer = this;
     meshes.push_back(mesh);
 
     totalNrOfVerts += mesh->nrOfVerts;
@@ -34,12 +40,23 @@ VertexBuffer *VertexBuffer::with()
     return new VertexBuffer();
 }
 
+VertexBuffer::VertexBuffer()
+{
+    glGenVertexArrays(1, &vaoId);
+}
+
+void VertexBuffer::bind()
+{
+    if (activeVaoId != vaoId) {
+        activeVaoId = vaoId;
+        glBindVertexArray(vaoId);
+    }
+}
+
 void VertexBuffer::uploadSingleMesh(SharedMesh mesh) { with()->add(mesh)->upload(); }
 void VertexBuffer::upload()
 {
-    // Vertex Array
-    glGenVertexArrays(1, &vaoId);
-    glBindVertexArray(vaoId);
+    bind();
 
     // Vertex Buffer
     glGenBuffers(1, &vboId);

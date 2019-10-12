@@ -14,6 +14,7 @@
 #include "../graphics/mesh.h"
 #include "../graphics/vertex_buffer.h"
 #include "../util/input/keyboard.h"
+#include "../util/debug/gizmos.h"
 
 
 class ModelTestScreen : public Screen
@@ -22,13 +23,12 @@ public:
     FlyingCamera camera = FlyingCamera();
     GLint MVPLocation;
     SharedMesh mesh = SharedMesh(new Mesh(12*3, 0, false)); // TODO: remove some verts
+    ShaderProgram shaderProgram = ShaderProgram::fromAssetFiles("shaders/default.vert", "shaders/default.frag");
+
+    Gizmos gizmos;
 
     ModelTestScreen()
     {
-        // Shader Program
-        ShaderProgram shaderProgram = ShaderProgram::fromAssetFiles("shaders/default.vert", "shaders/default.frag");
-        shaderProgram.use();
-
         mesh->vertices.insert(mesh->vertices.begin(), {
             //  x,    y,    z       x,    y,    z       x,    y,    z
             -1.0f,-1.0f,-1.0f,  -1.0f,-1.0f, 1.0f,  -1.0f, 1.0f, 1.0f,
@@ -46,9 +46,7 @@ public:
         });
 
         // Vertex Buffer
-        VertexBuffer vertexBuffer = VertexBuffer();
-        vertexBuffer.add(mesh);
-        vertexBuffer.upload();
+        VertexBuffer::uploadSingleMesh(mesh);
 
         // Model View Projection
         MVPLocation = glGetUniformLocation(shaderProgram.getId(), "MVP");
@@ -71,21 +69,25 @@ public:
         else {
             if (INPUT::KEYBOARD::anyKeyEverPressed())
                 anyKeyPressed = true;
-            camera.position = vec3(sin(time * 0.5) *5,  0,  cos(time * 0.5) *5);
+            camera.position = vec3(sin(time * 0.5) *5,  2,  cos(time * 0.5) *5);
             camera.lookAt(VEC3::ZERO);
             camera.Camera::update();
         }
 
         mat4 mvp = camera.combined * modelMatrix;
 
+        shaderProgram.use();
         glUniformMatrix4fv(
                 MVPLocation,   // Location
                 1,             // we want to edit one matrix
                 GL_FALSE,      // do not transpose (rotate rows and cols around)
                 &mvp[0][0]     // we share the pointer to the first value, 4fv knows to where it needs to go
         );
-
         mesh->render();
+
+        gizmos.drawLine(VEC3::ZERO, VEC3::X * 5.0f, COLOR::RED);
+        gizmos.drawLine(VEC3::ZERO, VEC3::Y * 5.0f, COLOR::GREEN);
+        gizmos.drawLine(VEC3::ZERO, VEC3::Z * 5.0f, COLOR::BLUE);
     }
 
     void resize(int width, int height)

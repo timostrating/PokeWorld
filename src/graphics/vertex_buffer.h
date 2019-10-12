@@ -15,6 +15,8 @@
 //    NORMAL = 0,
 //};
 
+class Mesh;
+typedef std::shared_ptr<Mesh> SharedMesh;
 
 class VertexBuffer
 {
@@ -22,7 +24,7 @@ class VertexBuffer
 private:
     std::vector<std::weak_ptr<Mesh>> meshes = {};
 
-    GLuint vaoId, vboId, iboId;
+    GLuint vaoId, vboId = 0, iboId = 0;
 
     unsigned int totalNrOfVerts = 0;
     unsigned int totalNrOfIndicies = 0;
@@ -33,11 +35,14 @@ public:
     // try not to use this. It is more efficient to put more meshes (with the same VertAttributes) in 1 VertBuffer
     static void uploadSingleMesh(SharedMesh mesh);
 
-//    explicit VertexBuffer(bool dynamic = false);
-//    ~VertexBuffer();
-
     static VertexBuffer* with();
+    VertexBuffer();
+//    ~VertexBuffer(); // TODO: add a destructor
+
     VertexBuffer* add(SharedMesh mesh);
 
+    void bind();
     void upload();
+
+    static GLuint activeVaoId;
 };

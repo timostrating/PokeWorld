@@ -7,8 +7,9 @@
 #include <glad/glad.h>
 #include <vector>
 #include <memory>
+#include "vertex_buffer.h"
 
-
+class VertexBuffer;
 class Mesh;
 typedef std::shared_ptr<Mesh> SharedMesh;
 
@@ -23,6 +24,8 @@ public:
 
     std::vector<float> vertices = {};
     std::vector<unsigned short> indicies = {};
+
+    VertexBuffer *vertexBuffer = nullptr;
 
     GLenum renderMode = GL_TRIANGLES;
 
