@@ -48,7 +48,7 @@ public:
         vertexBuffer.upload();
 
         // Model View Projection
-        MVPLocation = glGetUniformLocation(shaderProgram.getId(), "MVP");
+        MVPLocation = shaderProgram.uniformLocation("MVP");
         camera.position = glm::vec3(0,0,2);
     }
 

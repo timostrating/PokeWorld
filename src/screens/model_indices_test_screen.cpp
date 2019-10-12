@@ -88,7 +88,7 @@ public:
         );
         glEnableVertexAttribArray(1);
 
-        MVPLocation = glGetUniformLocation(shaderProgram.getId(), "MVP");
+        MVPLocation = shaderProgram.uniformLocation("MVP");
         camera.position = glm::vec3(0,0,5);
     }
 

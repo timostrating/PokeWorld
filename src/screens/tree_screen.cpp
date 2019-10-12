@@ -28,16 +28,26 @@ public:
     FlyingCamera camera = FlyingCamera();
     GLint MVPLocation;
     ShaderProgram defaultShaderProgram = ShaderProgram::fromAssetFiles("shaders/default.vert", "shaders/default.frag");
+    SharedMesh meshTest = SharedMesh(new Mesh(4,6));
 
-    Gizmos gizmos = Gizmos();
+    Gizmos gizmos;
 
     TreeScreen()
     {
         // Shader Program
         defaultShaderProgram.use();
 
+        meshTest->vertices.insert(meshTest->vertices.begin(), {
+                -1, 0, -1,
+                -1, 0,  1,
+                 1, 0,  1,
+                 1, 0, -1,
+        });
+        meshTest->indicies.insert(meshTest->indicies.begin(), {2, 1, 0, 0, 3, 2});
+        VertexBuffer::uploadSingleMesh(meshTest);
+
         // Model View Projection
-        MVPLocation = glGetUniformLocation(defaultShaderProgram.getId(), "MVP");
+        MVPLocation = defaultShaderProgram.uniformLocation("MVP");
     }
 
     void setup(GLFWwindow* window) {
@@ -59,6 +69,7 @@ public:
     mat4 modelMatrix = translate(mat4(1.0f), vec3(0, 0, 0)); // identity matrix
 
     std::string buf = std::string("F[-x[+x]++x]") + std::string(10, '\0');
+    float speed = 5;
     int applyNtimes = 5;
 
     void render(double deltaTime)
@@ -84,6 +95,15 @@ public:
         mat4 mvp = camera.combined * modelMatrix;
         glUniformMatrix4fv( MVPLocation, 1, GL_FALSE, &mvp[0][0]);
 
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////// TEST
+
+        meshTest->render();
+
+        gizmos.drawLine(VEC3::ZERO, VEC3::X * 5.0f, COLOR::RED);
+        gizmos.drawLine(VEC3::ZERO, VEC3::Y * 5.0f, COLOR::GREEN);
+        gizmos.drawLine(VEC3::ZERO, VEC3::Z * 5.0f, COLOR::BLUE);
+
+
         //////////////////////////////////////////////////////////////////////////////////////////////////////// LSYSTEM
         LSystem lSystem = LSystem("X");
         lSystem.addPattern('X', buf); // "F[-X][+X],FX"
@@ -93,7 +113,6 @@ public:
 
         std::stack<vec3> memory = std::stack<vec3>();
 
-        float speed = 5;
         float rotation = radians(mod(time * speed, 30.0) + 5.0);
 
         lSystem.applyNtimes(applyNtimes);
@@ -112,6 +131,9 @@ public:
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////// GUI
+        defaultShaderProgram.use();
+        VertexBuffer::bindDefault();
+
         // Feed inputs to dear imgui, start new frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();

@@ -22,7 +22,7 @@ class ModelTestScreen : public Screen
 public:
     FlyingCamera camera = FlyingCamera();
     GLint MVPLocation;
-    SharedMesh mesh = SharedMesh(new Mesh(12*3, 0, false)); // TODO: remove some verts
+    SharedMesh mesh = SharedMesh(new Mesh(12*3, 12*3)); // TODO: remove some verts
     ShaderProgram shaderProgram = ShaderProgram::fromAssetFiles("shaders/default.vert", "shaders/default.frag");
 
     Gizmos gizmos;
@@ -44,12 +44,13 @@ public:
              1.0f, 1.0f, 1.0f,  -1.0f, 1.0f,-1.0f,  -1.0f, 1.0f, 1.0f,
              1.0f, 1.0f, 1.0f,  -1.0f, 1.0f, 1.0f,   1.0f,-1.0f, 1.0f
         });
+        mesh->indicies.insert(mesh->indicies.begin(), {0,1,2, 3,4,5, 6,7,8, 9,10,11, 12,13,14, 15,16,17, 18,19,20, 21,22,23, 24,25,26, 27,28,29, 30,31,32, 33,34,35});
 
         // Vertex Buffer
         VertexBuffer::uploadSingleMesh(mesh);
 
         // Model View Projection
-        MVPLocation = glGetUniformLocation(shaderProgram.getId(), "MVP");
+        MVPLocation = shaderProgram.uniformLocation("MVP");
         camera.position = glm::vec3(0,0,2);
     }
 

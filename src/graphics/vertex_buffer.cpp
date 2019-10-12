@@ -45,6 +45,16 @@ VertexBuffer::VertexBuffer()
     glGenVertexArrays(1, &vaoId);
 }
 
+// static
+void VertexBuffer::bindDefault()
+{
+    if (activeVaoId != 0) {
+        activeVaoId = 0;
+        glBindVertexArray(0);
+    }
+}
+
+// non-static
 void VertexBuffer::bind()
 {
     if (activeVaoId != vaoId) {

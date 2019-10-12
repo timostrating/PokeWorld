@@ -45,4 +45,5 @@ public:
     void upload();
 
     static GLuint activeVaoId;
+    static void bindDefault();
 };

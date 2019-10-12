@@ -89,3 +89,8 @@ ShaderProgram::~ShaderProgram()
 {
     glDeleteProgram(programId);
 }
+
+GLint ShaderProgram::uniformLocation(const char *name)
+{
+    return glGetUniformLocation(programId, name);
+}

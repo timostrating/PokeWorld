@@ -12,34 +12,35 @@ char vertSource[] = "#version 300 es\n"
     "layout (location = 0) in vec3 a_pos;"
 
     "uniform mat4 MVP;"
-    "uniform vec3 from;"
-    "uniform vec3 to;"
+    "uniform vec3 u_from;"
+    "uniform vec3 u_to;"
 
     "void main() {"
-        "gl_Position = MVP * vec4((a_pos.x == 0.)? from : to, 1.0);"
+        "gl_Position = MVP * vec4((a_pos.x == 0.)? u_from : u_to, 1.0);"
     "}";
 
 char fragSource[] = "#version 300 es\n"
     "precision mediump float;"
-    "uniform vec4 color;"
+    "uniform vec4 u_color;"
     "out vec4 outputColor;"
     "void main() {"
-        "outputColor = color;"
+        "outputColor = u_color;"
     "}";
 
 
 Gizmos::Gizmos() : shaderProgram(ShaderProgram(vertSource, fragSource))
 {
-    mesh = SharedMesh(new Mesh(2,0, false));
+    mesh = SharedMesh(new Mesh(2,2));
     mesh->vertices.insert(mesh->vertices.begin(), {0,0,0, 1,1,1});
-    mesh->renderMode = GL_LINE_STRIP;
+    mesh->indicies.insert(mesh->indicies.begin(), {0,1});
+    mesh->renderMode = GL_LINES;
 
     VertexBuffer::uploadSingleMesh(mesh);
 
-    mvpId   = glGetUniformLocation(shaderProgram.getId(), "MVP");
-    fromId  = glGetUniformLocation(shaderProgram.getId(), "from");
-    toId    = glGetUniformLocation(shaderProgram.getId(), "to");
-    colorId = glGetUniformLocation(shaderProgram.getId(), "color");
+    mvpId   = shaderProgram.uniformLocation("MVP");
+    fromId  = shaderProgram.uniformLocation("u_from");
+    toId    = shaderProgram.uniformLocation("u_to");
+    colorId = shaderProgram.uniformLocation("u_color");
 }
 
 void Gizmos::drawLine(const vec3 &from, const vec3 &to, const vec4 &color)

@@ -16,5 +16,7 @@ public:
     ~ShaderProgram();
 
     void use();
-    GLuint getId() { return programId; }
+//    GLuint getId() { return programId; }
+
+    GLint uniformLocation(const char* name);
 };

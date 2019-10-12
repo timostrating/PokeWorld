@@ -20,7 +20,6 @@ class Mesh
 public:
     // delegating constructor
     Mesh(unsigned int nrOfVerts, unsigned int nrOfIndices) : nrOfVerts(nrOfVerts), nrOfIndices(nrOfIndices) {};
-    Mesh(unsigned int nrOfVerts, unsigned int nrOfIndices, bool useIndicies) : Mesh(nrOfVerts, nrOfIndices) { this->useIndicies = useIndicies; };
 
     std::vector<float> vertices = {};
     std::vector<unsigned short> indicies = {};
