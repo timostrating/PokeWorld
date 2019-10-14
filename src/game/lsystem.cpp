@@ -3,7 +3,7 @@
 //
 
 #include "lsystem.h"
-#include "../../external/unit_test/unit_test.hpp"
+#include "../util/external/unit_test.hpp"
 
 #define str std::string
 

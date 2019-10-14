@@ -53,3 +53,32 @@ void Gizmos::drawLine(const vec3 &from, const vec3 &to, const vec4 &color)
     mesh->render();
 }
 
+void Gizmos::drawCube(const vec3 &pos, const float size, const vec4 &color)
+{
+    shaderProgram.use();
+    glUniformMatrix4fv(mvpId, 1, GL_FALSE, &Camera::main->combined[0][0]);
+    glUniform4f(colorId, color.x, color.y, color.z, color.w);
+
+    const static vec3 data[] = {
+            glm::vec3(-1,-1, 1), glm::vec3(1,-1, 1),
+            glm::vec3(-1,-1,-1), glm::vec3(1,-1,-1),
+            glm::vec3(-1, 1, 1), glm::vec3(1, 1, 1),
+            glm::vec3(-1, 1,-1), glm::vec3(1, 1,-1),
+
+            glm::vec3(-1,-1, 1), glm::vec3(-1,-1,-1),
+            glm::vec3( 1,-1, 1), glm::vec3( 1,-1,-1),
+            glm::vec3(-1, 1, 1), glm::vec3(-1, 1,-1),
+            glm::vec3( 1, 1, 1), glm::vec3( 1, 1,-1),
+
+            glm::vec3(-1,-1, 1), glm::vec3(-1, 1, 1),
+            glm::vec3( 1,-1, 1), glm::vec3( 1, 1, 1),
+            glm::vec3(-1,-1,-1), glm::vec3(-1, 1,-1),
+            glm::vec3( 1,-1,-1), glm::vec3( 1, 1,-1),
+    };
+    for (int i=0; i<24; i+=2) {
+        glUniform3f(fromId, (size * data[i  ].x) + pos.x,  (size * data[i  ].y) + pos.y,  (size * data[i  ].z) + pos.z);
+        glUniform3f(toId,   (size * data[i+1].x) + pos.x,  (size * data[i+1].y) + pos.y,  (size * data[i+1].z) + pos.z);
+        mesh->render();
+    }
+}
+

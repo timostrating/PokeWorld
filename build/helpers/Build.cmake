@@ -23,12 +23,6 @@ set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
 set(OpenGL_GL_PREFERENCE "GLVND") # We dont want the legacy openGl
 find_package(OpenGL REQUIRED)
 
-
-# -----------------------------------------------------UNIT-TESTING---------------------------------------------------------
-
-include_directories(${EXTERNAL_DIR}/unit_test)
-
-
 # ---------------------------------------------------------GLFW---------------------------------------------------------
 
 if (NOT ${__EMSCRIPTEN__})

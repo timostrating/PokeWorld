@@ -22,6 +22,7 @@ public:
     Gizmos();
 
     void drawLine(const vec3 &from, const vec3 &to, const vec4 &color = COLOR::DEFAULT);
+    void drawCube(const vec3 &pos, const float radius, const vec4 &color = COLOR::DEFAULT);
 };
 
 

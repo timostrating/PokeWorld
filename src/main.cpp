@@ -10,7 +10,7 @@
 #include "screens/tree_screen.cpp"
 #include "util/interfaces/game.h"
 
-#include <unit_test.hpp>
+#include "util/external/unit_test.hpp"
 
 int main(int argc, char* argv[])
 {
