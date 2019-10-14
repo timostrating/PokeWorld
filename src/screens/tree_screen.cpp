@@ -19,6 +19,7 @@
 #include "../util/input/keyboard.h"
 #include "../game/lsystem.h"
 #include "../util/debug/gizmos.h"
+#include "../game/marching_cubes_terrain.h"
 
 using namespace glm;
 
@@ -31,6 +32,7 @@ public:
     SharedMesh meshTest = SharedMesh(new Mesh(4,6));
 
     Gizmos gizmos;
+    MarchingCubesTerrain terrain;
 
     TreeScreen()
     {
@@ -98,6 +100,7 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////////////////////// TEST
 
         meshTest->render();
+        terrain.render();
 
         gizmos.drawLine(VEC3::ZERO, VEC3::X * 5.0f, COLOR::RED);
         gizmos.drawLine(VEC3::ZERO, VEC3::Y * 5.0f, COLOR::GREEN);
