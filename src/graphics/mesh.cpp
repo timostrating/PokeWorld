@@ -12,6 +12,8 @@ void Mesh::render() {
 
     vertexBuffer->bind();
 
-    glDrawElements(renderMode, nrOfIndices, GL_UNSIGNED_SHORT, (void*)0);
-//    glDrawArrays(renderMode, 0, nrOfVerts);
+    if (nrOfIndices != 0)
+        glDrawElements(renderMode, nrOfIndices, GL_UNSIGNED_SHORT, (void*)0);
+    else
+        glDrawArrays(renderMode, 0, nrOfVerts);
 }

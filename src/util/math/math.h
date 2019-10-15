@@ -14,6 +14,16 @@
 namespace MATH
 {
     const float PI = 3.1415926535f;
+
+    inline float random()
+    {
+        return static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+    }
+
+    inline float random(const float min, const float max)
+    {
+        return min + static_cast <float> (rand()) /  static_cast <float> (RAND_MAX / (max - min));
+    }
 }
 
 namespace VEC3

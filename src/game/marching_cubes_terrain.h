@@ -13,22 +13,8 @@ class MarchingCubesTerrain
 
 private:
 
-    static const int size = 5;
-    const float noisefield[size][size][size] = {
-        {
-            {0.1, 0.7, 0.3},
-            {0.2, 0.9, 0.5},
-            {0.3, 0.8, 0.3},
-        }, {
-            {0.2, 0.9, 0.5},
-            {0.1, 0.7, 0.3},
-            {0.3, 0.8, 0.3},
-        }, {
-            {0.3, 0.8, 0.3},
-            {0.2, 0.9, 0.5},
-            {0.1, 0.7, 0.3},
-        }
-    };
+    static const int size = 6;
+    float noisefield[size][size][size] = {0};
 
     Gizmos gizmos;
 
