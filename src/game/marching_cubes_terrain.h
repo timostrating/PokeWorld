@@ -24,7 +24,8 @@ private:
     GLuint mvpId;
 
     float scale = 0.3f;
-    mat4 modelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), vec3(-5 * scale, -9.5 * scale, -5 * scale)), vec3(scale)); // identity matrix
+    vec3 position = vec3(-5, -9.5, -5);
+    mat4 modelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), vec3(position.x* scale, position.y * scale, position.z * scale)), vec3(scale));
 
 
 public:
