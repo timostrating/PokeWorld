@@ -53,7 +53,7 @@ int MarchingCubesTerrain::getCubeIndex(int x, int y, int z, float falloff) {
 
     for (unsigned int i=0; i < 8; i++) {
         if (noisefield[x + CUBE[i*3 +0]][y + CUBE[i*3 +1]][z + CUBE[i*3 +2]] < falloff)
-            cubeIndex += ((u_int)1 << i);
+            cubeIndex += ((uint)1 << i);
     }
     return cubeIndex;
 }
