@@ -268,7 +268,7 @@ static const int TRI_TABLE[256][16] = {
 
 // The 12 points of a margin cube: http://paulbourke.net/geometry/polygonise/polygonise1.gif
 static const vec3 EDGE_POINTS[12] = {
-        vec3(0.5f, 0, 1), vec3(1, 0, 0.5f), vec3(0.5f, 0, 0), vec3(0, 0, 0.5f),
-        vec3(0.5f, 1, 1), vec3(1, 1, 0.5f), vec3(0.5f, 1, 0), vec3(0, 1, 0.5f),
+        vec3(0.5f, 0, 0), vec3(1, 0, 0.5f), vec3(0.5f, 0, 1), vec3(0, 0, 0.5f),
+        vec3(0.5f, 1, 0), vec3(1, 1, 0.5f), vec3(0.5f, 1, 1), vec3(0, 1, 0.5f),
         vec3(0, 0.5f, 0), vec3(1, 0.5f, 0), vec3(1, 0.5f, 1), vec3(0, 0.5f, 1)
 };

@@ -29,7 +29,6 @@ public:
     FlyingCamera camera = FlyingCamera();
     GLint MVPLocation;
     ShaderProgram defaultShaderProgram = ShaderProgram::fromAssetFiles("shaders/default.vert", "shaders/default.frag");
-    SharedMesh meshTest = SharedMesh(new Mesh(4,6));
 
     Gizmos gizmos;
     MarchingCubesTerrain terrain;
@@ -38,15 +37,6 @@ public:
     {
         // Shader Program
         defaultShaderProgram.use();
-
-        meshTest->vertices.insert(meshTest->vertices.begin(), {
-                -1, 0, -1,
-                -1, 0,  1,
-                 1, 0,  1,
-                 1, 0, -1,
-        });
-        meshTest->indicies.insert(meshTest->indicies.begin(), {2, 1, 0, 0, 3, 2});
-        VertexBuffer::uploadSingleMesh(meshTest);
 
         // Model View Projection
         MVPLocation = defaultShaderProgram.uniformLocation("MVP");
@@ -89,7 +79,7 @@ public:
         else {
             if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB))
                 anyKeyPressed = true;
-            camera.position = vec3(sin(time * 0.5) *3,  1,  cos(time * 0.5) *3);
+            camera.position = vec3(sin(time * 0.5) *5,  2,  cos(time * 0.5) *5);
             camera.lookAt(VEC3::Y);
             camera.Camera::update();
         }
@@ -99,12 +89,11 @@ public:
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////// TEST
 
-        meshTest->render();
         terrain.render();
 
-        gizmos.drawLine(VEC3::ZERO, VEC3::X * 5.0f, COLOR::RED);
-        gizmos.drawLine(VEC3::ZERO, VEC3::Y * 5.0f, COLOR::GREEN);
-        gizmos.drawLine(VEC3::ZERO, VEC3::Z * 5.0f, COLOR::BLUE);
+//        gizmos.drawLine(VEC3::ZERO, VEC3::X * 5.0f, COLOR::RED);
+//        gizmos.drawLine(VEC3::ZERO, VEC3::Y * 5.0f, COLOR::GREEN);
+//        gizmos.drawLine(VEC3::ZERO, VEC3::Z * 5.0f, COLOR::BLUE);
 
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////// LSYSTEM
