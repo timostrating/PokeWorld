@@ -21,7 +21,7 @@ MarchingCubesTerrain::MarchingCubesTerrain()
     mvpId = terrainShader.uniformLocation("MVP");
 
     LOOP3D(size, x,y,z,
-        noisefield[x][y][z] = (x==0 || x == size-1 || y==0 || y == size-1 || z==0 || z == size-1)? 1 : MATH::random() - ((y-size+1)*0.09); // remove some based on y coordinate
+        noisefield[x][y][z] = (x==0 || x == size-1 || y==0 || y == size-1 || z==0 || z == size-1)? 1 : MATH::random() - ((y-size+3)*0.09); // remove some, based on y coordinate
         if ((x < 4 && z < 4) || (x < 4 && z > size-5) ||(x > size-5 && z < 4) || (x > size-5 && z > size-5)) // round the corners
             noisefield[x][y][z] += 0.2;
         if ((x < 2 && z < 2) || (x < 2 && z > size-3) ||(x > size-3 && z < 2) || (x > size-3 && z > size-3)) // round the corners
