@@ -196,7 +196,7 @@ Module['FS_createPath']('/assets', 'shaders', true, true);
   }
 
  }
- loadPackage({"files": [{"start": 0, "audio": 0, "end": 1856, "filename": "/assets/models/cube.glb"}, {"start": 1856, "audio": 0, "end": 5515, "filename": "/assets/models/cube.gltf"}, {"start": 5515, "audio": 0, "end": 5664, "filename": "/assets/shaders/3dcube.frag"}, {"start": 5664, "audio": 0, "end": 5889, "filename": "/assets/shaders/3dcube.vert"}, {"start": 5889, "audio": 0, "end": 6021, "filename": "/assets/shaders/default.vert"}, {"start": 6021, "audio": 0, "end": 6146, "filename": "/assets/shaders/default.frag"}], "remote_package_size": 6146, "package_uuid": "5b01ee21-5445-415c-ac28-6e3c56e7c7f8"});
+ loadPackage({"files": [{"start": 0, "audio": 0, "end": 1856, "filename": "/assets/models/cube.glb"}, {"start": 1856, "audio": 0, "end": 5515, "filename": "/assets/models/cube.gltf"}, {"start": 5515, "audio": 0, "end": 5751, "filename": "/assets/shaders/terrain.vert"}, {"start": 5751, "audio": 0, "end": 5876, "filename": "/assets/shaders/terrain.frag"}, {"start": 5876, "audio": 0, "end": 6025, "filename": "/assets/shaders/3dcube.frag"}, {"start": 6025, "audio": 0, "end": 6250, "filename": "/assets/shaders/3dcube.vert"}, {"start": 6250, "audio": 0, "end": 6382, "filename": "/assets/shaders/default.vert"}, {"start": 6382, "audio": 0, "end": 6507, "filename": "/assets/shaders/default.frag"}], "remote_package_size": 6507, "package_uuid": "ddb3ff2d-1e6a-4a86-853f-aa1366bf231d"});
 
 })();
 
@@ -1401,11 +1401,11 @@ function updateGlobalBufferViews() {
 
 
 var STATIC_BASE = 1024,
-    STACK_BASE = 80400,
+    STACK_BASE = 96960,
     STACKTOP = STACK_BASE,
-    STACK_MAX = 5323280,
-    DYNAMIC_BASE = 5323280,
-    DYNAMICTOP_PTR = 80368;
+    STACK_MAX = 5339840,
+    DYNAMIC_BASE = 5339840,
+    DYNAMICTOP_PTR = 96928;
 
 assert(STACK_BASE % 16 === 0, 'stack must start aligned');
 assert(DYNAMIC_BASE % 16 === 0, 'heap must start aligned');
@@ -1885,7 +1885,7 @@ var ASM_CONSTS = [];
 
 
 
-// STATICTOP = STATIC_BASE + 79376;
+// STATICTOP = STATIC_BASE + 95936;
 /* global initializers */  __ATINIT__.push({ func: function() { globalCtors() } });
 
 
@@ -1896,7 +1896,7 @@ var ASM_CONSTS = [];
 
 
 /* no memory initializer */
-var tempDoublePtr = 80384
+var tempDoublePtr = 96944
 assert(tempDoublePtr % 8 == 0);
 
 function copyTempFloat(ptr) { // functions, because inlining this code increases code size too much
