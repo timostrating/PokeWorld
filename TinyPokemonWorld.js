@@ -196,7 +196,7 @@ Module['FS_createPath']('/assets', 'shaders', true, true);
   }
 
  }
- loadPackage({"files": [{"start": 0, "audio": 0, "end": 1856, "filename": "/assets/models/cube.glb"}, {"start": 1856, "audio": 0, "end": 5515, "filename": "/assets/models/cube.gltf"}, {"start": 5515, "audio": 0, "end": 5751, "filename": "/assets/shaders/terrain.vert"}, {"start": 5751, "audio": 0, "end": 5876, "filename": "/assets/shaders/terrain.frag"}, {"start": 5876, "audio": 0, "end": 6025, "filename": "/assets/shaders/3dcube.frag"}, {"start": 6025, "audio": 0, "end": 6250, "filename": "/assets/shaders/3dcube.vert"}, {"start": 6250, "audio": 0, "end": 6382, "filename": "/assets/shaders/default.vert"}, {"start": 6382, "audio": 0, "end": 6507, "filename": "/assets/shaders/default.frag"}], "remote_package_size": 6507, "package_uuid": "ddb3ff2d-1e6a-4a86-853f-aa1366bf231d"});
+ loadPackage({"files": [{"start": 0, "audio": 0, "end": 1856, "filename": "/assets/models/cube.glb"}, {"start": 1856, "audio": 0, "end": 5515, "filename": "/assets/models/cube.gltf"}, {"start": 5515, "audio": 0, "end": 5751, "filename": "/assets/shaders/terrain.vert"}, {"start": 5751, "audio": 0, "end": 5876, "filename": "/assets/shaders/terrain.frag"}, {"start": 5876, "audio": 0, "end": 6025, "filename": "/assets/shaders/3dcube.frag"}, {"start": 6025, "audio": 0, "end": 6250, "filename": "/assets/shaders/3dcube.vert"}, {"start": 6250, "audio": 0, "end": 6382, "filename": "/assets/shaders/default.vert"}, {"start": 6382, "audio": 0, "end": 6507, "filename": "/assets/shaders/default.frag"}], "remote_package_size": 6507, "package_uuid": "6227d038-dcf3-4119-8763-75ec512ded7f"});
 
 })();
 
@@ -1401,11 +1401,11 @@ function updateGlobalBufferViews() {
 
 
 var STATIC_BASE = 1024,
-    STACK_BASE = 96960,
+    STACK_BASE = 97776,
     STACKTOP = STACK_BASE,
-    STACK_MAX = 5339840,
-    DYNAMIC_BASE = 5339840,
-    DYNAMICTOP_PTR = 96928;
+    STACK_MAX = 5340656,
+    DYNAMIC_BASE = 5340656,
+    DYNAMICTOP_PTR = 97744;
 
 assert(STACK_BASE % 16 === 0, 'stack must start aligned');
 assert(DYNAMIC_BASE % 16 === 0, 'heap must start aligned');
@@ -1862,8 +1862,8 @@ Module['asm'] = function(global, env, providedBuffer) {
   ;
   // import table
   env['table'] = wasmTable = new WebAssembly.Table({
-    'initial': 30496,
-    'maximum': 30496,
+    'initial': 30528,
+    'maximum': 30528,
     'element': 'anyfunc'
   });
   // With the wasm backend __memory_base and __table_base and only needed for
@@ -1885,7 +1885,7 @@ var ASM_CONSTS = [];
 
 
 
-// STATICTOP = STATIC_BASE + 95936;
+// STATICTOP = STATIC_BASE + 96752;
 /* global initializers */  __ATINIT__.push({ func: function() { globalCtors() } });
 
 
@@ -1896,7 +1896,7 @@ var ASM_CONSTS = [];
 
 
 /* no memory initializer */
-var tempDoublePtr = 96944
+var tempDoublePtr = 97760
 assert(tempDoublePtr % 8 == 0);
 
 function copyTempFloat(ptr) { // functions, because inlining this code increases code size too much
@@ -8677,8 +8677,6 @@ function copyTempDouble(ptr) {
       }
     }
 
-  var _floor=Math_floor;
-
   
   var ENV={};function _getenv(name) {
       // char *getenv(const char *name);
@@ -10347,8 +10345,6 @@ function intArrayToString(array) {
 // ASM_LIBRARY EXTERN PRIMITIVES: Int8Array,Int32Array
 
 
-function nullFunc_dd(x) { err("Invalid function pointer called with signature 'dd'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  err("Build with ASSERTIONS=2 for more info.");abort(x) }
-
 function nullFunc_i(x) { err("Invalid function pointer called with signature 'i'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  err("Build with ASSERTIONS=2 for more info.");abort(x) }
 
 function nullFunc_ii(x) { err("Invalid function pointer called with signature 'ii'. Perhaps this is an invalid value (e.g. caused by calling a virtual method on a NULL pointer)? Or calling a function with an incorrect type, which will fail? (it is worth building your source files with -Werror (warnings are errors), as warnings can indicate undefined behavior which can cause this)");  err("Build with ASSERTIONS=2 for more info.");abort(x) }
@@ -10434,7 +10430,6 @@ var asmLibraryArg = {
   "setTempRet0": setTempRet0,
   "getTempRet0": getTempRet0,
   "abortStackOverflow": abortStackOverflow,
-  "nullFunc_dd": nullFunc_dd,
   "nullFunc_i": nullFunc_i,
   "nullFunc_ii": nullFunc_ii,
   "nullFunc_iidiiii": nullFunc_iidiiii,
@@ -10784,7 +10779,6 @@ var asmLibraryArg = {
   "_emscripten_resize_heap": _emscripten_resize_heap,
   "_emscripten_set_main_loop": _emscripten_set_main_loop,
   "_emscripten_set_main_loop_timing": _emscripten_set_main_loop_timing,
-  "_floor": _floor,
   "_getenv": _getenv,
   "_glActiveTexture": _glActiveTexture,
   "_glAttachShader": _glAttachShader,
@@ -11122,12 +11116,6 @@ var stackSave = Module["stackSave"] = function() {
   assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
   assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
   return Module["asm"]["stackSave"].apply(null, arguments)
-};
-
-var dynCall_dd = Module["dynCall_dd"] = function() {
-  assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-  assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-  return Module["asm"]["dynCall_dd"].apply(null, arguments)
 };
 
 var dynCall_i = Module["dynCall_i"] = function() {
