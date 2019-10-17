@@ -6,6 +6,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "glm/gtx/rotate_vector.hpp"
 #include <string>
 #include "../external/unit_test.hpp"
 using namespace glm;
@@ -27,21 +28,30 @@ namespace MATH
         return min + static_cast <float> (rand()) /  static_cast <float> (RAND_MAX / (max - min));
     }
 
+    /// This is based on Method 10. Polar from:
     /// http://extremelearning.com.au/how-to-generate-uniformly-random-points-on-n-spheres-and-n-balls/
-    inline vec3 randomPointOnSphere()
+    inline vec3 randomPointOnSphere(float maxDegreeTop=180, float maxDegreeSide=360)
     {
         float u = random(), v = random();
 
-        float theta = 2 * PI * u;
-        float phi = acos(2*v -1);
+        float theta = 2*PI * u;
+        theta *= (maxDegreeTop / 360.0f);
+        theta += (1.0f / 2.0f) * PI; // rotate to the top
 
-        float
-            x = sin(theta) * cos(phi),
-            y = sin(theta) * sin(phi),
-            z = cos(theta);
-        return vec3(x, y, z);
+        float // 2 circle
+            x = cos(theta),
+            y = sin(theta),
+            z = 0;
+
+        float phi = 2*PI * v;
+        phi *= (maxDegreeSide / 360.0f);
+        phi *= ((y < 0)? 1.0f : -1.0f); // flip the angle so it stays on the same side
+
+        return glm::rotate(vec3(x,y,z), phi, vec3(0,sin(theta),0));
     }
-    TEST(randomPointOnSphere, return abs(glm::distance(vec3(0), randomPointOnSphere()) -1.0f) < 0.001f; )
+    TEST(randomPointOnSphere,  return abs(glm::distance(vec3(0), randomPointOnSphere()) -1.0f) < 0.001f; )
+    TEST(randomPointOnSphere2, return abs(glm::distance(vec3(0), randomPointOnSphere(rand()/360)) -1.0f) < 0.001f; )
+    TEST(randomPointOnSphere3, return abs(glm::distance(vec3(0), randomPointOnSphere(rand()/360,rand()/360)) -1.0f) < 0.001f; )
 }
 
 

@@ -33,8 +33,18 @@ public:
     Gizmos gizmos;
     MarchingCubesTerrain terrain;
 
+    const static int cacheSize = 100;
+    vec3 plusCache[cacheSize];
+    vec3 minCache[cacheSize];
+
+    const float angle = radians(33.3f);
+
     TreeScreen()
     {
+        for (int i=0; i<cacheSize; i++) {
+            plusCache[i] = MATH::randomPointOnSphere(70, 180);
+            minCache[i] = MATH::randomPointOnSphere(70, -180);
+        }
         // Shader Program
         defaultShaderProgram.use();
 
@@ -61,8 +71,9 @@ public:
     mat4 modelMatrix = translate(mat4(1.0f), vec3(0, 0, 0)); // identity matrix
 
     std::string buf = std::string("F[-x[+x]++x]") + std::string(10, '\0');
-    float speed = 5;
     int applyNtimes = 5;
+    bool twoD = false;
+    float growthSize = 0.2f;
 
     void render(double deltaTime)
     {
@@ -91,6 +102,9 @@ public:
 
         terrain.render();
 
+//        for (float i=0; i <= 180.0f; i += 0.1f)
+//            gizmos.drawCube(VEC3::Y * 1.5f + MATH::randomPointOnSphere(i, -180.0f), 0.01f, vec4(i/180.0f,i/180.0,i/180.0,0));
+
 //        gizmos.drawLine(VEC3::ZERO, VEC3::X * 5.0f, COLOR::RED);
 //        gizmos.drawLine(VEC3::ZERO, VEC3::Y * 5.0f, COLOR::GREEN);
 //        gizmos.drawLine(VEC3::ZERO, VEC3::Z * 5.0f, COLOR::BLUE);
@@ -101,19 +115,17 @@ public:
         lSystem.addPattern('X', buf); // "F[-X][+X],FX"
 
         vec3 curPoint = VEC3::ZERO, oldPoint = VEC3::ZERO;
-        vec3 direction = vec3(0, 0.2f, 0);
+        vec3 direction = VEC3::Y;
 
         std::stack<vec3> memory = std::stack<vec3>();
-
-        float rotation = radians(mod(time * speed, 30.0) + 5.0);
 
         lSystem.applyNtimes(applyNtimes);
         std::string str = lSystem.getStr();
         for (int i = 0; i < str.length(); i++) {
             switch (toupper(str[i])) {
-                case 'F': oldPoint = vec3(curPoint); curPoint += (direction); gizmos.drawLine(oldPoint, curPoint, COLOR::BLACK); break;
-                case '+': direction = glm::rotate(direction, rotation, VEC3::Z); break;
-                case '-': direction = glm::rotate(direction, -rotation, VEC3::Z); break;
+                case 'F': oldPoint = vec3(curPoint); curPoint += (direction) * growthSize; gizmos.drawLine(oldPoint, curPoint, COLOR::BLACK); break;
+                case '+': direction = twoD ? glm::rotate(direction, angle, VEC3::Z) : plusCache[i % cacheSize]; break;
+                case '-': direction = twoD ? glm::rotate(direction, -angle, VEC3::Z) : minCache[i % cacheSize]; break;
                 case '[': memory.push(curPoint); memory.push(direction); break;
                 case ']':
                     if (memory.empty()) break;
@@ -147,7 +159,10 @@ public:
         //        char *buf = new char[10];
         ImGui::InputText("pattern", &buf[0], buf.size()+ 1 );
         ImGui::Text("Times to apply pattern");
-        ImGui::SliderInt("times", &applyNtimes, 1, 6);
+        ImGui::SliderInt("", &applyNtimes, 1, 6);
+        ImGui::Dummy(ImVec2(0.0f, 10.0f));
+        ImGui::SliderFloat("Growth size", &growthSize, 0, 1);
+        ImGui::Checkbox("2d instead of 3d", &twoD);
         ImGui::End();
 
         // Render dear imgui into screen
