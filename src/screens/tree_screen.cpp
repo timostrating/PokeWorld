@@ -102,6 +102,34 @@ public:
 
         terrain.render();
 
+        vec3 ringPos = VEC3::Y;
+        vec3 rotationAngle = VEC3::Z;
+        float width = 0.5f;
+
+        vec3 oldPos = VEC3::X * width;
+        oldPos = glm::rotate(oldPos, (float) mod(time/10.0f, 0.5), rotationAngle);
+        int n = 10;
+        float stepSize = 2*MATH::PI / static_cast<float>(n);
+        float v = stepSize;
+
+        for (int j=0; j <= 5; j++) {
+            for (int i = 1; i <= n; i++) {
+                vec3 newPos = vec3(cos(v)*(width - (j/15.f)), 0, sin(v)*(width - (j/15.f)));
+                newPos = glm::rotate(newPos, (float) mod(time / 10.0f, 0.5), rotationAngle);
+//                gizmos.drawLine(ringPos + oldPos, ringPos + newPos); // original circle
+
+                gizmos.drawLine(ringPos + oldPos, ringPos + newPos); // bottom
+                gizmos.drawLine(ringPos + oldPos, ringPos + oldPos + VEC3::Y); // left
+//                gizmos.drawLine(ringPos + newPos, ringPos + newPos + VEC3::Y);
+                gizmos.drawLine(ringPos + oldPos + VEC3::Y, ringPos + newPos);
+//                gizmos.drawLine(ringPos + oldPos + VEC3::Y, ringPos + newPos + VEC3::Y);
+
+                oldPos = newPos;
+                v += stepSize;
+            }
+            ringPos += VEC3::Y;
+        }
+
 //        for (float i=0; i <= 180.0f; i += 0.1f)
 //            gizmos.drawCube(VEC3::Y * 1.5f + MATH::randomPointOnSphere(i, -180.0f), 0.01f, vec4(i/180.0f,i/180.0,i/180.0,0));
 
