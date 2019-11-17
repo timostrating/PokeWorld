@@ -15,21 +15,21 @@ namespace INPUT::MOUSE
     double mousePosX = 0.0;
     double mousePosY = 0.0;
 
-    static void cursor_position_callback(GLFWwindow* _, double xpos, double ypos)
+    static void cursorPositionCallback(GLFWwindow* _, double xpos, double ypos)
     {
         mousePosX = xpos;
         mousePosY = ypos;
     }
 
-    void scroll_callback(GLFWwindow* _, double xoffset, double yoffset)
+    void scrollCallback(GLFWwindow* _, double xoffset, double yoffset)
     {
         nextScroll = yoffset;
     }
 
     void setup(GLFWwindow *window)
     {
-        glfwSetCursorPosCallback(window, cursor_position_callback);
-        glfwSetScrollCallback(window, scroll_callback);
+        glfwSetCursorPosCallback(window, cursorPositionCallback);
+        glfwSetScrollCallback(window, scrollCallback);
     }
 
     void lateUpdate()

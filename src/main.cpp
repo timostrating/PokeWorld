@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
     if (!GAME::init())
         return -1;
 
-    TreeScreen screen;
+    TriangleTestScreen screen;
     GAME::setScreen(&screen);
 
     GAME::run();

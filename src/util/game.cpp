@@ -15,10 +15,44 @@
 #include "input/keyboard.h"
 #include "input/mouse.h"
 
+enum Constants { SCREENSHOT_MAX_FILENAME = 256 };
+static GLubyte *pixels = NULL;
+static unsigned int nframes = 0;
+static unsigned int g_height = 0;
+static unsigned int g_width = 0;
+
 
 namespace GAME {
     GLFWwindow *g_window;
     Screen *screen;
+
+    /* THIS IS A COPY FROM: https://stackoverflow.com/a/14324292/7217653
+     *
+     * Take screenshot with glReadPixels and save to a file in PPM format.
+     *
+     * -   filename: file path to save to, without extension
+     * -   width: screen width in pixels
+     * -   height: screen height in pixels
+     * -   pixels: intermediate buffer to avoid repeated mallocs across multiple calls.
+     *     Contents of this buffer do not matter. May be NULL, in which case it is initialized.
+     *     You must `free` it when you won't be calling this function anymore.
+     */
+    static void screenshot(const char *filename, unsigned int width, unsigned int height, GLubyte **pixels) {
+        size_t i, j, cur;
+        const size_t format_nchannels = 3;
+        FILE *f = fopen(filename, "w");
+        fprintf(f, "P3\n%d %d\n%d\n", width, height, 255);
+        *pixels = static_cast<GLubyte *>(realloc(*pixels, format_nchannels * sizeof(GLubyte) * width * height));
+        glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, *pixels);
+        for (i = 0; i < height; i++) {
+            for (j = 0; j < width; j++) {
+                cur = format_nchannels * ((height - i - 1) * width + j);
+                fprintf(f, "%3d %3d %3d ", (*pixels)[cur], (*pixels)[cur + 1], (*pixels)[cur + 2]);
+            }
+            fprintf(f, "\n");
+        }
+        fclose(f);
+    }
 
     bool init()
     {
@@ -31,7 +65,8 @@ namespace GAME {
 
         glfwWindowHint(GLFW_RESIZABLE , 1);
         /* Create a windowed mode window and its OpenGL context */
-        g_window = glfwCreateWindow(1200, 800, "Hello World", NULL, NULL);
+        g_width = 800; g_height = 800;
+        g_window = glfwCreateWindow(g_width, g_height, "Hello World", NULL, NULL);
         if (!g_window)
         {
             glfwTerminate();
@@ -40,7 +75,7 @@ namespace GAME {
 
         /* Make the window's context current */
         glfwMakeContextCurrent(g_window);
-        glfwSwapInterval(1); // Enable vsync
+        glfwSwapInterval(1); // 1 = Enable vsync
 
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
         {
@@ -87,12 +122,22 @@ namespace GAME {
         INPUT::KEYBOARD::lateUpdate();
         INPUT::MOUSE::lateUpdate();
 
+        if (INPUT::KEYBOARD::pressed(GLFW_KEY_PAUSE)) {
+            char filename[SCREENSHOT_MAX_FILENAME];
+            snprintf(filename, SCREENSHOT_MAX_FILENAME, "tmp.%d.ppm", nframes);
+            screenshot(filename, g_width, g_height, &pixels);
+            nframes++;
+//            todo: add a free(pixels); to the destructor
+        }
+
         prevTime = curTime;
     }
 
-    void framebuffer_size_callback(GLFWwindow* _, int width, int height)
+    void framebufferSizeCallback(GLFWwindow* _, int width, int height)
     {
-//        std::cout << "framebuffer_size_callback " << width << " " << height << "\n";
+        g_width = width;
+        g_height = height;
+
         glViewport(0, 0, width, height);
         if (screen)
             screen->resize(width, height);
@@ -102,7 +147,7 @@ namespace GAME {
     {
         prevTime = glfwGetTime();
 
-        glfwSetFramebufferSizeCallback(g_window, framebuffer_size_callback);  // https://www.glfw.org/docs/latest/window_guide.html#window_fbsize
+        glfwSetFramebufferSizeCallback(g_window, framebufferSizeCallback);  // https://www.glfw.org/docs/latest/window_guide.html#window_fbsize
 
 #ifdef __EMSCRIPTEN__ // Main loop
         emscripten_set_main_loop(tick, 0, 1);
