@@ -18,5 +18,5 @@ public:
     void use();
 //    GLuint getId() { return programId; }
 
-    GLint uniformLocation(const char* name);
+    GLint uniformLocation(const char* name) const;
 };

@@ -7,6 +7,7 @@
 #include "../util/math/math.h"
 #include "../graphics/camera.h"
 #include "cmath"
+#include "../graphics/texture.h"
 
 #define LOOP3D(N, X,Y,Z, CODE) \
     for (int X=0; x<N; X++) { \
@@ -78,6 +79,7 @@ void MarchingCubesTerrain::render()
 {
 //    debugRender();
     terrainShader.use();
+    test.bind(0, terrainShader, "tex0");
 
     mat4 tmp = Camera::main->combined * modelMatrix;
     glUniformMatrix4fv(mvpId, 1, GL_FALSE, &tmp[0][0]);

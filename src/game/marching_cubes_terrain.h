@@ -6,6 +6,7 @@
 
 
 #include "../util/debug/gizmos.h"
+#include "../graphics/texture.h"
 
 // FOR MORE INFO SEE:  http://paulbourke.net/geometry/polygonise/
 class MarchingCubesTerrain
@@ -21,6 +22,7 @@ private:
     SharedMesh mesh = SharedMesh(new Mesh(0, 0)); // Internal variables are our JOB
 
     ShaderProgram terrainShader = ShaderProgram::fromAssetFiles("shaders/terrain.vert", "shaders/terrain.frag");
+    Texture test = Texture::fromAssetFile("TODO");
     GLuint mvpId;
 
     float scale = 0.3f;

@@ -37,7 +37,7 @@ public:
     vec3 plusCache[cacheSize];
     vec3 minCache[cacheSize];
 
-    const float angle = radians(33.3f);
+    const float angle = radians(18.f);
 
     TreeScreen()
     {
@@ -70,7 +70,7 @@ public:
     bool anyKeyPressed = false;
     mat4 modelMatrix = translate(mat4(1.0f), vec3(0, 0, 0)); // identity matrix
 
-    std::string buf = std::string("F[-x[+x]++x]") + std::string(10, '\0');
+    std::string buf = std::string("F[-x[+x]++x]") + std::string(1000, '\0');
     int applyNtimes = 5;
     bool twoD = false;
     float growthSize = 0.2f;
@@ -102,33 +102,33 @@ public:
 
         terrain.render();
 
-        vec3 ringPos = VEC3::Y;
-        vec3 rotationAngle = VEC3::Z;
-        float width = 0.5f;
-
-        vec3 oldPos = VEC3::X * width;
-        oldPos = glm::rotate(oldPos, (float) mod(time/10.0f, 0.5), rotationAngle);
-        int n = 10;
-        float stepSize = 2*MATH::PI / static_cast<float>(n);
-        float v = stepSize;
-
-        for (int j=0; j <= 5; j++) {
-            for (int i = 1; i <= n; i++) {
-                vec3 newPos = vec3(cos(v)*(width - (j/15.f)), 0, sin(v)*(width - (j/15.f)));
-                newPos = glm::rotate(newPos, (float) mod(time / 10.0f, 0.5), rotationAngle);
-//                gizmos.drawLine(ringPos + oldPos, ringPos + newPos); // original circle
-
-                gizmos.drawLine(ringPos + oldPos, ringPos + newPos); // bottom
-                gizmos.drawLine(ringPos + oldPos, ringPos + oldPos + VEC3::Y); // left
-//                gizmos.drawLine(ringPos + newPos, ringPos + newPos + VEC3::Y);
-                gizmos.drawLine(ringPos + oldPos + VEC3::Y, ringPos + newPos);
-//                gizmos.drawLine(ringPos + oldPos + VEC3::Y, ringPos + newPos + VEC3::Y);
-
-                oldPos = newPos;
-                v += stepSize;
-            }
-            ringPos += VEC3::Y;
-        }
+    //        vec3 ringPos = VEC3::Y;
+//        vec3 rotationAngle = VEC3::Z;
+//        float width = 0.5f;
+//
+//        vec3 oldPos = VEC3::X * width;
+//        oldPos = glm::rotate(oldPos, (float) mod(time/10.0f, 0.5), rotationAngle);
+//        int n = 10;
+//        float stepSize = 2*MATH::PI / static_cast<float>(n);
+//        float v = stepSize;
+//
+//        for (int j=0; j <= 5; j++) {
+//            for (int i = 1; i <= n; i++) {
+//                vec3 newPos = vec3(cos(v)*(width - (j/15.f)), 0, sin(v)*(width - (j/15.f)));
+//                newPos = glm::rotate(newPos, (float) mod(time / 10.0f, 0.5), rotationAngle);
+////                gizmos.drawLine(ringPos + oldPos, ringPos + newPos); // original circle
+//
+//                gizmos.drawLine(ringPos + oldPos, ringPos + newPos); // bottom
+//                gizmos.drawLine(ringPos + oldPos, ringPos + oldPos + VEC3::Y); // left
+////                gizmos.drawLine(ringPos + newPos, ringPos + newPos + VEC3::Y);
+//                gizmos.drawLine(ringPos + oldPos + VEC3::Y, ringPos + newPos);
+////                gizmos.drawLine(ringPos + oldPos + VEC3::Y, ringPos + newPos + VEC3::Y);
+//
+//                oldPos = newPos;
+//                v += stepSize;
+//            }
+//            ringPos += VEC3::Y;
+//        }
 
 //        for (float i=0; i <= 180.0f; i += 0.1f)
 //            gizmos.drawCube(VEC3::Y * 1.5f + MATH::randomPointOnSphere(i, -180.0f), 0.01f, vec4(i/180.0f,i/180.0,i/180.0,0));
@@ -152,8 +152,12 @@ public:
         for (int i = 0; i < str.length(); i++) {
             switch (toupper(str[i])) {
                 case 'F': oldPoint = vec3(curPoint); curPoint += (direction) * growthSize; gizmos.drawLine(oldPoint, curPoint, COLOR::BLACK); break;
-                case '+': direction = twoD ? glm::rotate(direction, angle, VEC3::Z) : plusCache[i % cacheSize]; break;
-                case '-': direction = twoD ? glm::rotate(direction, -angle, VEC3::Z) : minCache[i % cacheSize]; break;
+                case '+': direction = glm::rotate(direction, angle, VEC3::Z); break;
+                case '-': direction = glm::rotate(direction, -angle, VEC3::Z); break;
+                case '/': direction = glm::rotate(direction, angle, VEC3::X); break;
+                case '\\': direction = glm::rotate(direction, -angle, VEC3::X); break;
+                case '!': direction = twoD ? vec3(plusCache[i % cacheSize].x, plusCache[i % cacheSize].y, 0) : plusCache[i % cacheSize]; break;
+                case '&': direction = twoD ? vec3(minCache[i % cacheSize].x, minCache[i % cacheSize].y, 0) : minCache[1 % cacheSize]; break;
                 case '[': memory.push(curPoint); memory.push(direction); break;
                 case ']':
                     if (memory.empty()) break;
@@ -179,6 +183,8 @@ public:
         ImGui::Text(" F : Move forward");
         ImGui::Text(" X : Replace this X with the pattern");
         ImGui::Text(" + : Rotate right \n - : Rotate left");
+        if(!twoD) ImGui::Text(" / : Yaw right \n \\ : Yaw left");
+        ImGui::Text(" ! : Random rightish \n & : Random leftisch");
         ImGui::Text(" [ : Store current location \n ] : Pop last stored location");
         ImGui::Dummy(ImVec2(0.0f, 10.0f));
         ImGui::Separator();
