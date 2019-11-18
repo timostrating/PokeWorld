@@ -18,8 +18,8 @@
 enum Constants { SCREENSHOT_MAX_FILENAME = 256 };
 static GLubyte *pixels = NULL;
 static unsigned int nframes = 0;
-static unsigned int g_height = 0;
-static unsigned int g_width = 0;
+static unsigned int g_width = 800;
+static unsigned int g_height = 800;
 
 
 namespace GAME {
@@ -65,7 +65,6 @@ namespace GAME {
 
         glfwWindowHint(GLFW_RESIZABLE , 1);
         /* Create a windowed mode window and its OpenGL context */
-        g_width = 800; g_height = 800;
         g_window = glfwCreateWindow(g_width, g_height, "Hello World", NULL, NULL);
         if (!g_window)
         {
@@ -162,5 +161,6 @@ namespace GAME {
     {
         screen = newScreen;
         screen->setup(g_window);
+        screen->resize(g_width, g_height);
     }
 }

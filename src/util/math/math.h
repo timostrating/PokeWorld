@@ -23,10 +23,18 @@ namespace MATH
         return static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
     }
 
+    inline vec2 randomVec2() { return vec2(random(), random()); }
+    inline vec3 randomVec3() { return vec3(random(), random(), random()); }
+
+
     inline float random(const float min, const float max)
     {
         return min + static_cast <float> (rand()) /  static_cast <float> (RAND_MAX / (max - min));
     }
+
+    inline vec2 randomVec2(const float min, const float max) { return vec2(random(min, max), random(min, max)); }
+    inline vec3 randomVec3(const float min, const float max) { return vec3(random(min, max), random(min, max), random(min, max)); }
+
 
     /// This is based on Method 10. Polar from:
     /// http://extremelearning.com.au/how-to-generate-uniformly-random-points-on-n-spheres-and-n-balls/
