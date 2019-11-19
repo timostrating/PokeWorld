@@ -121,7 +121,7 @@ namespace GAME {
         INPUT::KEYBOARD::lateUpdate();
         INPUT::MOUSE::lateUpdate();
 
-        if (INPUT::KEYBOARD::pressed(GLFW_KEY_PAUSE)) {
+        if (INPUT::KEYBOARD::pressed(GLFW_KEY_F12)) {
             char filename[SCREENSHOT_MAX_FILENAME];
             snprintf(filename, SCREENSHOT_MAX_FILENAME, "tmp.%d.ppm", nframes);
             screenshot(filename, g_width, g_height, &pixels);

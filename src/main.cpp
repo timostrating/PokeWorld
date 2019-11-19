@@ -8,7 +8,7 @@
 #include "screens/model_indices_test_screen.cpp"
 #include "screens/quad_model_test_screen.cpp"
 #include "screens/tree_screen.cpp"
-#include "screens/stars_screen.cpp"
+#include "screens/everyday_screen.cpp"
 #include "util/interfaces/game.h"
 
 #include "util/external/unit_test.hpp"
@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
     if (!GAME::init())
         return -1;
 
-    StarsScreen screen;
+    EverydayScreen screen;
     GAME::setScreen(&screen);
 
     GAME::run();

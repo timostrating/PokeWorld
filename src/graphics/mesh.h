@@ -18,7 +18,9 @@ class Mesh
     bool useIndicies = true;
 
 public:
-    // delegating constructor
+    static Mesh* quad();
+    static Mesh* triangle();
+    static Mesh* cube();
     Mesh(unsigned int nrOfVerts, unsigned int nrOfIndices) : nrOfVerts(nrOfVerts), nrOfIndices(nrOfIndices) {};
 
     std::vector<float> vertices = {};
