@@ -17,36 +17,44 @@ using namespace glm;
 
 class EverydayScreen : public Screen
 {
-public:
+    constexpr static char vertSource[] = "#version 300 es\n"
+                        "layout (location = 0) in vec3 a_pos;"
+
+                        "uniform mat4 MVP;"
+
+                        "out vec2 v_pos;"
+
+                        "void main() {"
+                            "v_pos = a_pos.xy;"
+                            "gl_Position = MVP * vec4(a_pos, 1);"
+                        "}";
+
+    constexpr static char fragSource[] = "#version 300 es\n"
+                        "precision mediump float;"
+                        "in vec2 v_pos;"
+
+                        "uniform float u_time;"
+                        "out vec4 outputColor;"
+
+                        "void main() {"
+                             "outputColor = vec4( abs(sin(v_pos.x * 50.0 + u_time)), abs(sin(v_pos.x * 50.0 - u_time * 1.33333)) + abs(sin(v_pos.y * 50.0 - u_time)), abs(sin(v_pos.y * 50.0 + u_time)), 1);"
+                        "}";
+
     FlyingCamera camera = FlyingCamera();
-    GLint MVPLocation;
-    ShaderProgram shader = ShaderProgram::fromAssetFiles("shaders/library/flat_color.vert", "shaders/library/flat_color.frag");
+    GLint MVPLocation, timeLocation;
+
+    ShaderProgram shader = ShaderProgram(vertSource, fragSource);
 
     Gizmos gizmos;
-    SharedMesh mesh = SharedMesh(new Mesh(6, 4*3));
+    SharedMesh mesh = SharedMesh(Mesh::quad());
 
+public:
     EverydayScreen()
     {
-        // Shader Program
         shader.use();
-        float h = 0.1f;
-        float w = 0.1f;
-        float s = 1.5f;
 
-        mesh->vertices.insert(mesh->vertices.begin(), {
-           0, s, 0,
-           -1, -h, 0,
-           +w, -3*h, 0,
-           0, -s, 0,
-           1, +h, 0,
-           -w, +3*h, 0
-        });
-
-        mesh->indicies.insert(mesh->indicies.begin(), {0, 5, 1,  1, 5, 2,  2, 3, 4,  4, 2, 5});
-
-        // Model View Projection
         MVPLocation = shader.uniformLocation("MVP");
-        glUniform3f(shader.uniformLocation("color"), 0.0f/255.0, 0.0f/255.0, 0.0f/255.0);
+        timeLocation = shader.uniformLocation("u_time");
 
         VertexBuffer::uploadSingleMesh(mesh);
     }
@@ -54,7 +62,8 @@ public:
     void setup(GLFWwindow* window) {}
 
     double time = 0;
-    mat4 modelMatrix = translate(mat4(1.0f), vec3(0, 0, 0));
+    float screenFit = 2.0f * tan(45.0f);
+    mat4 modelMatrix = scale(translate(mat4(1.0f), vec3(0, 0, 0)), screenFit * VEC3::ONE);
 
     void render(double deltaTime)
     {
@@ -66,11 +75,12 @@ public:
 
         shader.use();
 
-        camera.position = vec3(sin(time) *5,  0,  cos(time) *5);
+        camera.position = vec3(0, 0, -2);
         camera.lookAt(VEC3::ZERO);
         camera.Camera::update();
 
         glUniformMatrix4fv( MVPLocation, 1, GL_FALSE, &(camera.combined * modelMatrix)[0][0]);
+        glUniform1f(timeLocation, time);
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////// TEST
 
