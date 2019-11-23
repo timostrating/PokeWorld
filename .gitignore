@@ -1,7 +1,6 @@
 build/gh-pages
 /external
 out
-lib
 CMakeFiles
 cmake-build-debug
 CMakeCache.txt

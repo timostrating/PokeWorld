@@ -123,7 +123,7 @@ namespace GAME {
 
         if (INPUT::KEYBOARD::pressed(GLFW_KEY_F12)) {
             char filename[SCREENSHOT_MAX_FILENAME];
-            snprintf(filename, SCREENSHOT_MAX_FILENAME, "tmp.%d.ppm", nframes);
+            snprintf(filename, SCREENSHOT_MAX_FILENAME, "tmp.%05d.ppm", nframes);
             screenshot(filename, g_width, g_height, &pixels);
             nframes++;
 //            todo: add a free(pixels); to the destructor
