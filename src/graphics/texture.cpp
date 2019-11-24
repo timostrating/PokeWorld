@@ -5,6 +5,7 @@
 #include <iostream>
 #include "texture.h"
 #include "shader_program.h"
+#include "../util/external/stb_image.hpp"
 
 Texture::Texture()
 {
@@ -22,11 +23,21 @@ Texture::Texture()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     // Black/white checkerboard
-    float pixels[] = {
-            0.2f, 0.2f, 0.2f,   0.8f, 0.8f, 0.8f,
-            0.8f, 0.8f, 0.8f,   0.2f, 0.2f, 0.2f
-    };
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 2, 2, 0, GL_RGB, GL_FLOAT, pixels);
+//    float pixels[] = {
+//            0.2f, 0.2f, 0.2f,   0.8f, 0.8f, 0.8f,
+//            0.8f, 0.8f, 0.8f,   0.2f, 0.2f, 0.2f
+//    };
+//    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 2, 2, 0, GL_RGB, GL_FLOAT, pixels);
+
+    int width, height, n;
+    unsigned char *image = stbi_load("../../../../assets/textures/test/img_cheryl.jpg", &width, &height, &n, 0);
+    // ... process data if not NULL ...
+    // ... x = width, y = height, n = # 8-bit components per pixel ...
+    // ... replace '0' with '1'..'4' to force that many components per pixel
+    // ... but 'n' will always be the number that it would have been if you said 0
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+
+    // TODO: stbi_image_free(image);
 
     glGenerateMipmap(GL_TEXTURE_2D);
 }
