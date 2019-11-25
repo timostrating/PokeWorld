@@ -45,13 +45,11 @@ class EverydayScreen : public Screen
         void main() {
             outputColor = texture(u_texture, v_uv);
 
-            float v = pow(sin(u_time), 7.0); if (v < 0.0) v = 0.0;
-            float f = pow(cos(u_time), 7.0); if (f < 0.0) f = 0.0;
+            float v = sin(0.5 * u_time);
 
-            vec4 rValue = texture(u_texture, v_uv - vec2(0, v * 0.1));
-            vec4 gValue = texture(u_texture, v_uv - vec2(0, f * 0.1));
-            vec4 bValue = texture(u_texture, v_uv - vec2(0, 0));
-
+            vec4 rValue = texture(u_texture, v_uv - vec2(v * sin(v_uv.x - 0.5) * 0.9, v * sin(v_uv.y - 0.5) * 0.7));
+            vec4 gValue = texture(u_texture, v_uv - vec2(v * sin(v_uv.x - 0.5) * 0.8, v * sin(v_uv.y - 0.5) * 0.8));
+            vec4 bValue = texture(u_texture, v_uv - vec2(v * sin(v_uv.x - 0.5) * 0.7, v * sin(v_uv.y - 0.5) * 0.9));
             outputColor = vec4(rValue.r, gValue.g, bValue.b, 1.0);
         })glsl";
 
