@@ -13,10 +13,13 @@ class Texture
 
 private:
     GLuint textureId;
+    unsigned char *imagePtr;
 
 public:
     static Texture fromAssetFile(const char *imgPath);
-    Texture();
+    static Texture testCheckerboard();
+
+    Texture(const char *imgPath);
     ~Texture();
 
     void bind(unsigned int textureI);
