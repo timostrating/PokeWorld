@@ -25,12 +25,16 @@ class EverydayScreen : public Screen
         layout (location = 0) in vec3 a_pos;
 
         uniform mat4 MVP;
-
-        out vec2 v_uv;
+        uniform vec2 u_uv;
+        uniform sampler2D u_texture;
 
         void main() {
-            v_uv = 1.0 - (a_pos.xy + 1.0) / 2.0;
-            gl_Position = MVP * vec4(a_pos, 1.0);
+            vec3 pos = a_pos;
+            if (pos.y > 0.0) {
+                vec3 v = texture(u_texture, u_uv).rgb;
+                pos.y = 30.0 * (v.r + v.g + v.b);
+            }
+            gl_Position = MVP * vec4(pos, 1.0);
         })glsl";
 
     constexpr static char fragSource[] = R"glsl(#version 300 es
@@ -38,19 +42,20 @@ class EverydayScreen : public Screen
 
         out vec4 outputColor;
 
-        in vec2 v_uv;
-        uniform sampler2D u_texture;
         uniform float u_time;
+        uniform vec3 u_color;
+        uniform vec2 u_uv;
+        uniform sampler2D u_texture;
 
         void main() {
-            outputColor = texture(u_texture, v_uv);
+            vec3 v = vec3(.8, .8, .8);
+            vec3 t = texture(u_texture, u_uv).rgb;
+            if (t.r < 0.7) { v = vec3(t.r, 0.6, 0.6); }
+            if (t.r < 0.5) { v = vec3(0.4, t.g, 0.4); }
+            if (t.r < 0.3) { v = vec3(0.2, 0.2, t.b); }
 
-            float v = sin(0.5 * u_time);
-
-            vec4 rValue = texture(u_texture, v_uv - vec2(v * sin(v_uv.x - 0.5) * 0.9, v * sin(v_uv.y - 0.5) * 0.7));
-            vec4 gValue = texture(u_texture, v_uv - vec2(v * sin(v_uv.x - 0.5) * 0.8, v * sin(v_uv.y - 0.5) * 0.8));
-            vec4 bValue = texture(u_texture, v_uv - vec2(v * sin(v_uv.x - 0.5) * 0.7, v * sin(v_uv.y - 0.5) * 0.9));
-            outputColor = vec4(rValue.r, gValue.g, bValue.b, 1.0);
+            v += distance(u_uv, vec2(0.5, 0.5)) * 0.7;
+            outputColor = vec4(v, 1.0);
         })glsl";
 
 
@@ -58,10 +63,10 @@ class EverydayScreen : public Screen
     GLint MVPLocation;
 
     ShaderProgram shader = ShaderProgram(vertSource, fragSource);
-    Texture texture = Texture::fromAssetFile("textures/pokemon-stadium.png");
+    Texture texture = Texture::fromAssetFile("/textures/heightmap2.jpg");
 
     Gizmos gizmos;
-    SharedMesh mesh = SharedMesh(Mesh::quad());
+    SharedMesh mesh = SharedMesh(Mesh::cube());
 
 public:
     EverydayScreen()
@@ -80,15 +85,15 @@ public:
     void render(double deltaTime)
     {
         time += deltaTime;
-        glClearColor(104.0/255.0, 192.0/255.0, 105.0/255.0, 1.0f);
+        glClearColor(209.0/255.0, 222.0/255.0, 222.0/255.0, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////// CAMERA
 
         shader.use();
 
-        camera.position = vec3(0, 0, -1.0 / tanf(radians(22.5)));
-        camera.lookAt(VEC3::ZERO);
+        camera.position = vec3(sin(time * 0.2f), 0.5, cos(time * 0.2f)); // -1.0 / tanf(radians(22.5))
+        camera.lookAt(0.2f * VEC3::Y);
         camera.Camera::update();
 
         texture.bind(0, shader, "u_texture");
@@ -96,8 +101,14 @@ public:
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////// TEST
 
-        glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &(camera.combined * (translate(mat4(1.0f), vec3(0, 0, 0))) )[0][0]);
-        mesh->render();
+        for (float x=-1; x<1.0; x += 0.01)
+            for (float z=-1; z<1.0; z += 0.01)
+            {
+                glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &(camera.combined * (scale(translate(mat4(1.0f), vec3(x, 0, z)), 0.005f * VEC3::ONE)) )[0][0]);
+                glUniform2f(shader.uniformLocation("u_uv"), (x + 1.0) / 2.0, (z + 1.0) / 2.0);
+                glUniform3f(shader.uniformLocation("u_color"), abs(x), 0.0, abs(z));
+                mesh->render();
+            }
     }
 
     void resize(int width, int height)

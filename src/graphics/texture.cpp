@@ -20,8 +20,8 @@ Texture::Texture(const char *imgPath)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     // Filtering
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // GL_NEAREST or GL_LINEAR
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     if (imgPath == nullptr)
     {
@@ -62,7 +62,7 @@ void Texture::bind(const unsigned int textureI, const ShaderProgram &shader, con
 
 Texture Texture::fromAssetFile(const char *imgPath)
 {
-    return Texture((&std::string("../../../../assets/").append(imgPath))->c_str()); // TODO
+    return Texture((&std::string("../../../../assets/").append(imgPath))->c_str());
 }
 
 Texture Texture::testCheckerboard()
