@@ -16,10 +16,10 @@ private:
     unsigned char *imagePtr;
 
 public:
-    static Texture fromAssetFile(const char *imgPath);
+    static Texture fromAssetFile(const char *imgPath, GLint textureWrapping = GL_REPEAT, GLint textureInterpolation = GL_LINEAR);
     static Texture testCheckerboard();
 
-    Texture(const char *imgPath);
+    Texture(const char *imgPath, GLint textureWrapping = GL_REPEAT, GLint textureInterpolation = GL_LINEAR);
     ~Texture();
 
     void bind(unsigned int textureI);

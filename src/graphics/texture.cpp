@@ -8,20 +8,20 @@
 #include "../util/external/stb_image.hpp"
 #include "../util/debug/nice_error.h"
 
-Texture::Texture(const char *imgPath)
+Texture::Texture(const char *imgPath, GLint textureWrapping, GLint textureInterpolation)
 {
     glGenTextures(1, &textureId);
     std::cout << "Texture " << textureId << " " << imgPath << " created\n";
 
     bind(0); // TODO: support multiple textures
 
-    // Wraping
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // Wrapping
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, textureWrapping); // GL_REPEAT or GL_MIRRORED_REPEAT or GL_CLAMP_TO_EDGE or GL_CLAMP_TO_BORDER
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, textureWrapping);
 
     // Filtering
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); // GL_NEAREST or GL_LINEAR
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, textureInterpolation); // GL_REPEAT or GL_LINEAR
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, textureInterpolation); // GL_NEAREST_MIPMAP_NEAREST or GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR or GL_LINEAR_MIPMAP_LINEAR
 
     if (imgPath == nullptr)
     {
@@ -60,9 +60,9 @@ void Texture::bind(const unsigned int textureI, const ShaderProgram &shader, con
 }
 
 
-Texture Texture::fromAssetFile(const char *imgPath)
+Texture Texture::fromAssetFile(const char *imgPath, GLint a, GLint b)
 {
-    return Texture((&std::string("../../../../assets/").append(imgPath))->c_str());
+    return Texture((&std::string("../../../../assets/").append(imgPath))->c_str(), a, b);
 }
 
 Texture Texture::testCheckerboard()
