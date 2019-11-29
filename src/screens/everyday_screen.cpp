@@ -26,36 +26,96 @@ class EverydayScreen : public Screen
 
         uniform mat4 MVP;
 
-        out vec2 v_uv;
-
         void main() {
-            v_uv =  -1.0 * (a_pos.xy + 1.0) / 2.0;
             gl_Position = MVP * vec4(a_pos, 1.0);
         })glsl";
 
     constexpr static char fragSource[] = R"glsl(#version 300 es
         precision mediump float;
+        #define PI 3.14159265358979
 
         out vec4 outputColor;
 
-        in vec2 v_uv;
         uniform sampler2D u_texture;
         uniform float u_time;
 
-        void main() {
-            vec4 c = texture(u_texture, v_uv);
-            float v = abs(sin(u_time) / 20.0) + 1.0/255.0;
-            if (c.r < v && c.g > (1.0 - v) && c.b < v )
-                discard;
+        vec3 getNormal(in vec2 sphereCenter, in float sphereRadius, in vec2 point){
+            // Need to figure out how far the current point is from the center to lerp it
+            float distFromCenter = distance(point, sphereCenter);
+            float weight = distFromCenter/sphereRadius;
 
-            outputColor = c;
+            // Z component is zero since at the edge the normal will be on the XY plane
+            vec3 edgeNormal = vec3(point - sphereCenter, 0);
+            edgeNormal = normalize(edgeNormal);
+
+            // We know the normal at the center of the sphere points directly at the viewer,
+            // so we can use that in our mix/lerp.
+            return mix(vec3(0,0,1), edgeNormal, weight);
+        }
+
+        void main() {
+            if (sqrt(pow(gl_FragCoord.x - 400.0, 2.0) + pow(gl_FragCoord.y - 400.0, 2.0)) <= 200.0 ) {
+                vec3 lightdir = normalize(vec3(cos(u_time), 0.0, sin(u_time)));
+
+                vec3 normal = getNormal(vec2(400.0, 400.0), 200.0f, gl_FragCoord.xy);
+
+                vec3 northVector = vec3(0, 1, 0);
+                vec3 eastVector  = vec3(1, 0, 0);
+                vec3 vertPoint = normal;
+
+
+                float lat = acos(dot(northVector, normal));
+                float v = lat / PI;
+                float u;
+
+                float lon = (acos( dot( vertPoint, eastVector) / sin(lat))) / (2.0 * PI);
+                if(dot(cross(northVector, eastVector), vertPoint) > 0.0){
+                    u = lon;
+                }
+                else{
+                    u = 1.0 - lon;
+                }
+
+//                u -= u_time * 0.05;
+                float light = clamp(dot(normal, lightdir), 0.0, 1.0);
+                light *= 1.1;
+                light += 0.05;
+
+                vec4 texCol = texture(u_texture, vec2(u,v)) * 4.0f;
+
+                outputColor = light * texCol * vec4(255.0/255.0, 142.0/255.0, 74.0/255.0, 1.0);
+
+            } else {
+                float t = sqrt(pow(gl_FragCoord.x - 400.0, 2.0) + pow(gl_FragCoord.y - 400.0, 2.0)) / sqrt(pow(400.0, 2.0) + pow(400.0, 2.0));
+                vec4 colorA = vec4( 4.0/255.0,  8.0/255.0, 14.0/255.0, 1.0);
+                vec4 colorB = vec4(20.0/255.0, 66.0/255.0, 92.0/255.0, 1.0);
+
+                     if (abs(gl_FragCoord.x - 373.0) < 1.0 && abs(gl_FragCoord.y - 111.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
+                else if (abs(gl_FragCoord.x - 113.0) < 1.0 && abs(gl_FragCoord.y - 382.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
+                else if (abs(gl_FragCoord.x - 182.0) < 1.0 && abs(gl_FragCoord.y - 773.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
+                else if (abs(gl_FragCoord.x - 234.0) < 1.0 && abs(gl_FragCoord.y - 317.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
+                else if (abs(gl_FragCoord.x - 681.0) < 1.0 && abs(gl_FragCoord.y - 736.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
+                else if (abs(gl_FragCoord.x - 789.0) < 1.0 && abs(gl_FragCoord.y - 612.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
+                else if (abs(gl_FragCoord.x - 278.0) < 1.0 && abs(gl_FragCoord.y - 171.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
+                else if (abs(gl_FragCoord.x - 78.0)  < 1.0 && abs(gl_FragCoord.y - 571.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
+                else if (abs(gl_FragCoord.x - 48.0)  < 1.0 && abs(gl_FragCoord.y - 121.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
+                else if (abs(gl_FragCoord.x - 791.0) < 1.0 && abs(gl_FragCoord.y - 91.0)  < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
+                else if (abs(gl_FragCoord.x - 123.0) < 1.0 && abs(gl_FragCoord.y - 571.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
+                else if (abs(gl_FragCoord.x - 673.0) < 1.0 && abs(gl_FragCoord.y - 792.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
+                else if (abs(gl_FragCoord.x - 571.0) < 1.0 && abs(gl_FragCoord.y - 71.0)  < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
+                else if (abs(gl_FragCoord.x - 131.0) < 1.0 && abs(gl_FragCoord.y - 123.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
+                else if (abs(gl_FragCoord.x - 780.0) < 1.0 && abs(gl_FragCoord.y - 221.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
+                else {
+                    outputColor = mix(colorB, colorA, t);
+                }
+            }
         })glsl";
 
     FlyingCamera camera = FlyingCamera();
     GLint MVPLocation;
 
     ShaderProgram shader = ShaderProgram(vertSource, fragSource);
-    Texture texture = Texture::fromAssetFile("textures/snowman-svg-128px.jpg", GL_REPEAT, GL_NEAREST);
+    Texture texture = Texture::fromAssetFile("textures/heightmap2.jpg");
 
     Gizmos gizmos;
     SharedMesh quad = SharedMesh(Mesh::quad());
@@ -80,7 +140,7 @@ public:
         time += deltaTime;
         glUniform1f(shader.uniformLocation("u_time"), time);
 
-        glClearColor(222.0/255.0, 222.0/255.0, 232.0/255.0, 1.0f);
+        glClearColor( 4.0/255.0,  8.0/255.0, 14.0/255.0, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if (anyKeyPressed)
@@ -88,7 +148,7 @@ public:
         else {
             if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB))
                 anyKeyPressed = true;
-            camera.position = vec3(0, 0, -1.0f / tanf(radians(22.5f)));
+            camera.position = vec3(0, 0, + -1.0f / tanf(radians(22.5f)));
             camera.lookAt(VEC3::ZERO);
             camera.Camera::update();
         }
@@ -98,6 +158,10 @@ public:
         shader.use();
         glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &(camera.combined * translate(mat4(1.0f), vec3(0, 0, 0)) )[0][0]);
         quad->render();
+
+    }
+
+    void drawStar() {
 
     }
 
