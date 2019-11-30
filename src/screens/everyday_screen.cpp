@@ -30,6 +30,14 @@ class EverydayScreen : public Screen
             gl_Position = MVP * vec4(a_pos, 1.0);
         })glsl";
 
+
+
+
+
+
+
+
+
     constexpr static char fragSource[] = R"glsl(#version 300 es
         precision mediump float;
         #define PI 3.14159265358979
@@ -37,6 +45,7 @@ class EverydayScreen : public Screen
         out vec4 outputColor;
 
         uniform sampler2D u_texture;
+        uniform sampler2D u_texture2;
         uniform float u_time;
 
         vec3 getNormal(in vec2 sphereCenter, in float sphereRadius, in vec2 point){
@@ -53,8 +62,14 @@ class EverydayScreen : public Screen
             return mix(vec3(0,0,1), edgeNormal, weight);
         }
 
+        float rand(vec2 co){
+            return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+        }
+
         void main() {
-            if (sqrt(pow(gl_FragCoord.x - 400.0, 2.0) + pow(gl_FragCoord.y - 400.0, 2.0)) <= 200.0 ) {
+            float size = sqrt(pow(gl_FragCoord.x - 400.0, 2.0) + pow(gl_FragCoord.y - 400.0, 2.0));
+
+            if (size <= 210.0 ) {
                 vec3 lightdir = normalize(vec3(cos(u_time), 0.0, sin(u_time)));
 
                 vec3 normal = getNormal(vec2(400.0, 400.0), 200.0f, gl_FragCoord.xy);
@@ -76,38 +91,39 @@ class EverydayScreen : public Screen
                     u = 1.0 - lon;
                 }
 
-//                u -= u_time * 0.05;
+                u -= u_time * 0.02;
                 float light = clamp(dot(normal, lightdir), 0.0, 1.0);
-                light *= 1.1;
-                light += 0.05;
+                light *= 1.5;
+                light += 0.1;
 
-                vec4 texCol = texture(u_texture, vec2(u,v)) * 4.0f;
+                vec4 texCol = texture(u_texture, vec2(u,v));
 
-                outputColor = light * texCol * vec4(255.0/255.0, 142.0/255.0, 74.0/255.0, 1.0);
+                if (texCol.b > texCol.r + texCol.g)
+                    texCol = 0.4 * texCol + 0.8 * light * vec4(16.0/255.0, 30.0/255.0, 40.0/255.0, 1.0);
+
+                if (size <= 200.0)
+                    outputColor = light * texCol + light * 0.2 * texture(u_texture2, vec2(u - u_time * 0.02, v)) + vec4(.0,.0,.0,1.0);
+
+                else {
+                    float t = (size - 200.0) / 10.0;
+                    vec3 colorA = vec3(253.0/255.0, 253.0/255.0, 253.0/255.0);
+                    vec3 colorB = vec3(20.0/255.0, 66.0/255.0, 92.0/255.0);
+
+                    light -= 0.4;
+                    light *= 0.2;
+
+                    outputColor = vec4(mix(colorA, colorB, t), light);
+                }
 
             } else {
                 float t = sqrt(pow(gl_FragCoord.x - 400.0, 2.0) + pow(gl_FragCoord.y - 400.0, 2.0)) / sqrt(pow(400.0, 2.0) + pow(400.0, 2.0));
-                vec4 colorA = vec4( 4.0/255.0,  8.0/255.0, 14.0/255.0, 1.0);
-                vec4 colorB = vec4(20.0/255.0, 66.0/255.0, 92.0/255.0, 1.0);
+                vec3 colorA = vec3( 7.0/255.0, 16.0/255.0, 21.0/255.0);
+                vec3 colorB = vec3(24.0/255.0, 42.0/255.0, 55.0/255.0);
 
-                     if (abs(gl_FragCoord.x - 373.0) < 1.0 && abs(gl_FragCoord.y - 111.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
-                else if (abs(gl_FragCoord.x - 113.0) < 1.0 && abs(gl_FragCoord.y - 382.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
-                else if (abs(gl_FragCoord.x - 182.0) < 1.0 && abs(gl_FragCoord.y - 773.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
-                else if (abs(gl_FragCoord.x - 234.0) < 1.0 && abs(gl_FragCoord.y - 317.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
-                else if (abs(gl_FragCoord.x - 681.0) < 1.0 && abs(gl_FragCoord.y - 736.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
-                else if (abs(gl_FragCoord.x - 789.0) < 1.0 && abs(gl_FragCoord.y - 612.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
-                else if (abs(gl_FragCoord.x - 278.0) < 1.0 && abs(gl_FragCoord.y - 171.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
-                else if (abs(gl_FragCoord.x - 78.0)  < 1.0 && abs(gl_FragCoord.y - 571.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
-                else if (abs(gl_FragCoord.x - 48.0)  < 1.0 && abs(gl_FragCoord.y - 121.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
-                else if (abs(gl_FragCoord.x - 791.0) < 1.0 && abs(gl_FragCoord.y - 91.0)  < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
-                else if (abs(gl_FragCoord.x - 123.0) < 1.0 && abs(gl_FragCoord.y - 571.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
-                else if (abs(gl_FragCoord.x - 673.0) < 1.0 && abs(gl_FragCoord.y - 792.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
-                else if (abs(gl_FragCoord.x - 571.0) < 1.0 && abs(gl_FragCoord.y - 71.0)  < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
-                else if (abs(gl_FragCoord.x - 131.0) < 1.0 && abs(gl_FragCoord.y - 123.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
-                else if (abs(gl_FragCoord.x - 780.0) < 1.0 && abs(gl_FragCoord.y - 221.0) < 1.0) { outputColor = vec4(0.8, 0.8, 0.9, 1.0); }
-                else {
-                    outputColor = mix(colorB, colorA, t);
-                }
+                vec3 v = vec3(.0);
+                if (abs(rand(vec2(gl_FragCoord.x, gl_FragCoord.y))) < 0.0002) { v = vec3(0.5, 0.5, 0.8); }
+
+                outputColor = vec4(mix(colorB, colorA, t) + v, 1.0);
             }
         })glsl";
 
@@ -115,7 +131,8 @@ class EverydayScreen : public Screen
     GLint MVPLocation;
 
     ShaderProgram shader = ShaderProgram(vertSource, fragSource);
-    Texture texture = Texture::fromAssetFile("textures/heightmap2.jpg");
+    Texture texture = Texture::fromAssetFile("textures/earth.jpg");
+    Texture texture2 = Texture::fromAssetFile("textures/turbulance.jpg");
 
     Gizmos gizmos;
     SharedMesh quad = SharedMesh(Mesh::quad());
@@ -126,6 +143,7 @@ public:
         shader.use();
         MVPLocation = shader.uniformLocation("MVP");
         texture.bind(0, shader, "u_texture");
+        texture2.bind(1, shader, "u_texture2");
 
         VertexBuffer::uploadSingleMesh(quad);
     }
@@ -140,7 +158,7 @@ public:
         time += deltaTime;
         glUniform1f(shader.uniformLocation("u_time"), time);
 
-        glClearColor( 4.0/255.0,  8.0/255.0, 14.0/255.0, 1.0f);
+        glClearColor(18.0/255.0, 32.0/255.0, 42.0/255.0, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if (anyKeyPressed)
