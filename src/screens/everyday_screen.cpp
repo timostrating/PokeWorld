@@ -44,30 +44,29 @@ class EverydayScreen : public Screen
             return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
         }
 
-        #define t u_time * 0.25
+        #define t u_time * 0.125
         #define r vec2(800.0, 800.0)
 
         void main() {
-            vec3 c;
-            float l, z= 4.2 + 0.5 * abs(cos(t));
-            for(int i=0; i<6; i++) {
+            vec3 c = vec3(0.);
+            float l = 1.;
+            float z= 4.2 + 0.5 * abs(cos(t));
+            for(int i=0; i<3; i++) {
                 vec2 uv = gl_FragCoord.xy/r;
                 vec2 p = (gl_FragCoord.xy/r - 0.5) * vec2(1.0, r.x / r.y);
-                z += .17;
+                z -= abs(tan(t) / 250.0);
                 l = length(p);
-                uv += p/l*(sin(z)+1.) * abs(sin(l*9.-z*2.));
-
-                if (i<3)
-                    c[i] = .02 / length(abs(fract(uv)-.5));
-                else
-                    c[i-3] += .005 / (length(abs(fract(uv)-.5)) + texture(u_texture, uv));
+                uv += p/l*(sin(z)+1.) * abs(sin(l)+tan(z*.5));
+                c[i] += abs(tan(t) / 55.0) / (1.7 - texture(u_texture, uv));
             }
 
             vec3 v = vec3(.0);
-            if (abs(rand(vec2(gl_FragCoord.x, gl_FragCoord.y))) < 0.0002) {
-                v = vec3(0.5, 0.5, 0.7) * 1.5 * abs(sin(l*9.-z*2.));
-                if (abs(rand(vec2(gl_FragCoord.y, gl_FragCoord.x))) == abs(rand(vec2(t)))) { v = vec3(0., 0., 1.0) * 1.5 * abs(sin(l*9.-z*2.)); }
-            }
+            if (abs(rand(vec2(gl_FragCoord.x, gl_FragCoord.y))) < 0.001) { v += vec3(0.4, 0.3, 0.4); }
+            if (abs(rand(vec2(gl_FragCoord.y, gl_FragCoord.x))) < 0.001) { v += vec3(0.3, 0.3, 0.4); }
+            if (abs(rand(vec2(800. - gl_FragCoord.x, gl_FragCoord.y))) < 0.001) { v += vec3(0.2, 0.3, 0.4); }
+            if (abs(rand(vec2(800. - gl_FragCoord.y, gl_FragCoord.x))) < 0.001) { v += vec3(0.6, 0.6, 0.6); }
+
+            if (abs(rand(vec2(floor((gl_FragCoord.x - 400.) * abs(cos(t)) + 400.), floor((gl_FragCoord.y - 400.) * abs(cos(t)) + 400.) ))) < 0.001) { v += vec3(0.2, 0.2, 0.2); }
 
             outputColor = vec4(c/l + v, 1.0);
         })glsl";
