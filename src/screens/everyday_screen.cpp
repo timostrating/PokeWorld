@@ -37,45 +37,34 @@ class EverydayScreen : public Screen
 
         out vec4 outputColor;
 
-        uniform sampler2D u_texture;
         uniform float u_time;
 
-        float rand(vec2 co){
-            return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
-        }
-
-        #define t u_time * 0.125
+        #define t u_time * 0.25
         #define r vec2(800.0, 800.0)
+        #define ff pow(cos(t), 2.0) * 200.
 
         void main() {
-            vec3 c = vec3(0.);
-            float l = 1.;
-            float z= 4.2 + 0.5 * abs(cos(t));
-            for(int i=0; i<3; i++) {
-                vec2 uv = gl_FragCoord.xy/r;
-                vec2 p = (gl_FragCoord.xy/r - 0.5) * vec2(1.0, r.x / r.y);
-                z -= abs(tan(t) / 250.0);
-                l = length(p);
-                uv += p/l*(sin(z)+1.) * abs(sin(l)+tan(z*.5));
-                c[i] += abs(tan(t) / 55.0) / (1.7 - texture(u_texture, uv));
+            vec3 colorA = vec3(0.6, 0.8, 0.1);
+            vec3 colorB = vec3(0.1, 0.3, 0.8);
+
+            vec3 c = vec3(0.0, 0.0, 0.0);
+            if (abs(gl_FragCoord.x - 400.0) >= 200.0 || abs(gl_FragCoord.y - 400.0) >= 200.0) {
+                if (sqrt(pow(gl_FragCoord.x - ff, 2.0)          + pow(gl_FragCoord.y - ff, 2.0)) < 100.0 ) { c = vec3(1.0); }
+                if (sqrt(pow(800.0 - gl_FragCoord.x - ff, 2.0)  + pow(gl_FragCoord.y - ff, 2.0)) < 100.0 ) { c = vec3(1.0); }
+                if (sqrt(pow(gl_FragCoord.x - ff, 2.0)          + pow(800.0 - gl_FragCoord.y - ff, 2.0)) < 100.0 ) { c = vec3(1.0); }
+                if (sqrt(pow(800.0 - gl_FragCoord.x - ff, 2.0)  + pow(800.0 - gl_FragCoord.y - ff, 2.0)) < 100.0 ) { c = vec3(1.0); }
             }
 
-            vec3 v = vec3(.0);
-            if (abs(rand(vec2(gl_FragCoord.x, gl_FragCoord.y))) < 0.001) { v += vec3(0.4, 0.3, 0.4); }
-            if (abs(rand(vec2(gl_FragCoord.y, gl_FragCoord.x))) < 0.001) { v += vec3(0.3, 0.3, 0.4); }
-            if (abs(rand(vec2(800. - gl_FragCoord.x, gl_FragCoord.y))) < 0.001) { v += vec3(0.2, 0.3, 0.4); }
-            if (abs(rand(vec2(800. - gl_FragCoord.y, gl_FragCoord.x))) < 0.001) { v += vec3(0.6, 0.6, 0.6); }
+            float mixValue = sqrt(pow(gl_FragCoord.x, 2.0) + pow(gl_FragCoord.y, 2.0)) / sqrt(pow(r.x, 2.0) + pow(r.y, 2.0));
 
-            if (abs(rand(vec2(floor((gl_FragCoord.x - 400.) * abs(cos(t)) + 400.), floor((gl_FragCoord.y - 400.) * abs(cos(t)) + 400.) ))) < 0.001) { v += vec3(0.2, 0.2, 0.2); }
-
-            outputColor = vec4(c/l + v, 1.0);
+            vec3 mixColor = mix(colorA, colorB, mixValue);
+            outputColor = vec4(c + mixColor, 1.0);
         })glsl";
 
     FlyingCamera camera = FlyingCamera();
     GLint MVPLocation;
 
     ShaderProgram shader = ShaderProgram(vertSource, fragSource);
-    Texture texture = Texture::fromAssetFile("textures/turbulance.jpg");
 
     Gizmos gizmos;
     SharedMesh quad = SharedMesh(Mesh::quad());
@@ -85,7 +74,6 @@ public:
     {
         shader.use();
         MVPLocation = shader.uniformLocation("MVP");
-        texture.bind(0, shader, "u_texture");
 
         VertexBuffer::uploadSingleMesh(quad);
     }
@@ -118,10 +106,6 @@ public:
         shader.use();
         glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &(camera.combined * translate(mat4(1.0f), vec3(0, 0, 0)) )[0][0]);
         quad->render();
-
-    }
-
-    void drawStar() {
 
     }
 
