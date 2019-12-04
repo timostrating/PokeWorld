@@ -61,7 +61,7 @@ int MarchingCubesTerrain::getCubeIndex(int x, int y, int z, float falloff) {
 
 void MarchingCubesTerrain::debugRender()
 {
-    LOOP3D(size, x,y,z, gizmos.drawCube(vec3(x,y,z), 0.1, vec4(noisefield[x][y][z])); )
+    LOOP3D(size, x,y,z, gizmos.drawCube(vec3(x,y,z), 0.1, vec4(noisefield[x][y][z], noisefield[x][y][z], noisefield[x][y][z], 0.3f)); )
 
     LOOP3D(size-1, x,y,z,
         int cubeIndex = getCubeIndex(x,y,z, falloff);

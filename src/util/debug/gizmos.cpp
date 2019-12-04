@@ -49,7 +49,7 @@ void Gizmos::drawLine(const vec3 &from, const vec3 &to, const vec4 &color)
     glUniformMatrix4fv(mvpId, 1, GL_FALSE, &Camera::main->combined[0][0]);
     glUniform3f(fromId, from.x, from.y, from.z);
     glUniform3f(toId, to.x, to.y, to.z);
-    glUniform4f(colorId, color.x, color.y, color.z, color.w);
+    glUniform4f(colorId, color.r, color.g, color.b, color.a);
     mesh->render();
 }
 

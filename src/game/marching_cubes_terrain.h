@@ -22,7 +22,7 @@ private:
     SharedMesh mesh = SharedMesh(new Mesh(0, 0)); // Internal variables are our JOB
 
     ShaderProgram terrainShader = ShaderProgram::fromAssetFiles("shaders/terrain.vert", "shaders/terrain.frag");
-    Texture test = Texture::fromAssetFile("TODO");
+    Texture test = Texture::testCheckerboard();
     GLuint mvpId;
 
     float scale = 0.3f;

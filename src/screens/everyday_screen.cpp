@@ -13,6 +13,7 @@
 #include "../util/input/keyboard.h"
 #include "../util/debug/gizmos.h"
 #include "../graphics/texture.h"
+#include "../game/marching_cubes_terrain.h"
 
 using namespace glm;
 
@@ -39,26 +40,8 @@ class EverydayScreen : public Screen
 
         uniform float u_time;
 
-        #define t u_time * 0.25
-        #define r vec2(800.0, 800.0)
-        #define ff pow(cos(t), 2.0) * 200.
-
         void main() {
-            vec3 colorA = vec3(0.6, 0.8, 0.1);
-            vec3 colorB = vec3(0.1, 0.3, 0.8);
-
-            vec3 c = vec3(0.0, 0.0, 0.0);
-            if (abs(gl_FragCoord.x - 400.0) >= 200.0 || abs(gl_FragCoord.y - 400.0) >= 200.0) {
-                if (sqrt(pow(gl_FragCoord.x - ff, 2.0)          + pow(gl_FragCoord.y - ff, 2.0)) < 100.0 ) { c = vec3(1.0); }
-                if (sqrt(pow(800.0 - gl_FragCoord.x - ff, 2.0)  + pow(gl_FragCoord.y - ff, 2.0)) < 100.0 ) { c = vec3(1.0); }
-                if (sqrt(pow(gl_FragCoord.x - ff, 2.0)          + pow(800.0 - gl_FragCoord.y - ff, 2.0)) < 100.0 ) { c = vec3(1.0); }
-                if (sqrt(pow(800.0 - gl_FragCoord.x - ff, 2.0)  + pow(800.0 - gl_FragCoord.y - ff, 2.0)) < 100.0 ) { c = vec3(1.0); }
-            }
-
-            float mixValue = sqrt(pow(gl_FragCoord.x, 2.0) + pow(gl_FragCoord.y, 2.0)) / sqrt(pow(r.x, 2.0) + pow(r.y, 2.0));
-
-            vec3 mixColor = mix(colorA, colorB, mixValue);
-            outputColor = vec4(c + mixColor, 1.0);
+            outputColor = vec4(1.0, 0.1, 1.0, 1.0);
         })glsl";
 
     FlyingCamera camera = FlyingCamera();
@@ -68,6 +51,8 @@ class EverydayScreen : public Screen
 
     Gizmos gizmos;
     SharedMesh quad = SharedMesh(Mesh::quad());
+
+    MarchingCubesTerrain terrain = MarchingCubesTerrain();
 
 public:
     EverydayScreen()
@@ -96,17 +81,19 @@ public:
         else {
             if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB))
                 anyKeyPressed = true;
-            camera.position = vec3(0, 0, + -1.0f / tanf(radians(22.5f)));
-            camera.lookAt(VEC3::ZERO);
+            camera.position = vec3(sin(time * 0.3) * 15, 10, cos(time * 0.3) * 15);
+            camera.lookAt(vec3(5, 5, 5));
             camera.Camera::update();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////// TEST
 
-        shader.use();
-        glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &(camera.combined * translate(mat4(1.0f), vec3(0, 0, 0)) )[0][0]);
-        quad->render();
+//        shader.use();
+//        glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &(camera.combined * translate(mat4(1.0f), vec3(0, 0, 0)) )[0][0]);
+//        quad->render();
 
+        terrain.debugRender();
+//        terrain.render();
     }
 
     void resize(int width, int height)
