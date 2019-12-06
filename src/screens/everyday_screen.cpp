@@ -52,8 +52,6 @@ class EverydayScreen : public Screen
     Gizmos gizmos;
     SharedMesh quad = SharedMesh(Mesh::quad());
 
-    MarchingCubesTerrain terrain = MarchingCubesTerrain();
-
 public:
     EverydayScreen()
     {
@@ -73,27 +71,25 @@ public:
         time += deltaTime;
         glUniform1f(shader.uniformLocation("u_time"), time);
 
-        glClearColor(18.0/255.0, 32.0/255.0, 42.0/255.0, 1.0f);
+        glClearColor(69.0/255.0, 69.0/255.0, 69.0/255.0, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        if (anyKeyPressed)
+        if (anyKeyPressed) {
             camera.update(deltaTime);
-        else {
+        } else {
             if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB))
                 anyKeyPressed = true;
             camera.position = vec3(sin(time * 0.3) * 15, 10, cos(time * 0.3) * 15);
-            camera.lookAt(vec3(5, 5, 5));
+            camera.lookAt(vec3(0, 0, 0));
             camera.Camera::update();
         }
+        camera.debugDraw();
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////// TEST
 
-//        shader.use();
-//        glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &(camera.combined * translate(mat4(1.0f), vec3(0, 0, 0)) )[0][0]);
-//        quad->render();
-
-        terrain.debugRender();
-//        terrain.render();
+        shader.use();
+        glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &(camera.combined * rotate(scale(translate(mat4(1.0f), vec3(0, -0.01, 0)), 5.0f * VEC3::ONE), radians(90.0f), VEC3::X) )[0][0]);
+        quad->render();
     }
 
     void resize(int width, int height)

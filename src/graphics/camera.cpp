@@ -11,10 +11,16 @@
 
 using namespace glm;
 
+#define LOOP2D(N, X,Y, CODE) \
+    for (int X=0; x<N; X++) { \
+    for (int Y=0; y<N; Y++) { \
+        CODE \
+    }} \
 
 Camera *Camera::main = 0;
 
-Camera::Camera() {
+Camera::Camera()
+{
     glEnable(GL_DEPTH_TEST);
 
     glEnable(GL_CULL_FACE);
@@ -28,7 +34,8 @@ Camera::Camera() {
         main = this;
 }
 
-void Camera::update() {
+void Camera::update()
+{
 //    std::cout << "position " << VEC3::toString(position) << " \n";
 //    std::cout << "direction " << VEC3::toString(direction) << " \n";
 //    std::cout << "right " << VEC3::toString(right) << " \n";
@@ -49,7 +56,8 @@ void Camera::update() {
     combined = projection * view; // Remember, matrix multiplication is the other way around
 }
 
-void Camera::lookAt(vec3 target) {
+void Camera::lookAt(vec3 target)
+{
     /// | | | | | | |
     /// | | | | | | |    pos       (0,  0,  2)
     /// | | | | | | |    lookAt    (0,  0,  0)
@@ -63,13 +71,25 @@ void Camera::lookAt(vec3 target) {
     up = normalize(cross(right, direction));
 }
 
-void Camera::rotate(vec3 axis, float degrees) {
+void Camera::rotate(vec3 axis, float degrees)
+{
     float rads = radians(degrees);
     direction = glm::rotate(direction, rads, axis);
     right = glm::rotate(right, rads, axis);
     up = glm::rotate(up, rads, axis);
 }
 
-void Camera::translate(vec3 target) {
+void Camera::translate(vec3 target)
+{
     position += target;
+}
+
+void Camera::debugDraw()
+{
+    gizmos.drawLine(0.001f * VEC3::Y, 20.0f * VEC3::X, vec4(VEC3::X, 1.0));
+    gizmos.drawLine(0.001f * VEC3::Y, 20.0f * VEC3::Y, vec4(VEC3::Y, 1.0));
+    gizmos.drawLine(0.001f * VEC3::Y, 20.0f * VEC3::Z, vec4(VEC3::Z, 1.0));
+
+    for (int x=-10; x<=10; x++) { gizmos.drawLine(vec3(x, 0 ,-10), vec3(x, 0 ,10), vec4(1.0, 1.0, 1.0, 0.2f)); }
+    for (int z=-10; z<=10; z++) { gizmos.drawLine(vec3(-10, 0 ,z), vec3(10, 0 ,z), vec4(1.0, 1.0, 1.0, 0.2f)); }
 }

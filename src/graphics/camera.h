@@ -8,6 +8,8 @@
 #include <memory>
 #include "../util/interfaces/resizeable.h"
 #include "../util/math/math.h"
+#include "../util/debug/gizmos.h"
+
 using namespace glm;
 
 class Camera : Resizeable
@@ -25,6 +27,7 @@ public:
     }
 
     static Camera *main;
+    Gizmos gizmos;
 
     int width = 16, height = 9;
     double fov = 45;
@@ -52,6 +55,8 @@ public:
 
     void translate(float x, float y, float z) { translate(vec3(x,y,z)); }
     void translate(vec3 target);
+
+    void debugDraw();
 
 
     void resize(int newWidth, int newHeight) {
