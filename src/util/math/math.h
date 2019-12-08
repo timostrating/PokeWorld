@@ -9,6 +9,8 @@
 #include "glm/gtx/rotate_vector.hpp"
 #include <string>
 #include "../external/unit_test.hpp"
+#include "../debug/nice_error.h"
+
 using namespace glm;
 
 #define S(X) std::to_string(X).substr(0, 4)
@@ -17,7 +19,10 @@ using namespace glm;
 namespace MATH
 {
     const float PI = 3.1415926535f;
+    const float GOLDEN_RATIO = (sqrt(5.0f) + 1.0f) / 2.0f;
 
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////// RANDOM
     inline float random()
     {
         return static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
@@ -60,6 +65,16 @@ namespace MATH
     TEST(randomPointOnSphere,  return abs(glm::distance(vec3(0), randomPointOnSphere()) -1.0f) < 0.001f; )
     TEST(randomPointOnSphere2, return abs(glm::distance(vec3(0), randomPointOnSphere(rand()/360)) -1.0f) < 0.001f; )
     TEST(randomPointOnSphere3, return abs(glm::distance(vec3(0), randomPointOnSphere(rand()/360,rand()/360)) -1.0f) < 0.001f; )
+
+    inline float randomGoldenRatio(int i) {
+        return fmod(i * GOLDEN_RATIO, 1.0f);
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////// REMAP
+    inline float remap (float value, float from1, float to1, float from2, float to2) {
+        return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
+    }
 }
 
 
@@ -91,6 +106,29 @@ namespace COLOR
             YELLOW     = vec4(1,1,0,1),
             PINK       = vec4(1,0,1,1),
             LIGHT_BLUE = vec4(0,1,1,1);
+
+    /**
+     * based on https://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
+     * @param hsv [0..1]
+     * @param alpha [0..1]
+     * @return vec4 color
+     */
+    inline vec4 hsvToColor(float h, float s, float v, float alpha = 1.0f) {
+        int h_i = floor(h * 6);
+        float f = fmod(h * 6, 1);
+        float p = v * (1 - s);
+        float q = v * (1 - f * s);
+        float t = v * (1 - (1 - f) * s);
+
+        if (h_i == 0) { return vec4(v, t, p, alpha); }
+        if (h_i == 1) { return vec4(q, v, p, alpha); }
+        if (h_i == 2) { return vec4(p, v, t, alpha); }
+        if (h_i == 3) { return vec4(p, q, v, alpha); }
+        if (h_i == 4) { return vec4(t, p, v, alpha); }
+        if (h_i == 5) { return vec4(v, p, q, alpha); }
+
+        throw nice_error("We implemented hsvToColor Wrong");
+    }
 }
 
 

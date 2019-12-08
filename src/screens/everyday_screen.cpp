@@ -45,26 +45,33 @@ class EverydayScreen : public Screen
         })glsl";
 
     FlyingCamera camera = FlyingCamera();
-    GLint MVPLocation;
+    GLint MVPLocation, colorLocation;
 
-    ShaderProgram shader = ShaderProgram(vertSource, fragSource);
+//    ShaderProgram shader = ShaderProgram(vertSource, fragSource);
+    ShaderProgram shader = ShaderProgram::fromAssetFiles("shaders/lib/flat_color.vert", "shaders/lib/flat_color.frag");
 
     Gizmos gizmos;
     SharedMesh quad = SharedMesh(Mesh::quad());
+
+    float randoms[999];
 
 public:
     EverydayScreen()
     {
         shader.use();
         MVPLocation = shader.uniformLocation("MVP");
+        colorLocation = shader.uniformLocation("u_color");
 
         VertexBuffer::uploadSingleMesh(quad);
+
+        for (float & i : randoms) i = MATH::random();
     }
 
     void setup(GLFWwindow* window) {}
 
     double time = 0;
     bool anyKeyPressed = false;
+    float iCopy = 0;
 
     void render(double deltaTime)
     {
@@ -76,20 +83,35 @@ public:
 
         if (anyKeyPressed) {
             camera.update(deltaTime);
+            camera.debugDraw();
         } else {
             if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB))
                 anyKeyPressed = true;
-            camera.position = vec3(sin(time * 0.3) * 15, 10, cos(time * 0.3) * 15);
+            camera.position = vec3(0, 0, 1.0f / tanf(radians(22.5f)));
             camera.lookAt(vec3(0, 0, 0));
             camera.Camera::update();
         }
-        camera.debugDraw();
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////// TEST
 
         shader.use();
-        glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &(camera.combined * rotate(scale(translate(mat4(1.0f), vec3(0, -0.01, 0)), 5.0f * VEC3::ONE), radians(90.0f), VEC3::X) )[0][0]);
-        quad->render();
+        int i = static_cast<int>(iCopy);
+        iCopy += 0.25f;
+
+        for (float v=-1; v<0.99; v += 0.1f, i++) {
+            glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), vec3(v + 0.05, 0.65f, 0)), vec3(.05f, 0.3f, 1.0f)) )[0][0]);
+            glUniform4f(colorLocation, randoms[i*3 +0], randoms[i*3 +1], randoms[i*3 +2], 1.0f);
+            quad->render();
+
+            glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), vec3(v + 0.05, 0, 0)), vec3(.05f, 0.3f, 1.0f)) )[0][0]);
+            glUniform4f(colorLocation, MATH::randomGoldenRatio(i*3 +0), MATH::randomGoldenRatio(i*3 +1), MATH::randomGoldenRatio(i*3 +2), 1.0f);
+            quad->render();
+
+            glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), vec3(v + 0.05, -0.65f, 0)), vec3(.05f, 0.3f, 1.0f)) )[0][0]);
+            vec4 color = COLOR::hsvToColor(MATH::randomGoldenRatio(i*3 +0), 0.5f, 0.95f, 1.0f);
+            glUniform4f(colorLocation, color.r, color.g, color.b, color.a);
+            quad->render();
+        }
     }
 
     void resize(int width, int height)
