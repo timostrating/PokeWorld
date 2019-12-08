@@ -13,7 +13,6 @@ class Texture
 
 private:
     GLuint textureId;
-    unsigned char *imagePtr;
 
 public:
     static Texture fromAssetFile(const char *imgPath, GLint textureWrapping = GL_REPEAT, GLint textureInterpolation = GL_LINEAR);

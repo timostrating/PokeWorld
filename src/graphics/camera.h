@@ -32,7 +32,7 @@ public:
     int width = 16, height = 9;
     double fov = 45;
     double nearClippingPlane = 0.1;
-    double farClippingPlane = 100.0;
+    double farClippingPlane = 1000.0;
 
     vec3 position = VEC3::ZERO;
     vec3 direction = -VEC3::Z;

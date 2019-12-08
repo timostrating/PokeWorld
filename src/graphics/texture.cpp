@@ -5,8 +5,19 @@
 #include <iostream>
 #include "texture.h"
 #include "shader_program.h"
-#include "../util/external/stb_image.hpp"
 #include "../util/debug/nice_error.h"
+#include "../util/external/stb_image.hpp"
+
+
+Texture Texture::fromAssetFile(const char *imgPath, GLint a, GLint b)
+{
+    return Texture((&std::string("../../../../assets/").append(imgPath))->c_str(), a, b);
+}
+
+Texture Texture::testCheckerboard()
+{
+    return Texture(nullptr);
+}
 
 Texture::Texture(const char *imgPath, GLint textureWrapping, GLint textureInterpolation)
 {
@@ -36,12 +47,13 @@ Texture::Texture(const char *imgPath, GLint textureWrapping, GLint textureInterp
         int width, height, n;
         // n = # 8-bit components per pixel. Replace '0' with '1'..'4' to force that many components per pixel
         // but 'n' will always be the number that it would have been if you said 0
-        imagePtr = stbi_load(imgPath, &width, &height, &n, 0);
+        unsigned char *imagePtr = stbi_load(imgPath, &width, &height, &n, 0);
 
         if (imagePtr == nullptr)
             nice_error("Image loading error: image URI or file format is probably wrong.");
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imagePtr);
+        stbi_image_free(imagePtr);
     }
 
     glGenerateMipmap(GL_TEXTURE_2D);
@@ -59,23 +71,8 @@ void Texture::bind(const unsigned int textureI, const ShaderProgram &shader, con
     glUniform1i(shader.uniformLocation(name), textureI);
 }
 
-
-Texture Texture::fromAssetFile(const char *imgPath, GLint a, GLint b)
-{
-    return Texture((&std::string("../../../../assets/").append(imgPath))->c_str(), a, b);
-}
-
-Texture Texture::testCheckerboard()
-{
-    return Texture(nullptr);
-}
-
-
 Texture::~Texture()
 {
-    if (imagePtr != nullptr)
-        stbi_image_free(imagePtr);
-
     glDeleteTextures(1, &textureId);
     std::cout << "Texture " << textureId << " destroyed\n";
 }

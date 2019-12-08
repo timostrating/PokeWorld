@@ -21,6 +21,7 @@ public:
     static Mesh* quad();
     static Mesh* triangle();
     static Mesh* cube();
+    static Mesh* skybox();
     Mesh(unsigned int nrOfVerts, unsigned int nrOfIndices) : nrOfVerts(nrOfVerts), nrOfIndices(nrOfIndices) {};
 
     std::vector<float> vertices = {};
@@ -34,4 +35,5 @@ public:
     unsigned int nrOfIndices = 0;
 
     void render();
+
 };

@@ -12,6 +12,8 @@
 #include "util/interfaces/game.h"
 
 #include "util/external/unit_test.hpp"
+#define STB_IMAGE_IMPLEMENTATION
+#include "util/external/stb_image.hpp"
 
 int main(int argc, char* argv[])
 {

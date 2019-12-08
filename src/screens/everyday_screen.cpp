@@ -14,6 +14,7 @@
 #include "../util/debug/gizmos.h"
 #include "../graphics/texture.h"
 #include "../game/marching_cubes_terrain.h"
+#include "../graphics/cubemap.h"
 
 using namespace glm;
 
@@ -45,13 +46,23 @@ class EverydayScreen : public Screen
         })glsl";
 
     FlyingCamera camera = FlyingCamera();
-    GLint MVPLocation, colorLocation;
 
-//    ShaderProgram shader = ShaderProgram(vertSource, fragSource);
-    ShaderProgram shader = ShaderProgram::fromAssetFiles("shaders/lib/flat_color.vert", "shaders/lib/flat_color.frag");
+    ShaderProgram shader = ShaderProgram(vertSource, fragSource);
+    ShaderProgram skyShader = ShaderProgram::fromAssetFiles("shaders/lib/skybox.vert", "shaders/lib/skybox.frag");
+    std::vector<std::string> faces = {
+        "../../../../assets/textures/test/skybox/right.jpg",
+        "../../../../assets/textures/test/skybox/left.jpg",
+        "../../../../assets/textures/test/skybox/top.jpg",
+        "../../../../assets/textures/test/skybox/bottom.jpg",
+        "../../../../assets/textures/test/skybox/front.jpg",
+        "../../../../assets/textures/test/skybox/back.jpg"
+    };
+    Cubemap* skycubemap = new Cubemap(faces);
 
     Gizmos gizmos;
-    SharedMesh quad = SharedMesh(Mesh::quad());
+    SharedMesh cube = SharedMesh(Mesh::cube());
+    SharedMesh skybox = SharedMesh(Mesh::skybox());
+
 
     float randoms[999];
 
@@ -59,10 +70,9 @@ public:
     EverydayScreen()
     {
         shader.use();
-        MVPLocation = shader.uniformLocation("MVP");
-        colorLocation = shader.uniformLocation("u_color");
 
-        VertexBuffer::uploadSingleMesh(quad);
+        VertexBuffer::uploadSingleMesh(cube);
+        VertexBuffer::uploadSingleMesh(skybox);
 
         for (float & i : randoms) i = MATH::random();
     }
@@ -71,7 +81,6 @@ public:
 
     double time = 0;
     bool anyKeyPressed = false;
-    float iCopy = 0;
 
     void render(double deltaTime)
     {
@@ -87,31 +96,21 @@ public:
         } else {
             if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB))
                 anyKeyPressed = true;
-            camera.position = vec3(0, 0, 1.0f / tanf(radians(22.5f)));
+            camera.position = vec3(sin(time * 0.25) * 10, 1, cos(time * 0.25) * 10);
             camera.lookAt(vec3(0, 0, 0));
             camera.Camera::update();
         }
 
+        skyShader.use();
+        glUniformMatrix4fv(skyShader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), vec3(0, 0, 0)), 100.0f * VEC3::ONE))[0][0]);
+        skybox->render();
+
         /////////////////////////////////////////////////////////////////////////////////////////////////////////// TEST
 
-        shader.use();
-        int i = static_cast<int>(iCopy);
-        iCopy += 0.25f;
+//        shader.use();
+//        glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &(camera.combined * translate(mat4(1.0f), vec3(0, 0, 0)) )[0][0]);
+//        cube->render();
 
-        for (float v=-1; v<0.99; v += 0.1f, i++) {
-            glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), vec3(v + 0.05, 0.65f, 0)), vec3(.05f, 0.3f, 1.0f)) )[0][0]);
-            glUniform4f(colorLocation, randoms[i*3 +0], randoms[i*3 +1], randoms[i*3 +2], 1.0f);
-            quad->render();
-
-            glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), vec3(v + 0.05, 0, 0)), vec3(.05f, 0.3f, 1.0f)) )[0][0]);
-            glUniform4f(colorLocation, MATH::randomGoldenRatio(i*3 +0), MATH::randomGoldenRatio(i*3 +1), MATH::randomGoldenRatio(i*3 +2), 1.0f);
-            quad->render();
-
-            glUniformMatrix4fv(MVPLocation, 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), vec3(v + 0.05, -0.65f, 0)), vec3(.05f, 0.3f, 1.0f)) )[0][0]);
-            vec4 color = COLOR::hsvToColor(MATH::randomGoldenRatio(i*3 +0), 0.5f, 0.95f, 1.0f);
-            glUniform4f(colorLocation, color.r, color.g, color.b, color.a);
-            quad->render();
-        }
     }
 
     void resize(int width, int height)
