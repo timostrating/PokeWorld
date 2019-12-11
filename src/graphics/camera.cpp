@@ -46,9 +46,15 @@ void Camera::update()
             position + direction,     // camera looks at
             up                        // camera Up vector
     );
-    projection = perspective(
-            radians(fov),                   // Field of View
-            double(width) / double(height), // Aspect Ratio
+//    projection = perspective(
+//            radians(fov),                   // Field of View
+//            double(width) / double(height), // Aspect Ratio
+//            nearClippingPlane,              // near clipping plane
+//            farClippingPlane                // far clipping plane
+//    );
+
+    projection = ortho(
+            -1.0, 1.0, -1.0, 1.0,
             nearClippingPlane,              // near clipping plane
             farClippingPlane                // far clipping plane
     );

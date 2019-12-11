@@ -20,6 +20,7 @@
 #include "../game/lsystem.h"
 #include "../util/debug/gizmos.h"
 #include "../game/marching_cubes_terrain.h"
+#include "../graphics/cubemap.h"
 
 using namespace glm;
 
@@ -39,6 +40,19 @@ public:
 
     const float angle = radians(18.f);
 
+    ShaderProgram skyShader = ShaderProgram::fromAssetFiles("shaders/lib/skybox.vert", "shaders/lib/skybox.frag");
+    std::vector<std::string> faces = {
+            "../../../../assets/textures/test/skybox/right.jpg",
+            "../../../../assets/textures/test/skybox/left.jpg",
+            "../../../../assets/textures/test/skybox/top.jpg",
+            "../../../../assets/textures/test/skybox/bottom.jpg",
+            "../../../../assets/textures/test/skybox/front.jpg",
+            "../../../../assets/textures/test/skybox/back.jpg"
+    };
+    Cubemap* skycubemap = new Cubemap(faces);
+    SharedMesh skybox = SharedMesh(Mesh::skybox());
+
+
     TreeScreen()
     {
         for (int i=0; i<cacheSize; i++) {
@@ -50,6 +64,7 @@ public:
 
         // Model View Projection
         MVPLocation = defaultShaderProgram.uniformLocation("MVP");
+        VertexBuffer::uploadSingleMesh(skybox);
     }
 
     void setup(GLFWwindow* window) {
@@ -85,9 +100,10 @@ public:
 
         defaultShaderProgram.use(); // imgui may have changed the current shader
 
-        if (anyKeyPressed)
+        if (anyKeyPressed) {
             camera.update(deltaTime);
-        else {
+            camera.debugDraw();
+        } else {
             if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB))
                 anyKeyPressed = true;
             camera.position = vec3(sin(time * 0.5) *5,  2,  cos(time * 0.5) *5);
@@ -95,12 +111,19 @@ public:
             camera.Camera::update();
         }
 
+
+        skyShader.use();
+        glUniformMatrix4fv(skyShader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), vec3(0, 0, 0)), 100.0f * VEC3::ONE))[0][0]);
+        skybox->render();
+
         mat4 mvp = camera.combined * modelMatrix;
         glUniformMatrix4fv( MVPLocation, 1, GL_FALSE, &mvp[0][0]);
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////// TEST
 
         terrain.render();
+
+
 
     //        vec3 ringPos = VEC3::Y;
 //        vec3 rotationAngle = VEC3::Z;
