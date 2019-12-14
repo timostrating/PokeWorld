@@ -53,11 +53,12 @@ class EverydayScreen : public Screen
 
     FlyingCamera camera = FlyingCamera();
 
-    ShaderProgram skyShader = ShaderProgram(vertSource, fragSource);
-//    ShaderProgram skyShader = ShaderProgram::fromAssetFiles("shaders/lib/skybox.vert", "shaders/lib/skybox.frag");
+//    ShaderProgram skyShader = ShaderProgram(vertSource, fragSource);
+    ShaderProgram shader = ShaderProgram::fromAssetFiles("shaders/lib/flat_color.vert", "shaders/lib/flat_color.frag");
 
     Gizmos gizmos;
     SharedMesh cube = SharedMesh(Mesh::cube());
+    SharedMesh quad = SharedMesh(Mesh::quad());
 
 
     float randoms[999];
@@ -65,9 +66,10 @@ class EverydayScreen : public Screen
 public:
     EverydayScreen()
     {
-        skyShader.use();
+        shader.use();
 
         VertexBuffer::uploadSingleMesh(cube);
+        VertexBuffer::uploadSingleMesh(quad);
 
         for (float & i : randoms) i = MATH::random();
     }
@@ -79,9 +81,15 @@ public:
 
     void render(double deltaTime) {
         time += deltaTime;
-        glUniform1f(skyShader.uniformLocation("u_time"), time);
+        glUniform1f(shader.uniformLocation("u_time"), time);
+        vec4 color1 = vec4(1.0/255.0, 28.0/255.0, 38.0/255.0, 1.0);
+        vec4 color2 = vec4(1.0/255.0, 64.0/255.0, 64.0/255.0, 1.0);
+        vec4 color3 = vec4(121.0/255.0, 140.0/255.0, 135.0/255.0, 1.0);
+        vec4 color4 = vec4(215.0/255.0, 217.0/255.0, 215.0/255.0, 1.0);
+        vec4 color5 = vec4(166.0/255.0, 116.0/255.0, 88.0/255.0, 1.0);
 
-        glClearColor(38.0/255.0, 50.0/255.0, 56.0/255.0, 1.0f);
+        //        float t2 = 8.0f * sin(time * 0.05);
+        glClearColor(color1.r, color1.g, color1.b, color1.a);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if (anyKeyPressed) {
@@ -90,53 +98,28 @@ public:
         } else {
             if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB))
                 anyKeyPressed = true;
-            camera.position = vec3(0, 0, 1);
+            camera.position = vec3(5.5*sin(time*0.2), 0, 5.5*cos(time*0.2));
             camera.lookAt(vec3(0, 0, 0));
             camera.Camera::update();
         }
 
-        skyShader.use();
-        glUniformMatrix4fv(skyShader.uniformLocation("MVP"), 1, GL_FALSE,
-                           &(camera.combined * scale(translate(mat4(1.0f), vec3(0, 0, 0)), 1.0f * VEC3::ONE))[0][0]);
-
+        shader.use();
         /////////////////////////////////////////////////////////////////////////////////////////////////////////// TEST
 
-        float t2 = (sin(time * 0.3) + 1.0) / 2.0;
+        glUniformMatrix4fv(shader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), vec3(0, 0, 0)), 1.0f * VEC3::ONE))[0][0]);
 
-        vec4 color1 = vec4(59.0/255.0, 72.0/255.0, 77.0/255.0, 1.0);
-        vec3 a = vec3(-0.8, -0.8, 0.0);
-        vec3 b = vec3(-0.8,  0.8, 0.0);
-        vec3 c = vec3( 0.8,  0.8, 0.0);
-        vec3 d = vec3( 0.8, -0.8, 0.0);
+        float max = 20, max2 = 100;
+        vec3 from = VEC3::ZERO;
 
-        gizmos.drawCube(a, 0.02f, COLOR::WHITE);
-        gizmos.drawCube(b, 0.02f, COLOR::WHITE);
-        gizmos.drawCube(c, 0.02f, COLOR::WHITE);
-        gizmos.drawCube(d, 0.02f, COLOR::WHITE);
-
-        gizmos.drawLine(a, b, COLOR::WHITE);
-        gizmos.drawLine(b, c, COLOR::WHITE);
-        gizmos.drawLine(c, d, COLOR::WHITE);
-
-        vec3 mid = VEC3::ZERO, midAC = VEC3::ZERO, midBD = VEC3::ZERO;
-        for (float t=0.0f; t<t2; t+=0.01f) {
-            vec3 midAB = lerp(a, b, t);
-            vec3 midBC = lerp(b, c, t);
-            vec3 midCD = lerp(c, d, t);
-
-            gizmos.drawLine(midAB, midBC, color1 + vec4(1.0, 0.0, 0.0, 1.0));
-            gizmos.drawLine(midBC, midCD, color1 + vec4(0.0, 1.0, 0.0, 1.0));
-
-            midAC = lerp(midAB, midBC, t);
-            midBD = lerp(midBC, midCD, t);
-            gizmos.drawLine(midAC, midBD, color1 + vec4(0.0, 0.0, 1.0, 1.0));
-
-            mid = lerp(midAC, midBD, t);
-            gizmos.drawCube(mid, 0.01f, 0.7f * COLOR::WHITE);
+        for (int n=0; n<=max; n++) {
+            vec3 rot = vec3(sin(n/max * 2*MATH::PI), 0, cos(n/max * 2*MATH::PI));
+            for (int i=0; i<=max2; i++) {
+                vec3 to = vec3(sin(i/max2 * 2*MATH::PI), cos(i/max2 * 2*MATH::PI), 0);
+                if (i != 0) gizmos.drawLine(rot+from, rot+to, color3);
+                from = to;
+            }
         }
-        gizmos.drawCube(midAC + vec3(0, 0, 0.001f), 0.01f, color1 + vec4(1.0, 0.0, 0.0, 1.0));
-        gizmos.drawCube(midBD + vec3(0, 0, 0.001f), 0.01f, color1 + vec4(0.0, 1.0, 0.0, 1.0));
-        gizmos.drawCube(mid + vec3(0, 0, 0.002f), 0.01f, COLOR::WHITE);
+
     }
 
     vec3 lerp(vec3 from, vec3 to, float t) {
