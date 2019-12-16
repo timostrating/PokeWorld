@@ -1,0 +1,15 @@
+[submodule "external/unit_test"]
+	path = external/unit_test
+	url = git@github.com:timostrating/unit_test.git
+[submodule "external/stb"]
+	path = external/stb
+	url = git@github.com:nothings/stb.git
+[submodule "external/glfw"]
+	path = external/glfw
+	url = git@github.com:glfw/glfw.git
+[submodule "external/imgui"]
+	path = external/imgui
+	url = git@github.com:ocornut/imgui.git
+[submodule "external/glm"]
+	path = external/glm
+	url = git@github.com:g-truc/glm.git

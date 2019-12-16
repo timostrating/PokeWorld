@@ -31,20 +31,20 @@ if (NOT ${__EMSCRIPTEN__})
     set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
-    add_subdirectory(${EXTERNAL_DIR}/glfw-3.2.1 ./bin/glfw)
-    include_directories(${EXTERNAL_DIR}/glfw-3.2.1)
+    add_subdirectory(${EXTERNAL_DIR}/glfw ./bin/glfw)
+    include_directories(${EXTERNAL_DIR}/glfw)
 endif ()
 
 
 # ---------------------------------------------------------GLM----------------------------------------------------------
 
-add_subdirectory(${EXTERNAL_DIR}/glm-0.9.9.5/glm ./bin/glm)
-include_directories(${EXTERNAL_DIR}/glm-0.9.9.5/glm)
+add_subdirectory(${EXTERNAL_DIR}/glm/glm ./bin/glm)
+include_directories(${EXTERNAL_DIR}/glm/glm)
 
 
 # ---------------------------------------------------------ImGUI--------------------------------------------------------
 
-set(IMGUI_DIR ${EXTERNAL_DIR}/imgui-1.71)
+set(IMGUI_DIR ${EXTERNAL_DIR}/imgui)
 include_directories(${IMGUI_DIR})
 
 if (NOT ${__EMSCRIPTEN__})
