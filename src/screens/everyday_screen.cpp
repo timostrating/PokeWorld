@@ -78,15 +78,15 @@ public:
 
     double time = 0;
     bool anyKeyPressed = false;
+    float max = 3;
+    int ticker = 0;
 
     void render(double deltaTime) {
         time += deltaTime;
         glUniform1f(shader.uniformLocation("u_time"), time);
-        vec4 color1 = vec4(1.0/255.0, 28.0/255.0, 38.0/255.0, 1.0);
-        vec4 color2 = vec4(1.0/255.0, 64.0/255.0, 64.0/255.0, 1.0);
-        vec4 color3 = vec4(121.0/255.0, 140.0/255.0, 135.0/255.0, 1.0);
-        vec4 color4 = vec4(215.0/255.0, 217.0/255.0, 215.0/255.0, 1.0);
-        vec4 color5 = vec4(166.0/255.0, 116.0/255.0, 88.0/255.0, 1.0);
+        vec4 color1 = vec4(87.0/255.0, 53.0/255.0, 0.0/255.0, 1.0);
+        vec4 color2 = vec4(150.0/255.0, 117.0/255.0, 63.0/255.0, 1.0);
+        vec4 color3 = vec4(250.0/255.0, 233.0/255.0, 205.0/255.0, 1.0);
 
         //        float t2 = 8.0f * sin(time * 0.05);
         glClearColor(color1.r, color1.g, color1.b, color1.a);
@@ -98,7 +98,7 @@ public:
         } else {
             if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB))
                 anyKeyPressed = true;
-            camera.position = vec3(5.5*sin(time*0.2), 0, 5.5*cos(time*0.2));
+            camera.position = vec3(0, 0, 2);
             camera.lookAt(vec3(0, 0, 0));
             camera.Camera::update();
         }
@@ -106,24 +106,19 @@ public:
         shader.use();
         /////////////////////////////////////////////////////////////////////////////////////////////////////////// TEST
 
-        glUniformMatrix4fv(shader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), vec3(0, 0, 0)), 1.0f * VEC3::ONE))[0][0]);
+        glUniformMatrix4fv(shader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), vec3(2, 0, -1)), 2.0f * VEC3::ONE))[0][0]);
+        glUniform4f(shader.uniformLocation("u_color"), color3.r, color3.g, color3.b, color3.a);
 
-        float max = 20, max2 = 100;
-        vec3 from = VEC3::ZERO;
+        quad->render();
 
-        for (int n=0; n<=max; n++) {
-            vec3 rot = vec3(sin(n/max * 2*MATH::PI), 0, cos(n/max * 2*MATH::PI));
-            for (int i=0; i<=max2; i++) {
-                vec3 to = vec3(sin(i/max2 * 2*MATH::PI), cos(i/max2 * 2*MATH::PI), 0);
-                if (i != 0) gizmos.drawLine(rot+from, rot+to, color3);
-                from = to;
-            }
-        }
+        glUniform4f(shader.uniformLocation("u_color"), color2.r, color2.g, color2.b, color2.a);
+        float v = cos(time * 0.3) * 0.2;
+        if (v < 0) { v = 0; time += 0.2; }
 
-    }
-
-    vec3 lerp(vec3 from, vec3 to, float t) {
-        return (1.0f - t) * from + t * to;
+        glUniformMatrix4fv(shader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), vec3(0.2f + v, 0, 0)), vec3(0.2f, 0.6f, 1)))[0][0]);
+        quad->render();
+        glUniformMatrix4fv(shader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), vec3(-0.2f - v, 0, 0)), vec3(0.2f, 0.6f, 1)))[0][0]);
+        quad->render();
     }
 
     void resize(int width, int height)
