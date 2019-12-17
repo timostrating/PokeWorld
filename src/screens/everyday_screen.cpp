@@ -46,15 +46,23 @@ class EverydayScreen : public Screen
         uniform float u_time;
 
         void main() {
-            vec4 color = texture(skybox, TexCoords);
-            color *= 0.5 + gl_FragCoord.y / 800.0;
-            outputColor = vec4(color.b, color.b, color.b, 0.3 + 0.3 * abs(sin(u_time)));
+            vec3 color = vec3(13.0/255.0);
+            float a = mod(gl_FragCoord.x + 30.0, 120.0);
+            float b = mod(gl_FragCoord.y + 30.0, 120.0);
+            float width = 1.0 + 19.0 * abs(cos(u_time * 0.5));
+
+            if (a < width || b < width) color = vec3(64.0/255.0);
+            a -= width/2.0;
+            b -= width/2.0;
+            if (sqrt(a*a + b*b) < sqrt(2.0 * pow(width/2.0, 2.0))) color = vec3(1.0);
+
+            outputColor = vec4(color, 1.0);
         })glsl";
 
     FlyingCamera camera = FlyingCamera();
 
-//    ShaderProgram skyShader = ShaderProgram(vertSource, fragSource);
-    ShaderProgram shader = ShaderProgram::fromAssetFiles("shaders/lib/flat_color.vert", "shaders/lib/flat_color.frag");
+    ShaderProgram shader = ShaderProgram(vertSource, fragSource);
+//    ShaderProgram shader = ShaderProgram::fromAssetFiles("shaders/lib/flat_color.vert", "shaders/lib/flat_color.frag");
 
     Gizmos gizmos;
     SharedMesh cube = SharedMesh(Mesh::cube());
@@ -78,18 +86,13 @@ public:
 
     double time = 0;
     bool anyKeyPressed = false;
-    float max = 3;
-    int ticker = 0;
 
     void render(double deltaTime) {
         time += deltaTime;
         glUniform1f(shader.uniformLocation("u_time"), time);
-        vec4 color1 = vec4(87.0/255.0, 53.0/255.0, 0.0/255.0, 1.0);
-        vec4 color2 = vec4(150.0/255.0, 117.0/255.0, 63.0/255.0, 1.0);
-        vec4 color3 = vec4(250.0/255.0, 233.0/255.0, 205.0/255.0, 1.0);
 
         //        float t2 = 8.0f * sin(time * 0.05);
-        glClearColor(color1.r, color1.g, color1.b, color1.a);
+        glClearColor(1.0, 1.0, 1.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if (anyKeyPressed) {
@@ -98,7 +101,7 @@ public:
         } else {
             if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB))
                 anyKeyPressed = true;
-            camera.position = vec3(0, 0, 2);
+            camera.position = vec3(0.001, 0.001, 2);
             camera.lookAt(vec3(0, 0, 0));
             camera.Camera::update();
         }
@@ -106,18 +109,7 @@ public:
         shader.use();
         /////////////////////////////////////////////////////////////////////////////////////////////////////////// TEST
 
-        glUniformMatrix4fv(shader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), vec3(2, 0, -1)), 2.0f * VEC3::ONE))[0][0]);
-        glUniform4f(shader.uniformLocation("u_color"), color3.r, color3.g, color3.b, color3.a);
-
-        quad->render();
-
-        glUniform4f(shader.uniformLocation("u_color"), color2.r, color2.g, color2.b, color2.a);
-        float v = cos(time * 0.3) * 0.2;
-        if (v < 0) { v = 0; time += 0.2; }
-
-        glUniformMatrix4fv(shader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), vec3(0.2f + v, 0, 0)), vec3(0.2f, 0.6f, 1)))[0][0]);
-        quad->render();
-        glUniformMatrix4fv(shader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), vec3(-0.2f - v, 0, 0)), vec3(0.2f, 0.6f, 1)))[0][0]);
+        glUniformMatrix4fv(shader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), vec3(0, 0, 0)), 0.1f * VEC3::ONE))[0][0]);
         quad->render();
     }
 

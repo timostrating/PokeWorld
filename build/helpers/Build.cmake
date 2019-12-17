@@ -13,6 +13,7 @@ set(EXTERNAL_DIR ../../external)
 set(ASSETS_DIR ../../assets)
 set(PROJECT_NAME TinyPokemonWorld)
 
+
 # --------------------------------------------------------SOURCE--------------------------------------------------------
 
 file(GLOB_RECURSE source ../../src/*)
@@ -22,6 +23,7 @@ set_property(GLOBAL PROPERTY TARGET_SUPPORTS_SHARED_LIBS TRUE)
 
 set(OpenGL_GL_PREFERENCE "GLVND") # We dont want the legacy openGl
 find_package(OpenGL REQUIRED)
+
 
 # ---------------------------------------------------------GLFW---------------------------------------------------------
 
