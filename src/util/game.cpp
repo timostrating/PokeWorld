@@ -14,6 +14,10 @@
 #include "debug/gl_debug.h"
 #include "input/keyboard.h"
 #include "input/mouse.h"
+#include "../screens/main_screen.cpp"
+#include "../screens/tree_screen.cpp"
+#include "../screens/everyday_screen.cpp"
+#include "game.h"
 
 enum Constants { SCREENSHOT_MAX_FILENAME = 256 };
 static GLubyte *pixels = NULL;

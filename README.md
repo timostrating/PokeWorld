@@ -2,13 +2,29 @@
 
 WARNING: This is a work in progress Portfolio item.
 
-[Emscpriten](https://emscripten.org/) + [GLFW3](https://www.glfw.org/) + [GLAD](https://www.glfw.org/) + [GLM](https://github.com/g-truc/glm/releases) + [ImGui](https://github.com/ocornut/imgui) + [stb](https://github.com/nothings/stb) + [personal unit test](https://github.com/timostrating/unity_test) + [jet-live](https://github.com/ddovod/jet-live)
+[Emscpriten](https://emscripten.org/) + [GLFW3](https://www.glfw.org/) + [GLAD](https://www.glfw.org/) + [GLM](https://github.com/g-truc/glm/releases) + [ImGui](https://github.com/ocornut/imgui) + [stb](https://github.com/nothings/stb) + [personal unit test code](https://github.com/timostrating/unity_test)
 
 ## Setup
 OPTIONAL: Setup [Emscpriten](https://emscripten.org/)
 1. To manage the dependencies I started using submodules. So get them by recursively cloning this repo or running  `$ git submodule update --init --recursive` after cloning it
 2. Download [GLAD with opengl es 3.2](http://glad.dav1d.de/#profile=core&specification=gl&api=gl%3Dnone&api=gles1%3Dnone&api=gles2%3D3.2&api=glsc2%3Dnone&language=c&loader=on) and place the unzipped files in `./external/glad` 
 
+## Soon TM
+- [ ] model loading
+- [ ] mobile on web support
+- [ ] clickable
+- [ ] particle system - fireworks
+- [ ] procedural buildings
+- [ ] grass / vegetation
+- [ ] water
+- [ ] growing trees
+- [ ] dynamic sky 
+- [ ] generating textures
+
+
+- [ ] (optional) playable animations
+- [ ] (optional) post processing
+- [ ] (optional) sound
 
 ## Building it
 
