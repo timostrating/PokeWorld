@@ -60,9 +60,9 @@ class EverydayScreen : public Screen
 
     FlyingCamera camera = FlyingCamera();
 
-    ShaderProgram waterShader = ShaderProgram(vertSource, fragSource);
+//    ShaderProgram waterShader = ShaderProgram(vertSource, fragSource);
     ShaderProgram shader = ShaderProgram::fromAssetFiles("shaders/lib/flat_color.vert", "shaders/lib/flat_color.frag");
-    Texture texture = Texture::fromAssetFile("textures/turbulance.jpg");
+//    Texture texture = Texture::fromAssetFile("textures/turbulance.jpg");
 
     Gizmos gizmos;
     SharedMesh cube = SharedMesh(Mesh::cube());
@@ -72,9 +72,6 @@ public:
     EverydayScreen()
     {
         shader.use();
-        waterShader.use();
-        texture.bind(0, waterShader, "u_texture");
-
         VertexBuffer::uploadSingleMesh(cube);
         VertexBuffer::uploadSingleMesh(quad);
     }
@@ -86,56 +83,38 @@ public:
 
     void render(double deltaTime) {
         time += deltaTime;
-        waterShader.use();
-        glUniform1f(waterShader.uniformLocation("u_time"), time);
+        glUniform1f(shader.uniformLocation("u_time"), time);
 
-//        glClearColor(97.0/255.0, 116.0/255.0, 140.0/255.0, 1.0);
-        glClearColor(0.8 * 208.0/255.0, 0.8 * 217.0/255.0, 0.8 * 242.0/255.0, 1.0);
+        glClearColor(84.0/255.0, 84.0/255.0, 124.0/255.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if (anyKeyPressed) {
             camera.update(deltaTime);
-            camera.debugDraw();
         } else {
             if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB))
                 anyKeyPressed = true;
-            camera.position = vec3(1.5, 1, 1.5);
-            camera.lookAt(vec3(0, 0, 0));
+            camera.position = vec3(sin(time * 0.25) * 6.5, 3, cos(time * 0.25) * 6.5);
+            camera.lookAt(vec3(0, 2, 0));
             camera.Camera::update();
         }
+//        camera.debugDraw();
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////// TEST
 
-//        glUniformMatrix4fv(waterShader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * rotate(translate(mat4(1.0f), vec3(0, -0.05, 0)), radians(-90.0f), VEC3::X))[0][0]);
-//        quad->render();
-
         shader.use();
-        srand(0);
-        for (float v=0.0; v< 2*PI; v += 0.01f) {
-            float gray = random(0.6f, 0.9f);
-            glUniform4f(shader.uniformLocation("u_color"), gray * 43.0/255.0, gray * 54.0/255.0, gray * 64.0/255.0, 1.0);
-            glUniformMatrix4fv(shader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * rotate(scale(translate(mat4(1.0f), random(1.0f, 1.5f) * vec3(sin(v), 0, cos(v))), random(0.05f, 0.1f) * VEC3::ONE), radians(random(0.0f, 360.0f)), VEC3::X))[0][0]);
-            cube->render();
-        }
-
-        for (float v=0.0; v< 2*PI; v += 0.1f) {
-//            glUniform4f(shader.uniformLocation("u_color"), 93.0/255.0, 145.0/255.0, 125.0/255.0, 1.0);
-            glUniform4f(shader.uniformLocation("u_color"), 43.0/255.0, 64.0/255.0, 54.0/255.0, 1.0);
-            glUniformMatrix4fv(shader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * rotate(scale(translate(mat4(1.0f), random(1.0f, 1.5f) * vec3(sin(v), 0.08, cos(v))), random(0.02f, 0.05f) * VEC3::ONE), radians(random(0.0f, 360.0f)), VEC3::X))[0][0]);
-            cube->render();
-        }
-
-        waterShader.use();
-        glUniform1f(waterShader.uniformLocation("u_time"), time);
-
-        glUniformMatrix4fv(waterShader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * rotate(translate(mat4(1.0f), vec3(0, -0.02, 0)), radians(-90.0f), VEC3::X))[0][0]);
-        glUniform1f(waterShader.uniformLocation("u_alpha"), 1.0);
-        quad->render();
-        glUniformMatrix4fv(waterShader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * rotate(translate(mat4(1.0f), vec3(0, 0.02, 0)), radians(-90.0f), VEC3::X))[0][0]);
-        glUniform1f(waterShader.uniformLocation("u_alpha"), 0.1);
+        glUniformMatrix4fv(shader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * rotate(scale(translate(mat4(1.0f), vec3(0, 0, 0)), 10.0f * VEC3::ONE), radians(-90.0f), VEC3::X))[0][0]);
+        glUniform4f(shader.uniformLocation("u_color"), 0.15, 0.25, 0.15, 1.0);
         quad->render();
 
+        float a = abs(sin(time * 1.0) * 0.5);
+        float b = smoothstep(-1.0, 1.0, sin(time * 2.0)) * 0.2;
+        glUniformMatrix4fv(shader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), vec3(0, 1 + a + b, 0)), vec3(1+b, 1-b, 1+b)))[0][0]);
+        glUniform4f(shader.uniformLocation("u_color"), 1.0, 0.0, 1.0, 0.9);
+        cube->render();
 
+        glUniformMatrix4fv(shader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * rotate(scale(translate(mat4(1.0f), vec3(0, 3 + a + b, 0)), vec3(1.0, 0.1, 1)), static_cast<float>(time * 0.25f), VEC3::Y))[0][0]);
+        glUniform4f(shader.uniformLocation("u_color"), 0.0, 1.0, 0.0, 0.9);
+        quad->render();
     }
 
     void resize(int width, int height)
