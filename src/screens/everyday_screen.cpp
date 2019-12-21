@@ -80,21 +80,25 @@ public:
 
     double time = 0;
     bool anyKeyPressed = false;
+    float degree = 0;
 
     void render(double deltaTime) {
         time += deltaTime;
         glUniform1f(shader.uniformLocation("u_time"), time);
 
-        glClearColor(84.0/255.0, 84.0/255.0, 124.0/255.0, 1.0);
+        glClearColor(0.0/255.0, 8.0/255.0, 54.0/255.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        degree += 1.0;
+        degree = fmodf(degree, 100.0);
 
         if (anyKeyPressed) {
             camera.update(deltaTime);
         } else {
             if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB))
                 anyKeyPressed = true;
-            camera.position = vec3(sin(time * 0.25) * 6.5, 3, cos(time * 0.25) * 6.5);
-            camera.lookAt(vec3(0, 2, 0));
+            camera.position = vec3(sin(degree / 100.0) * 1.5, 0.5, cos(degree / 100.0) * 1.5);
+            camera.lookAt(vec3(0, 0, 0));
             camera.Camera::update();
         }
 //        camera.debugDraw();
@@ -102,19 +106,15 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////////////////////// TEST
 
         shader.use();
-        glUniformMatrix4fv(shader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * rotate(scale(translate(mat4(1.0f), vec3(0, 0, 0)), 10.0f * VEC3::ONE), radians(-90.0f), VEC3::X))[0][0]);
-        glUniform4f(shader.uniformLocation("u_color"), 0.15, 0.25, 0.15, 1.0);
-        quad->render();
+        srand(0);
 
-        float a = abs(sin(time * 1.0) * 0.5);
-        float b = smoothstep(-1.0, 1.0, sin(time * 2.0)) * 0.2;
-        glUniformMatrix4fv(shader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), vec3(0, 1 + a + b, 0)), vec3(1+b, 1-b, 1+b)))[0][0]);
-        glUniform4f(shader.uniformLocation("u_color"), 1.0, 0.0, 1.0, 0.9);
-        cube->render();
-
-        glUniformMatrix4fv(shader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * rotate(scale(translate(mat4(1.0f), vec3(0, 3 + a + b, 0)), vec3(1.0, 0.1, 1)), static_cast<float>(time * 0.25f), VEC3::Y))[0][0]);
-        glUniform4f(shader.uniformLocation("u_color"), 0.0, 1.0, 0.0, 0.9);
-        quad->render();
+        for(int i=0; i<1000; i++)
+        {
+            vec3 v = (degree / 100) * MATH::randomPointOnSphere(180, 360);
+            gizmos.drawLine(0.3f * v, 0.7f * v, 0.5f * COLOR::WHITE);
+            gizmos.drawLine(0.7f * v,        v, 0.7f * COLOR::WHITE);
+            gizmos.drawCube(v, 0.001f,          0.9f * COLOR::WHITE);
+        }
     }
 
     void resize(int width, int height)
