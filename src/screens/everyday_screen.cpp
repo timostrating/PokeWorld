@@ -29,10 +29,13 @@ class EverydayScreen : public Screen
 
         uniform mat4 MVP;
 
-        out vec2 v_uv;
+        out vec3 v_color;
 
         void main() {
-            v_uv = 1.0 - (a_pos.xy + 1.0) / 2.0;
+            vec3 a = vec3(51.0/255.0, 27.0/255.0, 24.0/255.0);
+            vec3 b = vec3(213.0/255.0, 163.0/255.0, 116.0/255.0);
+            v_color = mix(a, b, (a_pos.y + 1.0) * 0.5);
+//            v_color = vec3(51.0/255.0 + (a_pos.x/10.), 27.0/255.0 + (a_pos.y/10.), 24.0/255.0 + (a_pos.z/10.));
             gl_Position = MVP * vec4(a_pos, 1.0);
         })glsl";
 
@@ -43,30 +46,26 @@ class EverydayScreen : public Screen
 
         out vec4 outputColor;
 
-        in vec2 v_uv;
-        uniform float u_time;
-        uniform float u_alpha;
-        uniform sampler2D u_texture;
+        in vec3 v_color;
 
         void main() {
-            vec4 color = vec4(97.0/255.0, 116.0/255.0, 140.0/255.0, 1.0);
-            float noise = texture(u_texture, 0.2 * vec2(v_uv.x + 0.01 * u_time, v_uv.y + 0.015 * u_time)).x;
-            color += 0.7 * vec4(smoothstep(0.7, 0.9, noise));
-
-            color += vec4(sqrt(pow(v_uv.x - 0.5, 2.0) + pow(v_uv.y - 0.5, 2.0)));
-
-            outputColor = vec4(color.xyz, u_alpha);
+            outputColor = vec4(v_color, 1.0);
         })glsl";
 
     FlyingCamera camera = FlyingCamera();
 
-//    ShaderProgram waterShader = ShaderProgram(vertSource, fragSource);
-    ShaderProgram shader = ShaderProgram::fromAssetFiles("shaders/lib/flat_color.vert", "shaders/lib/flat_color.frag");
+    ShaderProgram shader = ShaderProgram(vertSource, fragSource);
+//    ShaderProgram shader = ShaderProgram::fromAssetFiles("shaders/terrain.vert", "shaders/terrain.frag");
 //    Texture texture = Texture::fromAssetFile("textures/turbulance.jpg");
 
     Gizmos gizmos;
     SharedMesh cube = SharedMesh(Mesh::cube());
     SharedMesh quad = SharedMesh(Mesh::quad());
+
+    static const int COUNT = 10;
+    SharedMesh stones[COUNT];
+    static const int POINTS = 7;
+    vec3 points[POINTS];
 
 public:
     EverydayScreen()
@@ -74,47 +73,58 @@ public:
         shader.use();
         VertexBuffer::uploadSingleMesh(cube);
         VertexBuffer::uploadSingleMesh(quad);
+
+        for (int n=0; n<COUNT; n++) {
+            stones[n] = SharedMesh(new Mesh(0, 0));
+            srand(n);
+            for (int i = 0; i < POINTS; i++)
+                points[i] = MATH::randomPointOnSphere(180, 360);
+
+            for (int i = 0; i < POINTS; i++)
+                for (int j = 0; j < POINTS; j++)
+                    for (int k = 0; k < POINTS; k++)
+                        if (i != j && i != k && j != k)
+                            stones[n]->vertices.insert(stones[n]->vertices.begin(),
+                                                   {points[i].x, points[i].y, points[i].z,
+                                                    points[j].x, points[j].y, points[j].z,
+                                                    points[k].x, points[k].y, points[k].z});
+
+            stones[n]->nrOfVerts = stones[n]->vertices.size() / 3;
+            VertexBuffer::uploadSingleMesh(stones[n]);
+        }
+
     }
 
     void setup(GLFWwindow* window) {}
 
+
     double time = 0;
     bool anyKeyPressed = false;
-    float degree = 0;
 
     void render(double deltaTime) {
         time += deltaTime;
         glUniform1f(shader.uniformLocation("u_time"), time);
 
-        glClearColor(0.0/255.0, 8.0/255.0, 54.0/255.0, 1.0);
+        glClearColor(0.5 * 212.0/255.0, 0.5 * 172.0/255.0, 0.5 * 138.0/255.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        degree += 1.0;
-        degree = fmodf(degree, 100.0);
 
         if (anyKeyPressed) {
             camera.update(deltaTime);
+            camera.debugDraw();
         } else {
             if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB))
                 anyKeyPressed = true;
-            camera.position = vec3(sin(degree / 100.0) * 1.5, 0.5, cos(degree / 100.0) * 1.5);
+            camera.position = vec3(sin(time * 0.5) * 3.5, 0.5, cos(time * 0.5) * 3.5);
             camera.lookAt(vec3(0, 0, 0));
             camera.Camera::update();
         }
-//        camera.debugDraw();
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////// TEST
 
         shader.use();
-        srand(0);
-
-        for(int i=0; i<1000; i++)
-        {
-            vec3 v = (degree / 100) * MATH::randomPointOnSphere(180, 360);
-            gizmos.drawLine(0.3f * v, 0.7f * v, 0.5f * COLOR::WHITE);
-            gizmos.drawLine(0.7f * v,        v, 0.7f * COLOR::WHITE);
-            gizmos.drawCube(v, 0.001f,          0.9f * COLOR::WHITE);
-        }
+        glUniformMatrix4fv(shader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * translate(mat4(1.0f), vec3(0, 0, 0)))[0][0]);
+//        glUniform4f(shader.uniformLocation("u_color"), 1.0, 0.5, 0.5, 1.0);
+        stones[int(time) % COUNT]->render();
     }
 
     void resize(int width, int height)
