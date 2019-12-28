@@ -11,7 +11,7 @@ using namespace INPUT;
 
 // CREDIT TO: https://github.com/hilkojj/cpp-game-utils/blob/master/source/utils/camera/flying_camera_controller.cpp
 void FlyingCamera::update(float deltaTime) {
-    speedMultiplier += MOUSE::getScrollDelta() * .5;
+    speedMultiplier += MOUSE::getScrollDelta();
     if (speedMultiplier < 0) speedMultiplier = 0;
 
     if (KEYBOARD::pressed(GLFW_KEY_W))

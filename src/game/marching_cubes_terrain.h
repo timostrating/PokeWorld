@@ -25,9 +25,9 @@ private:
     Texture test = Texture::testCheckerboard();
     GLuint mvpId;
 
-    float scale = 0.3f;
+    float scale = 25.0f;
     vec3 position = vec3(-5, -9.5, -5);
-    mat4 modelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), vec3(position.x* scale, position.y * scale, position.z * scale)), vec3(scale));
+    mat4 modelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), vec3(position.x * scale, position.y * scale, position.z * scale)), vec3(scale));
 
 
 public:

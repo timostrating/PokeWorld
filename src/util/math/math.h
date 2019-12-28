@@ -105,6 +105,7 @@ namespace COLOR
             BLUE       = vec4(0,0,1,1),
             YELLOW     = vec4(1,1,0,1),
             PINK       = vec4(1,0,1,1),
+            BROWN      = vec4(0.7, 0.3, 0, 1),
             LIGHT_BLUE = vec4(0,1,1,1);
 
     /**

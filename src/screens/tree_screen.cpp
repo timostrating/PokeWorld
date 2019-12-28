@@ -40,17 +40,17 @@ public:
 
     const float angle = radians(18.f);
 
-    ShaderProgram skyShader = ShaderProgram::fromAssetFiles("shaders/lib/skybox.vert", "shaders/lib/skybox.frag");
-    std::vector<std::string> faces = {
-            "../../../../assets/textures/test/skybox/right.jpg",
-            "../../../../assets/textures/test/skybox/left.jpg",
-            "../../../../assets/textures/test/skybox/top.jpg",
-            "../../../../assets/textures/test/skybox/bottom.jpg",
-            "../../../../assets/textures/test/skybox/front.jpg",
-            "../../../../assets/textures/test/skybox/back.jpg"
-    };
-    Cubemap* skycubemap = new Cubemap(faces);
-    SharedMesh skybox = SharedMesh(Mesh::skybox());
+//    ShaderProgram skyShader = ShaderProgram::fromAssetFiles("shaders/lib/skybox.vert", "shaders/lib/skybox.frag");
+//    std::vector<std::string> faces = {
+//            "../../../../assets/textures/test/skybox/right.jpg",
+//            "../../../../assets/textures/test/skybox/left.jpg",
+//            "../../../../assets/textures/test/skybox/top.jpg",
+//            "../../../../assets/textures/test/skybox/bottom.jpg",
+//            "../../../../assets/textures/test/skybox/front.jpg",
+//            "../../../../assets/textures/test/skybox/back.jpg"
+//    };
+//    Cubemap* skycubemap = new Cubemap(faces);
+//    SharedMesh skybox = SharedMesh(Mesh::skybox());
 
 
     TreeScreen()
@@ -64,7 +64,7 @@ public:
 
         // Model View Projection
         MVPLocation = defaultShaderProgram.uniformLocation("MVP");
-        VertexBuffer::uploadSingleMesh(skybox);
+//        VertexBuffer::uploadSingleMesh(skybox);
     }
 
     void setup(GLFWwindow* window) {
@@ -112,9 +112,9 @@ public:
         }
 
 
-        skyShader.use();
-        glUniformMatrix4fv(skyShader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), vec3(0, 0, 0)), 100.0f * VEC3::ONE))[0][0]);
-        skybox->render();
+//        skyShader.use();
+//        glUniformMatrix4fv(skyShader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), vec3(0, 0, 0)), 100.0f * VEC3::ONE))[0][0]);
+//        skybox->render();
 
         mat4 mvp = camera.combined * modelMatrix;
         glUniformMatrix4fv( MVPLocation, 1, GL_FALSE, &mvp[0][0]);

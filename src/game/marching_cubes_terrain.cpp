@@ -74,7 +74,6 @@ void MarchingCubesTerrain::debugRender()
     )
 }
 
-
 void MarchingCubesTerrain::render()
 {
 //    debugRender();

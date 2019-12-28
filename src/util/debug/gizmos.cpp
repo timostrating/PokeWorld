@@ -53,7 +53,8 @@ void Gizmos::drawLine(const vec3 &from, const vec3 &to, const vec4 &color)
     mesh->render();
 }
 
-void Gizmos::drawCube(const vec3 &pos, const float size, const vec4 &color)
+void Gizmos::drawCube(const vec3 &pos, const float size, const vec4 &color) { drawBox(pos, vec3(size), color); }
+void Gizmos::drawBox(const vec3 &pos, const vec3 size, const vec4 &color)
 {
     shaderProgram.use();
     glUniformMatrix4fv(mvpId, 1, GL_FALSE, &Camera::main->combined[0][0]);
@@ -76,8 +77,8 @@ void Gizmos::drawCube(const vec3 &pos, const float size, const vec4 &color)
             glm::vec3( 1,-1,-1), glm::vec3( 1, 1,-1),
     };
     for (int i=0; i<24; i+=2) {
-        glUniform3f(fromId, (size * data[i  ].x) + pos.x,  (size * data[i  ].y) + pos.y,  (size * data[i  ].z) + pos.z);
-        glUniform3f(toId,   (size * data[i+1].x) + pos.x,  (size * data[i+1].y) + pos.y,  (size * data[i+1].z) + pos.z);
+        glUniform3f(fromId, (size.x * data[i  ].x) + pos.x,  (size.y * data[i  ].y) + pos.y,  (size.z * data[i  ].z) + pos.z);
+        glUniform3f(toId,   (size.x * data[i+1].x) + pos.x,  (size.y * data[i+1].y) + pos.y,  (size.z * data[i+1].z) + pos.z);
         mesh->render();
     }
 }
