@@ -12,6 +12,6 @@ public:
     void update(float deltaTime);
 
 private:
-    float speedMultiplier = 100.0;
+    float speedMultiplier = 20.0;
     float rotationSpeed = 90;
 };

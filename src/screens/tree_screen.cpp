@@ -32,7 +32,6 @@ public:
     ShaderProgram defaultShaderProgram = ShaderProgram::fromAssetFiles("shaders/default.vert", "shaders/default.frag");
 
     Gizmos gizmos;
-    MarchingCubesTerrain terrain;
 
     const static int cacheSize = 100;
     vec3 plusCache[cacheSize];
@@ -121,7 +120,7 @@ public:
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////// TEST
 
-        terrain.render();
+
 
 
 

@@ -15,54 +15,12 @@
 #include "../graphics/texture.h"
 #include "../game/marching_cubes_terrain.h"
 #include "../graphics/cubemap.h"
+#include "../game/bezier_curve.h"
 
 using namespace glm;
 using namespace MATH;
 
 #define MULTILINE(...) #__VA_ARGS__
-
-class BezierCurve {
-    Gizmos gizmos;
-    std::vector<vec3> points;
-
-private:
-    vec3 lerp(vec3, vec3, float t)
-    {
-
-    }
-
-public:
-    BezierCurve(vec3 a, vec3 b, vec3 c, vec3 d)
-    {
-        points.insert(points.begin(), {a,b,c,d});
-
-        if (points.size() < 4 || points.size() % 2 != 0)
-            nice_error("BezierCurve points incorrect");
-    }
-
-    void debugDraw()
-    {
-        for (auto p : points)
-            gizmos.drawCube(p, 0.1, COLOR::WHITE);
-
-        for (int i=0; i<points.size()-1; i++)
-            gizmos.drawLine(points[i], points[i+1], COLOR::WHITE);
-    }
-
-    vec3 getPoint(float t, float scale=1, float scale2=1)
-    {
-        float one_t = 1-t;
-        vec3 p0 = scale*points[0], p1 = scale*points[1], p2 = scale2*points[2], p3 = scale2*points[3];
-        return powf(one_t,3)*p0 + 3*powf(one_t, 2)*t*p1 + 3*one_t*powf(t,2)*p2 + powf(t,3)*p3;
-    }
-
-    vec3 getDerivative(float t, float scale=1)
-    {
-        float one_t = 1-t;
-        vec3 p0 = scale*points[0], p1 = scale*points[1], p2 = scale*points[2], p3 = scale*points[3];
-        return 3*powf(one_t,2)*(p1-p0) + 6*one_t*t*(p2-p1) + 3*powf(t,2)*(p3-p2);
-    }
-};
 
 class EverydayScreen : public Screen
 {
@@ -104,7 +62,7 @@ class EverydayScreen : public Screen
     SharedMesh quad = SharedMesh(Mesh::quad());
 
 
-    BezierCurve curve = BezierCurve(vec3(-4, 0, -1), vec3(-4, 0, 5), vec3(4, 1, -2), vec3(4, 1, 3));
+    BezierCurve curve = BezierCurve(vec3(-8, 0, -5), vec3(-3, 0, 5), vec3(4, -1, -2), vec3(4, -1, 3));
 
 public:
     EverydayScreen()
@@ -126,7 +84,7 @@ public:
         glUniform1f(shader.uniformLocation("u_time"), time);
 
 //        glClearColor(0.5 * 212.0/255.0, 0.5 * 172.0/255.0, 0.5 * 138.0/255.0, 1.0);
-        glClearColor(16.0/255.0, 16.0/255.0, 16.0/255.0, 1.0);
+        glClearColor(16.0/255.0, 32.0/255.0, 64.0/255.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if (anyKeyPressed) {
@@ -135,24 +93,54 @@ public:
         } else {
             if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB))
                 anyKeyPressed = true;
-            camera.position = vec3(sin(time * 0.5) * 10, 7, cos(time * 0.5) * 10);
+//            camera.position = vec3(sin(time * 0.5) * 10, 7, cos(time * 0.5) * 10);
+            camera.position = vec3(5, 7, 5);
             camera.lookAt(vec3(0, 0, 0));
             camera.Camera::update();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////// TEST
-
+        float v = fmodf(time*0.1, 1.0);
         shader.use();
 //        curve.debugDraw();
-        vec3 from = curve.getPoint(0, abs(sin(time)), abs(cos(time))), to, deriv;
-        for (float v=0.01; v<1.0; v += 0.01)
-        {
-            to = curve.getPoint(v, abs(sin(time)), abs(cos(time)));
-            deriv = curve.getDerivative(v, 0.1);
+        vec3 from = curve.getPoint(0), to, deriv, tangent, up, normal;
+//        for (float v=0.1; v<1.0; v += 0.09)
+//        {
+            to = curve.getPoint(v);
+            deriv = curve.getDerivative(v);
+            tangent = normalize(deriv);
+            up = normalize(cross(from, to));
+            normal = normalize(cross(up, tangent));
 
-            gizmos.drawLine(from, to,       vec4(deriv.r *10, deriv.g *1, deriv.b *10, 1.0));
-            gizmos.drawLine(from, to+deriv, vec4(deriv.r *1, deriv.g *10, deriv.b *1, 1.0));
-//            gizmos.drawLine(from, to-deriv, vec4(deriv.r *1, deriv.g *1, deriv.b *10, 1.0));
+//            gizmos.drawLine(from, to, vec4(deriv.r, deriv.g, deriv.b, 1.0));
+            gizmos.drawCube(to, 0.01f, COLOR::PINK);
+            gizmos.drawLine(to, to+tangent, COLOR::GREEN);
+            gizmos.drawLine(to, to+up, COLOR::BLUE);
+            gizmos.drawLine(to, to+normal, COLOR::RED);
+
+
+//            cross(getDerivative(t), getPoint(t));
+
+//            from = to;
+//        }
+
+        for (float n=0.0; n<v; n += 0.01)
+        {
+            vec3 oldUp = from+up;
+            vec3 oldNormal = from+normal;
+//            gizmos.drawLine(from+normal, from+up, vec4(0.8,0.5,0.3, 1.0));
+
+            to = curve.getPoint(n);
+            deriv = curve.getDerivative(n);
+            tangent = normalize(deriv);
+            up = normalize(cross(from, to));
+            normal = normalize(cross(up, tangent));
+
+            gizmos.drawLine(oldUp, to+up, vec4(0.8,0.5,0.3, 1.0));
+            gizmos.drawLine(oldNormal, to+normal, vec4(0.8,0.5,0.3, 1.0));
+            if (int(n*100) % 10 == 0)
+                gizmos.drawLine(to+up, to+normal, vec4(0.8,0.8,0.3, 1.0));
+
 
             from = to;
         }
