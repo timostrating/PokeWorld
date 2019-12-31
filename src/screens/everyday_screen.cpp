@@ -22,6 +22,14 @@ using namespace MATH;
 
 #define MULTILINE(...) #__VA_ARGS__
 
+class particle
+{
+public:
+
+    vec3 pos;
+    particle() : pos(vec3(0)) {}
+};
+
 class EverydayScreen : public Screen
 {
 
@@ -32,9 +40,11 @@ class EverydayScreen : public Screen
         uniform vec4 u_color;
 
         out vec3 v_color;
+        out vec3 v_pos;
 
         void main() {
-            v_color = vec3(u_color.r + (a_pos.x/4.), u_color.g + (a_pos.y/4.), u_color.b + (a_pos.z/4.));
+            v_pos = a_pos;
+            v_color = vec3(u_color.r + (a_pos.x/10.), u_color.g + (a_pos.y/10.), u_color.b + (a_pos.z/10.));
             gl_Position = MVP * vec4(a_pos, 1.0);
         })glsl";
 
@@ -46,8 +56,11 @@ class EverydayScreen : public Screen
         out vec4 outputColor;
 
         in vec3 v_color;
+        in vec3 v_pos;
 
         void main() {
+            if (sqrt(pow(v_pos.x, 2.0) + pow(v_pos.y, 2.0)) > 1.)
+                discard;
             outputColor = vec4(v_color, 1.0);
         })glsl";
 
@@ -55,7 +68,7 @@ class EverydayScreen : public Screen
 
     ShaderProgram shader = ShaderProgram(vertSource, fragSource);
 //    ShaderProgram shader = ShaderProgram::fromAssetFiles("shaders/lib/flat_color.vert", "shaders/lib/flat_color.frag");
-//    Texture texture = Texture::fromAssetFile("textures/turbulance.jpg");
+//    Texture texture = Texture::fromAssetFile("textures/tur.jpg");
 
     Gizmos gizmos;
     SharedMesh cube = SharedMesh(Mesh::cube());
@@ -63,6 +76,7 @@ class EverydayScreen : public Screen
 
 
     BezierCurve curve = BezierCurve(vec3(-8, 0, -5), vec3(-3, 0, 5), vec3(4, -1, -2), vec3(4, -1, 3));
+    particle particles[1200] = {};
 
 public:
     EverydayScreen()
@@ -70,6 +84,7 @@ public:
         shader.use();
         VertexBuffer::uploadSingleMesh(cube);
         VertexBuffer::uploadSingleMesh(quad);
+//        texture.bind(0, shader, "u_texture");
     }
 
     void setup(GLFWwindow* window) {}
@@ -77,14 +92,13 @@ public:
 
     double time = 0;
     bool anyKeyPressed = false;
-    float f = 0.3;
 
     void render(double deltaTime) {
         time += deltaTime;
         glUniform1f(shader.uniformLocation("u_time"), time);
 
 //        glClearColor(0.5 * 212.0/255.0, 0.5 * 172.0/255.0, 0.5 * 138.0/255.0, 1.0);
-        glClearColor(16.0/255.0, 32.0/255.0, 64.0/255.0, 1.0);
+        glClearColor(16.0/255.0, 16.0/255.0, 24.0/255.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if (anyKeyPressed) {
@@ -93,56 +107,41 @@ public:
         } else {
             if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB))
                 anyKeyPressed = true;
-//            camera.position = vec3(sin(time * 0.5) * 10, 7, cos(time * 0.5) * 10);
-            camera.position = vec3(5, 7, 5);
-            camera.lookAt(vec3(0, 0, 0));
+            camera.position = vec3(sin(time) * 0.1, 0.2, 3);
+//            camera.position = vec3(5, 7, 5);
+            camera.lookAt(vec3(0, 1, 0));
             camera.Camera::update();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////// TEST
-        float v = fmodf(time*0.1, 1.0);
+        float v = fmodf(time * 0.5, 4.0);
         shader.use();
-//        curve.debugDraw();
-        vec3 from = curve.getPoint(0), to, deriv, tangent, up, normal;
-//        for (float v=0.1; v<1.0; v += 0.09)
-//        {
-            to = curve.getPoint(v);
-            deriv = curve.getDerivative(v);
-            tangent = normalize(deriv);
-            up = normalize(cross(from, to));
-            normal = normalize(cross(up, tangent));
 
-//            gizmos.drawLine(from, to, vec4(deriv.r, deriv.g, deriv.b, 1.0));
-            gizmos.drawCube(to, 0.01f, COLOR::PINK);
-            gizmos.drawLine(to, to+tangent, COLOR::GREEN);
-            gizmos.drawLine(to, to+up, COLOR::BLUE);
-            gizmos.drawLine(to, to+normal, COLOR::RED);
+        srand(0);
 
-
-//            cross(getDerivative(t), getPoint(t));
-
-//            from = to;
-//        }
-
-        for (float n=0.0; n<v; n += 0.01)
+        vec3 positions[3] = {vec3(0), vec3(-1,0,0), vec3(1,0,0)};
+        vec3 colors[3] = {vec3(0.8, 0.3, 0.3), vec3(0.3, 0.8, 0.3), vec3(0.3, 0.3, 0.8)};
+        int i=0;
+        for (int n=1; n<=3; n++)
         {
-            vec3 oldUp = from+up;
-            vec3 oldNormal = from+normal;
-//            gizmos.drawLine(from+normal, from+up, vec4(0.8,0.5,0.3, 1.0));
+            glUniform4f(shader.uniformLocation("u_color"), colors[n-1].r, colors[n-1].g, colors[n-1].b, 1.0);
+            for (; i<n*400; i++)
+            {
+                if (v < 1.5) {
+                    particles[i].pos.x = 0;
+                    particles[i].pos.y = remap(v, 0, 1.5, 0, (n==1)?1.5:1);
 
-            to = curve.getPoint(n);
-            deriv = curve.getDerivative(n);
-            tangent = normalize(deriv);
-            up = normalize(cross(from, to));
-            normal = normalize(cross(up, tangent));
+                } else {
 
-            gizmos.drawLine(oldUp, to+up, vec4(0.8,0.5,0.3, 1.0));
-            gizmos.drawLine(oldNormal, to+normal, vec4(0.8,0.5,0.3, 1.0));
-            if (int(n*100) % 10 == 0)
-                gizmos.drawLine(to+up, to+normal, vec4(0.8,0.8,0.3, 1.0));
-
-
-            from = to;
+                    vec2 pos = MATH::randomVec2(-1, 1);
+                    if (length(normalize(MATH::randomVec2(-1, 1))) < length(MATH::randomVec2(-1, 1)))
+                        pos = normalize(pos);
+                    particles[i].pos.x += ((n==1)?1.0:0.6) * 0.1f * pos.x;
+                    particles[i].pos.y += ((n==1)?1.0:0.6) * 0.1f * pos.y;
+                }
+                glUniformMatrix4fv(shader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), positions[n-1] + particles[i].pos + vec3(0,0,n*0.01)), ((v>3.0)?remap(v, 3, 3.5, 1, 0):1) * remap(v, 1.5, 3, 0, 1) * 0.03f * vec3(1)))[0][0]);
+                quad->render();
+            }
         }
     }
 
