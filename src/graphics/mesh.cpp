@@ -5,8 +5,12 @@
 #include <iostream>
 #include "mesh.h"
 #include "../util/debug/nice_error.h"
+#include "../util/math/math.h"
 
-Mesh* Mesh::quad() {
+using namespace MATH;
+
+Mesh* Mesh::quad()
+{
     Mesh* mesh = new Mesh(4, 6);
     mesh->vertices.insert(mesh->vertices.begin(), {
             -1, -1,  0,
@@ -17,7 +21,8 @@ Mesh* Mesh::quad() {
     return mesh;
 }
 
-Mesh* Mesh::triangle() {
+Mesh* Mesh::triangle()
+{
     Mesh* mesh = new Mesh(3, 3);
     mesh->vertices.insert(mesh->vertices.begin(), {
             -1, -1,  0,
@@ -27,7 +32,8 @@ Mesh* Mesh::triangle() {
     return mesh;
 }
 
-Mesh *Mesh::cube() {
+Mesh *Mesh::cube()
+{
     Mesh* mesh = new Mesh(12*3, 0);
     mesh->vertices.insert(mesh->vertices.begin(), { // TODO optimize
             //  x,    y,    z       x,    y,    z       x,    y,    z
@@ -48,7 +54,8 @@ Mesh *Mesh::cube() {
     return mesh;
 }
 
-Mesh *Mesh::skybox() {
+Mesh *Mesh::skybox()
+{
     Mesh* mesh = new Mesh(12*3, 0);
     mesh->vertices.insert(mesh->vertices.begin(), {
             -1.0f,  1.0f, -1.0f,   -1.0f, -1.0f, -1.0f,    1.0f, -1.0f, -1.0f,
@@ -68,7 +75,35 @@ Mesh *Mesh::skybox() {
     return mesh;
 }
 
-void Mesh::render() {
+Mesh *Mesh::sphere()
+{
+    Mesh* mesh = new Mesh(0, 0);
+    float step = 2*PI / 10;
+
+    for (float phi=-0.5*PI; phi < 0.5*PI - 0.01; phi+=step) // [-90,90]
+    {
+        bool firstPhiLoop = abs(-0.5 * PI - phi) > 0.01,
+             lastPhiLoop  = phi + step < 0.5*PI - 0.01;
+
+        for (float theta=0; theta < 2*PI - 0.01; theta+=step) // [0,360]
+        {
+            vec3 a1 = vec3(cos(phi) * cos(theta), sin(phi), cos(phi)*sin(theta));
+            vec3 a2 = vec3(cos(phi) * cos(theta+step), sin(phi), cos(phi)*sin(theta+step));
+            vec3 b1 = vec3(cos(phi+step) * cos(theta), sin(phi+step), cos(phi+step)*sin(theta));
+            vec3 b2 = vec3(cos(phi+step) * cos(theta+step), sin(phi+step), cos(phi+step)*sin(theta+step));
+
+            if (firstPhiLoop)
+                mesh->vertices.insert(mesh->vertices.end(), {a1.x,a1.y,a1.z, b1.x,b1.y,b1.z, a2.x,a2.y,a2.z});
+            if (lastPhiLoop)
+                mesh->vertices.insert(mesh->vertices.end(), {b2.x,b2.y,b2.z, a2.x,a2.y,a2.z, b1.x,b1.y,b1.z});
+        }
+    }
+    mesh->nrOfVerts = mesh->vertices.size() / 3;
+    return mesh;
+}
+
+void Mesh::render()
+{
     if (!vertexBuffer)
         throw nice_error("You need to upload this mesh to a vertexBuffer first");
 

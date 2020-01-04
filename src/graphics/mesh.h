@@ -15,13 +15,13 @@ typedef std::shared_ptr<Mesh> SharedMesh;
 
 class Mesh
 {
-    bool useIndicies = true;
-
 public:
     static Mesh* quad();
     static Mesh* triangle();
     static Mesh* cube();
     static Mesh* skybox();
+    static Mesh* sphere();
+
     Mesh(unsigned int nrOfVerts, unsigned int nrOfIndices) : nrOfVerts(nrOfVerts), nrOfIndices(nrOfIndices) {};
 
     std::vector<float> vertices = {};
