@@ -43,10 +43,10 @@ Gizmos::Gizmos() : shaderProgram(ShaderProgram(vertSource, fragSource))
     colorId = shaderProgram.uniformLocation("u_color");
 }
 
-void Gizmos::drawLine(const vec3 &from, const vec3 &to, const vec4 &color)
+void Gizmos::drawLine(const vec3 &from, const vec3 &to, const vec4 &color, const mat4 modelProjection)
 {
     shaderProgram.use();
-    glUniformMatrix4fv(mvpId, 1, GL_FALSE, &Camera::main->combined[0][0]);
+    glUniformMatrix4fv(mvpId, 1, GL_FALSE, &(Camera::main->combined * modelProjection)[0][0]);
     glUniform3f(fromId, from.x, from.y, from.z);
     glUniform3f(toId, to.x, to.y, to.z);
     glUniform4f(colorId, color.r, color.g, color.b, color.a);

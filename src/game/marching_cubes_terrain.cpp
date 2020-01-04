@@ -6,7 +6,6 @@
 #include "marching_cube.hpp"
 #include "../util/math/math.h"
 #include "../graphics/camera.h"
-#include "cmath"
 #include "../graphics/texture.h"
 
 #define LOOP3D(N, X,Y,Z, CODE) \
@@ -44,7 +43,8 @@ MarchingCubesTerrain::MarchingCubesTerrain()
     VertexBuffer::uploadSingleMesh(mesh);
 }
 
-int MarchingCubesTerrain::getCubeIndex(int x, int y, int z, float falloff) {
+int MarchingCubesTerrain::getCubeIndex(int x, int y, int z, float falloff)
+{
     int cubeIndex = 0;
 
     const static int CUBE[8*3] {

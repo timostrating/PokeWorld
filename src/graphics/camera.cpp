@@ -17,7 +17,7 @@ using namespace glm;
         CODE \
     }} \
 
-Camera *Camera::main = 0;
+Camera *Camera::main = nullptr;
 
 Camera::Camera()
 {

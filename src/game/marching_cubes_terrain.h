@@ -4,9 +4,10 @@
 
 #pragma once
 
-
 #include "../util/debug/gizmos.h"
 #include "../graphics/texture.h"
+
+using namespace glm;
 
 // FOR MORE INFO SEE:  http://paulbourke.net/geometry/polygonise/
 class MarchingCubesTerrain
@@ -22,12 +23,12 @@ private:
     SharedMesh mesh = SharedMesh(new Mesh(0, 0)); // Internal variables are our JOB
 
     ShaderProgram terrainShader = ShaderProgram::fromAssetFiles("shaders/terrain.vert", "shaders/terrain.frag");
-    Texture test = Texture::testCheckerboard();
+    Texture test = Texture::fromAssetFile("textures/rocks1.jpg");
     GLuint mvpId;
 
-    float scale = 25.0f;
+    float modelScale = 25.0f;
     vec3 position = vec3(-5, -9.5, -5);
-    mat4 modelMatrix = glm::scale(glm::translate(glm::mat4(1.0f), vec3(position.x * scale, position.y * scale, position.z * scale)), vec3(scale));
+    mat4 modelMatrix = scale(translate(mat4(1.0f), vec3(position.x * modelScale, position.y * modelScale, position.z * modelScale)), vec3(modelScale));
 
 
 public:

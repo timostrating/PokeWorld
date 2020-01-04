@@ -21,7 +21,7 @@ private:
 public:
     Gizmos();
 
-    void drawLine(const vec3 &from, const vec3 &to, const vec4 &color = COLOR::DEFAULT);
+    void drawLine(const vec3 &from, const vec3 &to, const vec4 &color = COLOR::DEFAULT, const mat4 modelProjection = mat4(1));
     void drawCube(const vec3 &pos, const float radius, const vec4 &color = COLOR::DEFAULT);
     void drawBox(const vec3 &pos, const vec3 radius, const vec4 &color = COLOR::DEFAULT);
 };

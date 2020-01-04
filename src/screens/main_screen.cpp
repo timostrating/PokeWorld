@@ -18,6 +18,7 @@
 #include "../util/input/keyboard.h"
 #include "../graphics/cubemap.h"
 #include "../game/marching_cubes_terrain.h"
+#include "../game/water_plain.h"
 
 using namespace glm;
 
@@ -71,6 +72,7 @@ public:
     GLint MVPsky;
 
     MarchingCubesTerrain terrain;
+    WaterPlain water;
 
     SharedMesh cube = SharedMesh(Mesh::cube());
 
@@ -107,7 +109,11 @@ public:
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         skyShader.use();
-        glUniformMatrix4fv(MVPsky, 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), vec3(0, 0, 0)), 400.0f * VEC3::ONE))[0][0]);
+        mat4 cameraFixed = camera.projection * mat4(camera.view[0][0],camera.view[0][1],camera.view[0][2],camera.view[0][3],
+                                                    camera.view[1][0],camera.view[1][1],camera.view[1][2],camera.view[1][3],
+                                                    camera.view[2][0],camera.view[2][1],camera.view[2][2],camera.view[2][3],
+                                                                    0,                0,                0,camera.view[3][3]);
+        glUniformMatrix4fv(MVPsky, 1, GL_FALSE, &(cameraFixed * scale(translate(mat4(1.0f), vec3(0, 0, 0)), 400.0f * VEC3::ONE))[0][0]);
         skybox->render();
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////// CAMERA
@@ -119,17 +125,18 @@ public:
         } else {
             if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB))
                 anyKeyPressed = true;
-            camera.position = vec3(sin(time * 0.5) *250,  150,  cos(time * 0.5) *250);
+            camera.position = vec3(sin(time * 0.5) *350,  150,  cos(time * 0.5) *350);
             camera.lookAt(VEC3::Y);
             camera.Camera::update();
         }
 
         terrain.render();
+        water.render();
 
-        shader.use(); // imgui may have changed the current shader
-        srand(0); // trees
-        for (int i=0; i<200; i++)
-            drawTree(MATH::random(-100,100), MATH::random(-100,100));
+//        shader.use(); // imgui may have changed the current shader
+//        srand(0); // trees
+//        for (int i=0; i<200; i++)
+//            drawTree(MATH::random(-100,100), MATH::random(-100,100));
 
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////// GUI
