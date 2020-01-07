@@ -40,11 +40,6 @@ VertexBuffer *VertexBuffer::with()
     return new VertexBuffer();
 }
 
-VertexBuffer::VertexBuffer()
-{
-    glGenVertexArrays(1, &vaoId);
-}
-
 // static
 void VertexBuffer::bindDefault()
 {

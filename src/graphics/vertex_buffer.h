@@ -36,7 +36,10 @@ public:
     static void uploadSingleMesh(SharedMesh mesh);
 
     static VertexBuffer* with();
-    VertexBuffer();
+    VertexBuffer()
+    {
+        glGenVertexArrays(1, &vaoId);
+    }
 //    ~VertexBuffer(); // TODO: add a destructor
 
     VertexBuffer* add(SharedMesh mesh);
