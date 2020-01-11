@@ -27,7 +27,7 @@ private:
     Texture test = Texture::fromAssetFile("textures/rocks1.jpg");
     GLuint mvpId;
 
-    float modelScale = 25.0f;
+    float modelScale = 5.0f;
     vec3 position = vec3(-5, -9.5, -5);
     mat4 modelMatrix = scale(translate(mat4(1.0f), vec3(position.x * modelScale, position.y * modelScale, position.z * modelScale)), vec3(modelScale));
 

@@ -10,19 +10,18 @@ OPTIONAL: Setup [Emscpriten](https://emscripten.org/)
 2. Download [GLAD with opengl es 3.2](http://glad.dav1d.de/#profile=core&specification=gl&api=gl%3Dnone&api=gles1%3Dnone&api=gles2%3D3.2&api=glsc2%3Dnone&language=c&loader=on) and place the unzipped files in `./external/glad` 
 
 ## Soon TM
-- [ ] model loading
-- [ ] mobile on web support
-- [ ] clickable
+- [X] clickable
+- [ ] water
+- [ ] grass / vegetation
+- [ ] growing trees
+- [ ] mobile and web support
 - [ ] particle system - fireworks
 - [ ] procedural buildings
-- [ ] grass / vegetation
-- [ ] water
-- [ ] growing trees
-- [ ] dynamic sky 
-- [ ] generating textures
+- [ ] dynamic sky
 
 <br>
 
+- [ ] (optional) model loading
 - [ ] (optional) playable animations
 - [ ] (optional) post processing
 - [ ] (optional) sound
