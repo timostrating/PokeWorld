@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
     if (!GAME::init())
         return -1;
 
-    EverydayScreen screen;
+    MainScreen screen;
     GAME::setScreen(&screen);
 
     GAME::run();

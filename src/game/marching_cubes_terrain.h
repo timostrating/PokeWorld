@@ -6,11 +6,12 @@
 
 #include "../util/debug/gizmos.h"
 #include "../graphics/texture.h"
+#include "../util/interfaces/game_object.h"
 
 using namespace glm;
 
 // FOR MORE INFO SEE:  http://paulbourke.net/geometry/polygonise/
-class MarchingCubesTerrain
+class MarchingCubesTerrain : public GameObject
 {
 
 private:

@@ -18,70 +18,70 @@
 #include "../util/input/keyboard.h"
 #include "../graphics/cubemap.h"
 #include "../game/marching_cubes_terrain.h"
-#include "../game/water_plain.h"
+#include "../game/water_plane.h"
+#include "../game/systems/sky_system.h"
+#include "../game/systems/color_picker_system.h"
 
 using namespace glm;
 
+class Tmp : public GameObject {
+public:
+    SharedMesh cube = SharedMesh(Mesh::cube());
+    vec3 random = MATH::randomVec3(-10, 10);
+    mat4 transform = scale(translate(mat4(1), random), MATH::random(0.1, 0.3) * vec3(1));
+    ShaderProgram flatShader = ShaderProgram::fromAssetFiles("shaders/lib/flat_color.vert", "shaders/lib/flat_color.frag");
+    bool clicked = false;
+
+    Tmp() {
+        VertexBuffer::uploadSingleMesh(cube);
+        colorPickerData = new ColorPickerData {cube, transform};
+    }
+
+    void render() {
+        flatShader.use();
+        glUniformMatrix4fv(flatShader.uniformLocation("MVP"), 1, GL_FALSE, &(Camera::main->combined * transform)[0][0]);
+        if (clicked)
+            glUniform4f(flatShader.uniformLocation("u_color"), 1, 0, 1, 1);
+        else
+            glUniform4f(flatShader.uniformLocation("u_color"), MATH::remap(random.x, -10, 10, 0, 1), MATH::remap(random.y, -10, 10, 0, 1), MATH::remap(random.z, -10, 10, 0, 1), 1);
+        cube->render();
+    }
+
+    void onHover() {
+        random = MATH::randomVec3(-10, 10);
+    }
+
+    void onClick() {
+        clicked = true;
+    }
+};
 
 class MainScreen : public Screen
 {
-    constexpr static char vertSource[] = R"glsl(#version 300 es
-        layout (location = 0) in vec3 a_pos;
-
-        uniform mat4 MVP;
-        uniform vec4 u_color;
-
-        out vec3 v_color;
-
-        void main() {
-            v_color = vec3(u_color.r + (a_pos.x/100.), u_color.g + (a_pos.y/100.), u_color.b + (a_pos.z/100.));
-            gl_Position = MVP * vec4(a_pos, 1.0);
-        })glsl";
-
-
-
-    constexpr static char fragSource[] = R"glsl(#version 300 es
-        precision mediump float;
-
-        out vec4 outputColor;
-
-        in vec3 v_color;
-
-        void main() {
-            outputColor = vec4(v_color, 1.0);
-        })glsl";
-
 
 public:
     FlyingCamera camera = FlyingCamera();
-    ShaderProgram shader = ShaderProgram(vertSource, fragSource);
+    ShaderProgram flatShader = ShaderProgram::fromAssetFiles("shaders/lib/flat_color.vert", "shaders/lib/flat_color.frag");
 
     Gizmos gizmos;
-
-    ShaderProgram skyShader = ShaderProgram::fromAssetFiles("shaders/lib/skybox.vert", "shaders/lib/skybox.frag");
-    std::vector<std::string> faces = {
-            "../../../../assets/textures/test/skybox/right.jpg",
-            "../../../../assets/textures/test/skybox/left.jpg",
-            "../../../../assets/textures/test/skybox/top.jpg",
-            "../../../../assets/textures/test/skybox/bottom.jpg",
-            "../../../../assets/textures/test/skybox/front.jpg",
-            "../../../../assets/textures/test/skybox/back.jpg"
-    };
-    Cubemap* skycubemap = new Cubemap(faces);
-    SharedMesh skybox = SharedMesh(Mesh::skybox());
-    GLint MVPsky;
-
-    MarchingCubesTerrain terrain;
-    WaterPlain water;
-
     SharedMesh cube = SharedMesh(Mesh::cube());
+
+    SkySystem* skySystem = new SkySystem();
+    ColorPickerSystem* colorPickerSystem = new ColorPickerSystem();
+
+    std::vector<GameObject*> gameObjects = {
+//        new MarchingCubesTerrain(),
+//        new WaterPlane(),
+    };
 
     MainScreen()
     {
         VertexBuffer::uploadSingleMesh(cube);
-        VertexBuffer::uploadSingleMesh(skybox);
 
-        MVPsky = skyShader.uniformLocation("MVP");
+        for (int i=0; i<1000; i++)
+            gameObjects.insert(gameObjects.begin(), new Tmp());
+
+        colorPickerSystem->setClickAbles(&gameObjects);
     }
 
     void setup(GLFWwindow* window)
@@ -105,42 +105,43 @@ public:
     void render(double deltaTime)
     {
         time += deltaTime;
-        glClearColor(64.0/255.0, 64.0/255.0, 64.0/255.0, 1.0f);
+
+        colorPickerSystem->update();
+
+        glClearColor(100/255.0, 100/255.0, 100/255.0, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        skyShader.use();
-        mat4 cameraFixed = camera.projection * mat4(camera.view[0][0],camera.view[0][1],camera.view[0][2],camera.view[0][3],
-                                                    camera.view[1][0],camera.view[1][1],camera.view[1][2],camera.view[1][3],
-                                                    camera.view[2][0],camera.view[2][1],camera.view[2][2],camera.view[2][3],
-                                                                    0,                0,                0,camera.view[3][3]);
-        glUniformMatrix4fv(MVPsky, 1, GL_FALSE, &(cameraFixed * scale(translate(mat4(1.0f), vec3(0, 0, 0)), 400.0f * VEC3::ONE))[0][0]);
-        skybox->render();
+        skySystem->update();
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////// CAMERA
-
 
         if (anyKeyPressed) {
             camera.update(deltaTime);
             camera.debugDraw();
+            for (auto &go : gameObjects)
+                go->debugRender();
+
         } else {
             if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB))
                 anyKeyPressed = true;
-            camera.position = vec3(sin(time * 0.5) *350,  150,  cos(time * 0.5) *350);
+            camera.position = vec3(sin(time * 0.5) *30,  12,  cos(time * 0.5) *30);
+//            camera.position = vec3(15,  10,  15);
             camera.lookAt(VEC3::Y);
             camera.Camera::update();
         }
 
-        terrain.render();
-        water.render();
+        flatShader.use();
+        for (auto &go : gameObjects)
+            go->render();
 
-//        shader.use(); // imgui may have changed the current shader
+//        flatShader.use();
 //        srand(0); // trees
 //        for (int i=0; i<200; i++)
 //            drawTree(MATH::random(-100,100), MATH::random(-100,100));
 
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////// GUI
-        shader.use();
+        flatShader.use();
         VertexBuffer::bindDefault();
 
         // Feed inputs to dear imgui, start new frame
@@ -148,31 +149,14 @@ public:
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::Begin("LSystem pattern");
-            // todo
-        ImGui::End();
+//        ImGui::Begin("LSystem pattern");
+//            for (auto &go : gameObjects)
+//                go->renderGui();
+//        ImGui::End();
 
         // Render dear imgui into screen
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-    }
-
-    void drawTree(float x, float z) {
-        float height = MATH::random(5, 10);
-        glUniformMatrix4fv(shader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), vec3(x, 0.5 * height, z)), vec3(1, 0.5 * height, 1)))[0][0]);
-        glUniform4f(shader.uniformLocation("u_color"), height * 0.1, 0.0, 0.0, 1.0);
-        cube->render();
-        vec3 r = MATH::randomVec3(0.5, 1);
-        glUniformMatrix4fv(shader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * scale(translate(mat4(1.0f), vec3(x, r.y * 0.1 + height, z)), vec3(r.x * 5, r.y * 5, r.z * 5)))[0][0]);
-        glUniform4f(shader.uniformLocation("u_color"), r.x * 0.0, r.y * 0.7, r.z * 0.3, 1.0);
-        cube->render();
-    }
-
-    void drawBox(mat4 transform, vec4 color = vec4(1.0, 0.0, 1.0, 1.0))
-    {
-        glUniformMatrix4fv(shader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * transform)[0][0]);
-        glUniform4f(shader.uniformLocation("u_color"), color.r, color.g, color.b, color.a);
-        cube->render();
     }
 
     void resize(int width, int height)

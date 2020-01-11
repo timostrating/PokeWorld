@@ -12,4 +12,10 @@ namespace INPUT::MOUSE
     void lateUpdate();
 
     float getScrollDelta();
+
+    int getMousePosX();
+    int getMousePosY();
+
+    bool leftClick();
+    bool rightClick();
 };

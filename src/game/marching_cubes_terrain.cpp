@@ -41,6 +41,7 @@ MarchingCubesTerrain::MarchingCubesTerrain()
     )
 
     VertexBuffer::uploadSingleMesh(mesh);
+    colorPickerData = new ColorPickerData{mesh, modelMatrix};
 }
 
 int MarchingCubesTerrain::getCubeIndex(int x, int y, int z, float falloff)

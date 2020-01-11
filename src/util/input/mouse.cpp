@@ -15,6 +15,9 @@ namespace INPUT::MOUSE
     double mousePosX = 0.0;
     double mousePosY = 0.0;
 
+    int mouseButtons[3] = {GLFW_RELEASE};
+
+
     static void cursorPositionCallback(GLFWwindow* _, double xpos, double ypos)
     {
         mousePosX = xpos;
@@ -26,10 +29,23 @@ namespace INPUT::MOUSE
         nextScroll = yoffset;
     }
 
+    void mouseCallback(GLFWwindow* _, int button, int action, int mods)
+    {
+        if (button > 3)
+            return;
+
+        mouseButtons[button] = action;
+    }
+
+    bool leftClick() { return mouseButtons[GLFW_MOUSE_BUTTON_LEFT];}
+    bool rightClick() { return mouseButtons[GLFW_MOUSE_BUTTON_RIGHT];}
+
     void setup(GLFWwindow *window)
     {
         glfwSetCursorPosCallback(window, cursorPositionCallback);
         glfwSetScrollCallback(window, scrollCallback);
+        glfwSetMouseButtonCallback(window, mouseCallback);
+
     }
 
     void lateUpdate()
@@ -38,5 +54,8 @@ namespace INPUT::MOUSE
         scroll = nextScroll;
         nextScroll = 0;
     }
+
+    int getMousePosX() { return static_cast<int>(mousePosX); }
+    int getMousePosY() { return static_cast<int>(mousePosY); }
 
 }

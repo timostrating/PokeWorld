@@ -5,52 +5,153 @@
 #include "frame_buffer.h"
 #include "../util/debug/nice_error.h"
 
-void FrameBuffer::bindDefault()
+
+void FrameBuffer::unbindCurrent()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+//    glViewport(0, 0, 800, 800); // TODO: fix this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+}
+
+GLuint create()
+{
+    GLuint id;
+    glGenFramebuffers(1, &id);
+    return id;
+}
+
+FrameBuffer::FrameBuffer(GLuint width, GLuint height, GLuint samples_)
+        : id(create()), width(width), height(height),
+          samples(
+#ifdef EMSCRIPTEN
+                  0
+#else
+                  samples_
+#endif
+          )
+{
+    std::cout << "FrameBuffer " << id << " created with " << samples << " samples\n";
+
+    if (samples) sampled = new FrameBuffer(width, height);
+}
+
+FrameBuffer::~FrameBuffer()
+{
+    glDeleteFramebuffers(1, &id);
+    std::cout << "FrameBuffer " << id << " destroyed\n";
+    delete sampled;
+    delete colorTexture;
+    delete depthTexture;
 }
 
 void FrameBuffer::bind()
 {
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE)
-        nice_error("FrameBuffer is not complete");
-
-    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindFramebuffer(GL_FRAMEBUFFER, id);
+    glViewport(0, 0, width, height);
 }
 
-FrameBuffer FrameBuffer::testBuffer()
+void FrameBuffer::unbind()
 {
-    FrameBuffer buffer;
+    unbindCurrent();
+    if (!sampled) return;
 
-    GLuint texColorBuffer;
-    glGenTextures(1, &texColorBuffer);
-    glBindTexture(GL_TEXTURE_2D, texColorBuffer);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, sampled->id);
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, id);
 
-    glTexImage2D(
-            GL_TEXTURE_2D, 0, GL_RGB, 800, 800, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL
-    );
-    // TODO: when not 800x800 add glViewport
+    GLbitfield mask = 0;
+    if (colorTexture) mask |= GL_COLOR_BUFFER_BIT;
+    if (depthTexture) mask |= GL_DEPTH_BUFFER_BIT;
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBlitFramebuffer(0, 0, width, height, 0, 0, width, height, mask, GL_NEAREST);
 
-    // add colorbuffer to framebuffer
-    glFramebufferTexture2D(
-            GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texColorBuffer, 0
-    );
-    // TODO: delete it when we are done
+    unbindCurrent();
+}
 
+void FrameBuffer::addColorTexture(GLuint format, GLuint magFilter, GLuint minFilter)
+{
+    if (sampled)
+    {
+        addColorBuffer(format);
+        sampled->addColorTexture(format, magFilter, minFilter);
+        colorTexture = sampled->colorTexture;
+        return;
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, id);
+    // glDrawBuffer(GL_COLOR_ATTACHMENT0);
 
-    GLuint rboDepth;
-    glGenRenderbuffers(1, &rboDepth);
-    glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 800, 800);
+    GLuint texId;
+    glGenTextures(1, &texId);
+    glBindTexture(GL_TEXTURE_2D, texId);
+    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, NULL);
 
-    // add Renderbuffer Object for depth and stencil
-    glFramebufferRenderbuffer(
-            GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth
-    );
-    // TODO: delete it when we are done
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texId, 0);
+    colorTexture = new Texture(texId);
 
-    return buffer;
+    unbindCurrent();
+}
+
+void FrameBuffer::addColorBuffer(GLuint format)
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, id);
+
+    GLuint id;
+    glGenRenderbuffers(1, &id);
+    glBindRenderbuffer(GL_RENDERBUFFER, id);
+
+    if (!sampled)
+        glRenderbufferStorage(GL_RENDERBUFFER, format, width, height);
+    else
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, format, width, height);
+
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, id);
+
+    unbindCurrent();
+}
+
+void FrameBuffer::addDepthTexture(GLuint magFilter, GLuint minFilter)
+{
+    if (sampled)
+    {
+        addDepthBuffer();
+        sampled->addDepthTexture(magFilter, minFilter);
+        depthTexture = sampled->depthTexture;
+        return;
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, id);
+
+#ifdef EMSCRIPTEN
+    magFilter = minFilter = GL_NEAREST;
+#endif
+
+    GLuint texId;
+    glGenTextures(1, &texId);
+    glBindTexture(GL_TEXTURE_2D, texId);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT32F, width, height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texId, 0);
+    depthTexture = new Texture(texId);
+
+    unbindCurrent();
+}
+
+void FrameBuffer::addDepthBuffer()
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, id);
+
+    GLuint id;
+    glGenRenderbuffers(1, &id);
+    glBindRenderbuffer(GL_RENDERBUFFER, id);
+
+    if (!sampled)
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32F, width, height);
+    else
+        glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GL_DEPTH_COMPONENT32F, width, height);
+
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, id);
+
+    unbindCurrent();
 }

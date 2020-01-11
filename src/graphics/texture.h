@@ -19,6 +19,9 @@ public:
     static Texture testCheckerboard();
 
     Texture(const char *imgPath, GLint textureWrapping = GL_REPEAT, GLint textureInterpolation = GL_LINEAR);
+
+    Texture(GLuint textureId) : textureId(textureId) {}
+
     ~Texture();
 
     void bind(unsigned int textureI);
