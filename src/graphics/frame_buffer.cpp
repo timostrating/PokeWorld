@@ -2,6 +2,7 @@
 // Created by sneeuwpop on 05-01-20.
 //
 
+#include <imgui.h>
 #include "frame_buffer.h"
 #include "../util/debug/nice_error.h"
 
@@ -87,7 +88,7 @@ void FrameBuffer::addColorTexture(GLuint format, GLuint magFilter, GLuint minFil
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texId, 0);
-    colorTexture = new Texture(texId);
+    colorTexture = new Texture(texId, width, height);
 
     unbindCurrent();
 }
@@ -133,7 +134,7 @@ void FrameBuffer::addDepthTexture(GLuint magFilter, GLuint minFilter)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, texId, 0);
-    depthTexture = new Texture(texId);
+    depthTexture = new Texture(texId, width, height);
 
     unbindCurrent();
 }
@@ -154,4 +155,13 @@ void FrameBuffer::addDepthBuffer()
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, id);
 
     unbindCurrent();
+}
+
+void FrameBuffer::renderGUI()
+{
+    ImGui::Text("Framebuffer %d", id);
+    ImGui::Text("");
+
+    if (colorTexture != nullptr) { ImGui::Text("pointer = %p", colorTexture); colorTexture->renderGUI(); }
+    if (depthTexture != nullptr) { ImGui::Text("pointer = %p", depthTexture); depthTexture->renderGUI(); }
 }

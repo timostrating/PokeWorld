@@ -19,7 +19,7 @@
 #include "../graphics/cubemap.h"
 #include "../game/marching_cubes_terrain.h"
 #include "../game/water_plane.h"
-#include "../game/systems/sky_system.h"
+#include "../game/sky.h"
 #include "../game/systems/color_picker_system.h"
 
 using namespace glm;
@@ -29,7 +29,7 @@ public:
     SharedMesh cube = SharedMesh(Mesh::cube());
     vec3 random = MATH::randomVec3(-10, 10);
     mat4 transform = scale(translate(mat4(1), random), MATH::random(0.1, 0.3) * vec3(1));
-    ShaderProgram flatShader = ShaderProgram::fromAssetFiles("shaders/lib/flat_color.vert", "shaders/lib/flat_color.frag");
+    ShaderProgram flatShader = ShaderProgram::fromAssetFiles("shaders/lib/default.vert", "shaders/lib/default.frag");
     bool clicked = false;
 
     Tmp() {
@@ -61,12 +61,12 @@ class HoverScreen : public Screen
 
 public:
     FlyingCamera camera = FlyingCamera();
-    ShaderProgram flatShader = ShaderProgram::fromAssetFiles("shaders/lib/flat_color.vert", "shaders/lib/flat_color.frag");
+    ShaderProgram flatShader = ShaderProgram::fromAssetFiles("shaders/lib/default.vert", "shaders/lib/default.frag");
 
     Gizmos gizmos;
     SharedMesh cube = SharedMesh(Mesh::cube());
 
-    SkySystem* skySystem = new SkySystem();
+    Sky* skySystem = new Sky();
     ColorPickerSystem* colorPickerSystem = new ColorPickerSystem();
 
     std::vector<GameObject*> gameObjects = {
@@ -81,7 +81,7 @@ public:
         for (int i=0; i<1000; i++)
             gameObjects.insert(gameObjects.begin(), new Tmp());
 
-        colorPickerSystem->setClickAbles(&gameObjects);
+        colorPickerSystem->setGameObjects(&gameObjects);
     }
 
     void setup(GLFWwindow* window)
@@ -106,13 +106,11 @@ public:
     {
         time += deltaTime;
 
-        colorPickerSystem->update();
+        colorPickerSystem->update(deltaTime);
 
         glClearColor(100/255.0, 100/255.0, 100/255.0, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        skySystem->update();
-
+        
         ///////////////////////////////////////////////////////////////////////////////////////////////////////// CAMERA
 
         if (anyKeyPressed) {

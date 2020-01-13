@@ -5,14 +5,25 @@
 #pragma once
 
 
-#include "../../util/interfaces/system.h"
-#include "../../graphics/shader_program.h"
-#include "../../graphics/cubemap.h"
-#include "../../graphics/mesh.h"
+#include "../util/interfaces/system.h"
+#include "../graphics/shader_program.h"
+#include "../graphics/cubemap.h"
+#include "../graphics/mesh.h"
+#include "../util/interfaces/game_object.h"
 
 class SkySystem : public System
 {
-    ShaderProgram skyShader = ShaderProgram::fromAssetFiles("shaders/lib/skybox.vert", "shaders/lib/skybox.frag");
+
+public:
+    float rotation = 0;
+    void update(float deltatime) { rotation += deltatime * 2;}
+};
+
+
+
+class Sky : public GameObject
+{
+    ShaderProgram skyShader = ShaderProgram::fromAssetFiles("shaders/skybox.vert", "shaders/skybox.frag");
     std::vector<std::string> faces = {
             "../../../../assets/textures/test/skybox/right.jpg",
             "../../../../assets/textures/test/skybox/left.jpg",
@@ -25,16 +36,17 @@ class SkySystem : public System
     SharedMesh skybox = SharedMesh(Mesh::skybox());
     GLint MVPsky;
 
+    SkySystem* skySystem = nullptr;
 
 public:
-    SkySystem()
+    Sky(SkySystem* skySystem = nullptr) : skySystem(skySystem)
     {
         VertexBuffer::uploadSingleMesh(skybox);
 
         MVPsky = skyShader.uniformLocation("MVP");
     }
 
-    void update();
+    void render();
 };
 
 

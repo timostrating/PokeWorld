@@ -39,6 +39,9 @@ public:
     void addDepthTexture(GLuint magFilter, GLuint minFilter);
 
     void addDepthBuffer();
+
+    void renderGUI();
+
 private:
     FrameBuffer *sampled = NULL;
 

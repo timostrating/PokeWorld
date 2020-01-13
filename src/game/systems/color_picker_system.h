@@ -13,7 +13,7 @@
 class ColorPickerSystem : public System
 {
     std::vector<GameObject*> *gameObjects;
-    ShaderProgram flatShader = ShaderProgram::fromAssetFiles("shaders/lib/flat_color.vert", "shaders/lib/flat_color.frag");
+    ShaderProgram flatShader = ShaderProgram::fromAssetFiles("shaders/lib/default.vert", "shaders/lib/default.frag");
     GLint u_color, MVP;
     FrameBuffer fbo;
 
@@ -29,9 +29,9 @@ public:
         MVP = flatShader.uniformLocation("MVP");
     }
 
-    void setClickAbles(std::vector<GameObject*> *gameObjects_);
+    void setGameObjects(std::vector<GameObject*> *gameObjects_);
 
-    void update();
+    void update(float deltaTime);
 };
 
 

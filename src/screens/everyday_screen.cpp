@@ -102,7 +102,7 @@ class EverydayScreen : public Screen
     FlyingCamera camera = FlyingCamera();
 
     ShaderProgram shader = ShaderProgram(vertSource, fragSource);
-    ShaderProgram flatShader = ShaderProgram::fromAssetFiles("shaders/lib/flat_color.vert", "shaders/lib/flat_color.frag");
+    ShaderProgram flatShader = ShaderProgram::fromAssetFiles("shaders/lib/default.vert", "shaders/lib/default.frag");
 //    Texture texture = Texture::fromAssetFile("textures/tur.jpg");
 
     Gizmos gizmos;

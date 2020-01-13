@@ -24,7 +24,7 @@ private:
     SharedMesh mesh = SharedMesh(new Mesh(0, 0)); // Internal variables are our JOB
 
     ShaderProgram terrainShader = ShaderProgram::fromAssetFiles("shaders/terrain.vert", "shaders/terrain.frag");
-    Texture test = Texture::fromAssetFile("textures/rocks1.jpg");
+//    Texture test = Texture::fromAssetFile("textures/rocks1.jpg");
     GLuint mvpId;
 
     float modelScale = 5.0f;

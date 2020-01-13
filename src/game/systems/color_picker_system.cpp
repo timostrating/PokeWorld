@@ -7,12 +7,12 @@
 #include "../../graphics/camera.h"
 #include "../../util/input/mouse.h"
 
-void ColorPickerSystem::setClickAbles(std::vector<GameObject *> *gameObjects_)
+void ColorPickerSystem::setGameObjects(std::vector<GameObject *> *gameObjects_)
 {
     gameObjects = gameObjects_;
 }
 
-void ColorPickerSystem::update() {
+void ColorPickerSystem::update(float deltaTime) {
     int x = INPUT::MOUSE::getMousePosX();
     int y = 800 - INPUT::MOUSE::getMousePosY();     // TODO hardcoded height
 
@@ -54,7 +54,7 @@ void ColorPickerSystem::update() {
     if (pickedID != 0 && pickedID <= gameObjects->size())
     {
         gameObjects->at(pickedID-1)->onHover();
-        std::cout << "HOVER: ("<<INPUT::MOUSE::getMousePosX() << "," << INPUT::MOUSE::getMousePosY() << ") " << pickedID-1 << "\n";
+//        std::cout << "HOVER: ("<<INPUT::MOUSE::getMousePosX() << "," << INPUT::MOUSE::getMousePosY() << ") " << pickedID-1 << "\n";
         if (INPUT::MOUSE::leftClick())
         {
             gameObjects->at(pickedID-1)->onClick();

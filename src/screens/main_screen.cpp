@@ -19,34 +19,72 @@
 #include "../graphics/cubemap.h"
 #include "../game/marching_cubes_terrain.h"
 #include "../game/water_plane.h"
-#include "../game/systems/sky_system.h"
+#include "../game/sky.h"
 #include "../game/systems/color_picker_system.h"
+#include "../game/systems/water_system.h"
 
 using namespace glm;
+
+class Tmp : public GameObject {
+public:
+    SharedMesh cube = SharedMesh(Mesh::cube());
+    mat4 transform = scale(translate(mat4(1), vec3(-20, 1, 20)), MATH::random(0.1, 0.3) * vec3(1));
+    ShaderProgram flatShader = ShaderProgram::fromAssetFiles("shaders/lib/default.vert", "shaders/lib/default.frag");
+
+    float color = 1;
+    bool clicked = false;
+
+    Tmp() {
+        VertexBuffer::uploadSingleMesh(cube);
+        colorPickerData = new ColorPickerData {cube, transform};
+    }
+
+    void render() {
+        flatShader.use();
+        glUniformMatrix4fv(flatShader.uniformLocation("MVP"), 1, GL_FALSE, &(Camera::main->combined * transform)[0][0]);
+        if (clicked)
+            glUniform4f(flatShader.uniformLocation("u_color"), 1, 0, 1, 1);
+        else
+            glUniform4f(flatShader.uniformLocation("u_color"), 0.2, color, 0.2, 1);
+        cube->render();
+    }
+
+    void onHover() { color = MATH::random(0.5, 1); }
+    void onClick() { clicked = true; }
+};
+
 
 class MainScreen : public Screen
 {
 
 public:
     FlyingCamera camera = FlyingCamera();
-    ShaderProgram flatShader = ShaderProgram::fromAssetFiles("shaders/lib/flat_color.vert", "shaders/lib/flat_color.frag");
+    ShaderProgram flatShader = ShaderProgram::fromAssetFiles("shaders/lib/default.vert", "shaders/lib/default.frag");
 
     Gizmos gizmos;
     SharedMesh cube = SharedMesh(Mesh::cube());
 
-    SkySystem* skySystem = new SkySystem();
     ColorPickerSystem* colorPickerSystem = new ColorPickerSystem();
+    WaterSystem* waterSystem = new WaterSystem();
+    SkySystem* skySystem = new SkySystem();
+
+    MarchingCubesTerrain* terrain = new MarchingCubesTerrain();
+    WaterPlane* waterplane = new WaterPlane(waterSystem);
 
     std::vector<GameObject*> gameObjects = {
-        new MarchingCubesTerrain(),
-        new WaterPlane(),
+        new Sky(skySystem),
+        new Tmp(),
     };
 
     MainScreen()
     {
         VertexBuffer::uploadSingleMesh(cube);
 
-        colorPickerSystem->setClickAbles(&gameObjects);
+        colorPickerSystem->setGameObjects(&gameObjects);
+        waterSystem->setGameObjects(&gameObjects);
+
+//        glEnable(GL_CLIP_DISTANCE0);
+//        glEnable( CLIP_DISTANCE0_EXT );
     }
 
     void setup(GLFWwindow* window)
@@ -64,19 +102,17 @@ public:
         ImGui_ImplOpenGL3_Init(glsl_version);
     }
 
-    double time = 0;
+    float time = 0;
     bool anyKeyPressed = false;
 
     void render(double deltaTime)
     {
         time += deltaTime;
 
-        colorPickerSystem->update();
+        colorPickerSystem->update(deltaTime);
 
-        glClearColor(100/255.0, 100/255.0, 100/255.0, 1.0f);
+        glClearColor(0/255.0, 0/255.0, 0/255.0, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        skySystem->update();
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////// CAMERA
 
@@ -89,20 +125,33 @@ public:
         } else {
             if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB))
                 anyKeyPressed = true;
-            camera.position = vec3(sin(time * 0.5) *30,  12,  cos(time * 0.5) *30);
-//            camera.position = vec3(15,  10,  15);
-            camera.lookAt(VEC3::Y);
+//            camera.position = vec3(sin(time * 0.5) *30,  15,  cos(time * 0.5) *30);
+            camera.position = vec3(-12, 4, 8);
+            camera.lookAt(vec3(-20, 1.5, 20));
             camera.Camera::update();
         }
 
+        //////////////////////////////////////////////////////////////////////////////////////////////////////// SYSTEMS
+
+        skySystem->update(deltaTime);
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////// GAME OBJECTS
+
         flatShader.use();
+        terrain->render();
         for (auto &go : gameObjects)
             go->render();
+
+        waterSystem->update(deltaTime);
+        waterplane->render();
+
 
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////// GUI
         flatShader.use();
         VertexBuffer::bindDefault();
+
+        if (anyKeyPressed == false) { return; }
 
         // Feed inputs to dear imgui, start new frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -110,8 +159,11 @@ public:
         ImGui::NewFrame();
 
         ImGui::Begin("window");
-            for (auto &go : gameObjects)
+            waterSystem->renderGUI();
+            for (auto &go : gameObjects) {
+                ImGui::Separator();
                 go->renderGui();
+            }
         ImGui::End();
 
         // Render dear imgui into screen

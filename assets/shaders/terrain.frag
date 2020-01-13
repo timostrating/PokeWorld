@@ -6,8 +6,46 @@ out vec4 outputColor;
 uniform sampler2D tex0;
 
 in vec3 v_pos;
-in vec3 v_color;
+
+
+float mod289(float x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
+vec4 mod289(vec4 x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
+vec4 perm(vec4 x){return mod289(((x * 34.0) + 1.0) * x);}
+
+float noise(vec3 p){
+    vec3 a = floor(p);
+    vec3 d = p - a;
+    d = d * d * (3.0 - 2.0 * d);
+
+    vec4 b = a.xxyy + vec4(0.0, 1.0, 0.0, 1.0);
+    vec4 k1 = perm(b.xyxy);
+    vec4 k2 = perm(k1.xyxy + b.zzww);
+
+    vec4 c = k2 + a.zzzz;
+    vec4 k3 = perm(c);
+    vec4 k4 = perm(c + 1.0);
+
+    vec4 o1 = fract(k3 * (1.0 / 41.0));
+    vec4 o2 = fract(k4 * (1.0 / 41.0));
+
+    vec4 o3 = o2 * d.z + o1 * (1.0 - d.z);
+    vec2 o4 = o3.yw * d.x + o3.xz * (1.0 - d.x);
+
+    return o4.y * d.y + o4.x * (1.0 - d.y);
+}
+
+vec3 mix3(vec3 a, vec3 b, vec3 c, float t) {
+    if (t < 0.5)
+    return mix(a, b, t*2.0);
+    else
+    return mix(b, c, (t-0.5)*2.0);
+}
+
+const vec3 color1 = vec3( 20.0/255.0,  15.0/255.0,  21.0/255.0);
+const vec3 color2 = vec3(100.0/255.0,  66.0/255.0, 101.0/255.0);
+const vec3 color3 = vec3(108.0/255.0, 130.0/255.0, 169.0/255.0);
 
 void main() {
-    outputColor = texture(tex0, v_pos.xy * 0.1);
+    float noise = noise(v_pos * 2.0);
+    outputColor = vec4(mix3(color3, color2, color1, noise), 1.0);
 }

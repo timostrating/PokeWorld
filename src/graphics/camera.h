@@ -63,4 +63,6 @@ public:
         width = newWidth;
         height = newHeight;
     }
+
+    void invertPitch();
 };

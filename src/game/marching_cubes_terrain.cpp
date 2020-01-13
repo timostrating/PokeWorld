@@ -41,7 +41,6 @@ MarchingCubesTerrain::MarchingCubesTerrain()
     )
 
     VertexBuffer::uploadSingleMesh(mesh);
-    colorPickerData = new ColorPickerData{mesh, modelMatrix};
 }
 
 int MarchingCubesTerrain::getCubeIndex(int x, int y, int z, float falloff)
@@ -79,7 +78,7 @@ void MarchingCubesTerrain::render()
 {
 //    debugRender();
     terrainShader.use();
-    test.bind(0, terrainShader, "tex0");
+//    test.bind(0, terrainShader, "tex0");
 
     mat4 tmp = Camera::main->combined * modelMatrix;
     glUniformMatrix4fv(mvpId, 1, GL_FALSE, &tmp[0][0]);

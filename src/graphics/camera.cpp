@@ -99,3 +99,8 @@ void Camera::debugDraw()
     for (int x=-10; x<=10; x++) { gizmos.drawLine(vec3(x, 0 ,-10), vec3(x, 0 ,10), vec4(1.0, 1.0, 1.0, 0.2f)); }
     for (int z=-10; z<=10; z++) { gizmos.drawLine(vec3(-10, 0 ,z), vec3(10, 0 ,z), vec4(1.0, 1.0, 1.0, 0.2f)); }
 }
+
+void Camera::invertPitch()
+{
+    direction.y *= -1;
+}
