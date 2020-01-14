@@ -5,12 +5,13 @@
 #include <imgui.h>
 #include "frame_buffer.h"
 #include "../util/debug/nice_error.h"
+#include "../util/game.h"
 
 
 void FrameBuffer::unbindCurrent()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-//    glViewport(0, 0, 800, 800); // TODO: fix this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    glViewport(0, 0, GAME::g_width, GAME::g_height);
 }
 
 GLuint create()

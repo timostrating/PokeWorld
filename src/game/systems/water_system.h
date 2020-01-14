@@ -9,6 +9,7 @@
 #include "../../util/interfaces/game_object.h"
 #include "../../util/interfaces/system.h"
 #include "../../graphics/frame_buffer.h"
+#include "../../util/game.h"
 
 class WaterSystem : public System
 {
@@ -16,7 +17,7 @@ class WaterSystem : public System
     FrameBuffer reflectionFbo, refractionFbo;
 
 public:
-    WaterSystem() : reflectionFbo(800, 800), refractionFbo(800, 800)
+    WaterSystem() : reflectionFbo(GAME::g_width, GAME::g_height), refractionFbo(GAME::g_width, GAME::g_height)
     {
         reflectionFbo.addColorTexture(GL_RGB, GL_REPEAT, GL_LINEAR);
         reflectionFbo.addDepthTexture(GL_REPEAT, GL_LINEAR);

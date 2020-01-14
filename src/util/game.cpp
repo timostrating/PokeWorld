@@ -22,8 +22,6 @@
 enum Constants { SCREENSHOT_MAX_FILENAME = 256 };
 static GLubyte *pixels = NULL;
 static unsigned int nframes = 0;
-static unsigned int g_width = 800;
-static unsigned int g_height = 800;
 
 
 namespace GAME {

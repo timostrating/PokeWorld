@@ -9,7 +9,7 @@
 class ShaderProgram
 {
 private:
-    GLuint programId; // TODO lookup what the standards are about private variables
+    GLuint programId;
 
 public:
     static ShaderProgram fromAssetFiles(const char *vertPath, const char *fragPath);
