@@ -80,7 +80,6 @@ void MarchingCubesTerrain::render()
     terrainShader.use();
 //    test.bind(0, terrainShader, "tex0");
 
-    mat4 tmp = Camera::main->combined * modelMatrix;
-    glUniformMatrix4fv(mvpId, 1, GL_FALSE, &tmp[0][0]);
+    glUniformMatrix4fv(mvpId, 1, GL_FALSE, &(Camera::main->combined * transform)[0][0]);
     mesh->render();
 }

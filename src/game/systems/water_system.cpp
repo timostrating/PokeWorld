@@ -7,8 +7,9 @@
 #include "water_system.h"
 #include "../../graphics/camera.h"
 
-void WaterSystem::setGameObjects(std::vector<GameObject *> *gameObjects_)
+void WaterSystem::setGameObjects(std::vector<GameObject *> *gameObjects_, MarchingCubesTerrain *terrain_)
 {
+    terrain = terrain_;
     gameObjects = gameObjects_;
 }
 
@@ -30,15 +31,27 @@ void WaterSystem::update(float deltaTime)
     Camera::main->invertPitch();
     Camera::main->update();
 
+    float tmp = Camera::main->farClippingPlane;
+    Camera::main->farClippingPlane = 100;
+    Camera::main->update();
     refractionFbo.bind();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        for (auto &go : *gameObjects) {
-            go->render();
-        }
+        waterTerrainShader.use();
+        glUniformMatrix4fv(MVP, 1, GL_FALSE, &(Camera::main->combined * terrain->transform)[0][0]);    ;
+        terrain->mesh->render();
 
     refractionFbo.unbind();
+    Camera::main->farClippingPlane = tmp;
+    Camera::main->update();
+
+}
+
+void WaterSystem::bindTexture(ShaderProgram &shader)
+{
+    reflectionFbo.colorTexture->bind(0, shader, "u_reflectionTexture");
+    refractionFbo.colorTexture->bind(1, shader, "u_refractionTexture");
 }
 
 void WaterSystem::renderGUI()
