@@ -15,6 +15,7 @@ class Line
 {
 
 public:
+
     std::vector<mat4> lineparts;
     int length = 0;
 
@@ -24,6 +25,8 @@ public:
     mat4 lerpIndexed(const int i, const float t);
 
     void debugDraw(Gizmos* gizmos);
+
+    Mesh* wrapMeshAround(std::vector<vec3> *points);
 };
 
 

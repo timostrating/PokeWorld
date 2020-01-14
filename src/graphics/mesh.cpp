@@ -75,15 +75,15 @@ Mesh *Mesh::skybox()
     return mesh;
 }
 
-Mesh *Mesh::sphere()
+Mesh *Mesh::sphere(int rings, bool inverse)
 {
     Mesh* mesh = new Mesh(0, 0);
-    float step = 2*PI / 10;
+    float step = 2*PI / rings;
 
     for (float phi=-0.5*PI; phi < 0.5*PI - 0.01; phi+=step) // [-90,90]
     {
-        bool firstPhiLoop = abs(-0.5 * PI - phi) > 0.01,
-             lastPhiLoop  = phi + step < 0.5*PI - 0.01;
+        bool notFirstPhiLoop = abs(-0.5 * PI - phi) > 0.01,
+             notLastPhiLoop  = phi + step < 0.5 * PI - 0.01;
 
         for (float theta=0; theta < 2*PI - 0.01; theta+=step) // [0,360]
         {
@@ -92,10 +92,13 @@ Mesh *Mesh::sphere()
             vec3 b1 = vec3(cos(phi+step) * cos(theta), sin(phi+step), cos(phi+step)*sin(theta));
             vec3 b2 = vec3(cos(phi+step) * cos(theta+step), sin(phi+step), cos(phi+step)*sin(theta+step));
 
-            if (firstPhiLoop)
-                mesh->vertices.insert(mesh->vertices.end(), {a1.x,a1.y,a1.z, b1.x,b1.y,b1.z, a2.x,a2.y,a2.z});
-            if (lastPhiLoop)
-                mesh->vertices.insert(mesh->vertices.end(), {b2.x,b2.y,b2.z, a2.x,a2.y,a2.z, b1.x,b1.y,b1.z});
+            if (inverse) {
+                if (notFirstPhiLoop) mesh->vertices.insert(mesh->vertices.end(), {a1.x,a1.y,a1.z, a2.x,a2.y,a2.z, b1.x,b1.y,b1.z});
+                if (notLastPhiLoop)  mesh->vertices.insert(mesh->vertices.end(), {b2.x,b2.y,b2.z, b1.x,b1.y,b1.z, a2.x,a2.y,a2.z});
+            } else {
+                if (notFirstPhiLoop) mesh->vertices.insert(mesh->vertices.end(), {a1.x,a1.y,a1.z, b1.x,b1.y,b1.z, a2.x,a2.y,a2.z});
+                if (notLastPhiLoop)  mesh->vertices.insert(mesh->vertices.end(), {b2.x,b2.y,b2.z, a2.x,a2.y,a2.z, b1.x,b1.y,b1.z});
+            }
         }
     }
     mesh->nrOfVerts = mesh->vertices.size() / 3;

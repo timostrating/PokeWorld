@@ -8,4 +8,5 @@ class System
 {
 public:
     virtual void update(float deltaTime) {};
+    virtual void renderGUI() {};
 };

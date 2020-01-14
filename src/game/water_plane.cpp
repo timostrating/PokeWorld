@@ -14,8 +14,3 @@ void WaterPlane::render()
     glUniformMatrix4fv(mvpId, 1, GL_FALSE, &(Camera::main->combined * modelMatrix)[0][0]);
     mesh->render();
 }
-
-void WaterPlane::onClick()
-{
-    glUniform4f(waterShader.uniformLocation("u_color"), random(0,1), random(0,1), random(0,1), 1);
-}

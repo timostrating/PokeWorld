@@ -43,6 +43,8 @@ void WaterSystem::update(float deltaTime)
 
 void WaterSystem::renderGUI()
 {
+    ImGui::Text("WaterSystem:");
+    ImGui::Text("");
     reflectionFbo.renderGUI();
     refractionFbo.renderGUI();
 }

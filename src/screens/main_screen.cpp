@@ -22,12 +22,13 @@
 #include "../game/sky.h"
 #include "../game/systems/color_picker_system.h"
 #include "../game/systems/water_system.h"
+#include "../game/stadium.h"
 
 using namespace glm;
 
 class Tmp : public GameObject {
 public:
-    SharedMesh cube = SharedMesh(Mesh::cube());
+    SharedMesh sphere = SharedMesh(Mesh::sphere());
     mat4 transform = scale(translate(mat4(1), vec3(-20, 1, 20)), MATH::random(0.1, 0.3) * vec3(1));
     ShaderProgram flatShader = ShaderProgram::fromAssetFiles("shaders/lib/default.vert", "shaders/lib/default.frag");
 
@@ -35,8 +36,8 @@ public:
     bool clicked = false;
 
     Tmp() {
-        VertexBuffer::uploadSingleMesh(cube);
-        colorPickerData = new ColorPickerData {cube, transform};
+        VertexBuffer::uploadSingleMesh(sphere);
+        colorPickerData = new ColorPickerData {sphere, transform};
     }
 
     void render() {
@@ -46,7 +47,7 @@ public:
             glUniform4f(flatShader.uniformLocation("u_color"), 1, 0, 1, 1);
         else
             glUniform4f(flatShader.uniformLocation("u_color"), 0.2, color, 0.2, 1);
-        cube->render();
+        sphere->render();
     }
 
     void onHover() { color = MATH::random(0.5, 1); }
@@ -73,6 +74,7 @@ public:
 
     std::vector<GameObject*> gameObjects = {
         new Sky(skySystem),
+        new Stadium(),
         new Tmp(),
     };
 
@@ -158,11 +160,16 @@ public:
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::Begin("window");
+        ImGui::Begin("Systems");
             waterSystem->renderGUI();
+            ImGui::Separator();
+            colorPickerSystem->renderGUI();
+        ImGui::End();
+
+        ImGui::Begin("GameObjects");
             for (auto &go : gameObjects) {
-                ImGui::Separator();
                 go->renderGui();
+                ImGui::Separator();
             }
         ImGui::End();
 

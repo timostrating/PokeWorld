@@ -32,6 +32,7 @@ public:
     void setGameObjects(std::vector<GameObject*> *gameObjects_);
 
     void update(float deltaTime);
+    void renderGUI();
 };
 
 

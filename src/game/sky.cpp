@@ -11,6 +11,11 @@ void Sky::render()
     float rotation = (skySystem == nullptr) ? 0 : skySystem->rotation;
 
     skyShader.use();
-    glUniformMatrix4fv(MVPsky, 1, GL_FALSE, &(Camera::main->combined * rotate(scale(translate(mat4(1.0f), vec3(0, -70, 0)), 400.0f * VEC3::ONE), radians(rotation), VEC3::Y))[0][0]);
+    mat4 fixedPosition = Camera::main->projection * mat4(
+            Camera::main->view[0][0], Camera::main->view[0][1], Camera::main->view[0][2], Camera::main->view[0][3],
+            Camera::main->view[1][0], Camera::main->view[1][1], Camera::main->view[1][2], Camera::main->view[1][3],
+            Camera::main->view[2][0], Camera::main->view[2][1], Camera::main->view[2][2], Camera::main->view[2][3],
+                                   0,                        0,                        0, Camera::main->view[3][3]);
+    glUniformMatrix4fv(MVPsky, 1, GL_FALSE, &(fixedPosition * rotate(transform, radians(rotation), VEC3::Y))[0][0]);
     skybox->render();
 }

@@ -10,6 +10,7 @@
 #include "../graphics/cubemap.h"
 #include "../graphics/mesh.h"
 #include "../util/interfaces/game_object.h"
+#include "../util/math/math.h"
 
 class SkySystem : public System
 {
@@ -23,6 +24,8 @@ public:
 
 class Sky : public GameObject
 {
+    mat4 transform = scale(translate(mat4(1.0f), vec3(0, -70, 0)), 400.0f * VEC3::ONE);
+
     ShaderProgram skyShader = ShaderProgram::fromAssetFiles("shaders/skybox.vert", "shaders/skybox.frag");
     std::vector<std::string> faces = {
             "../../../../assets/textures/test/skybox/right.jpg",
@@ -33,7 +36,7 @@ class Sky : public GameObject
             "../../../../assets/textures/test/skybox/back.jpg"
     };
     Cubemap* skycubemap = new Cubemap(faces);
-    SharedMesh skybox = SharedMesh(Mesh::skybox());
+    SharedMesh skybox = SharedMesh(Mesh::sphere(10, true));
     GLint MVPsky;
 
     SkySystem* skySystem = nullptr;

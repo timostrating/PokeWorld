@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <imgui.h>
 #include "color_picker_system.h"
 #include "../../graphics/camera.h"
 #include "../../util/input/mouse.h"
@@ -64,4 +65,11 @@ void ColorPickerSystem::update(float deltaTime) {
     }
 
     fbo.unbind();
+}
+
+void ColorPickerSystem::renderGUI()
+{
+    ImGui::Text("ColorPickerSystem:");
+    ImGui::Text("");
+    fbo.renderGUI();
 }

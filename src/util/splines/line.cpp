@@ -4,6 +4,9 @@
 
 #include "line.h"
 
+using namespace glm;
+
+
 mat4 lerp(const mat4 a, const mat4 b, const float t)
 {
     mat4 value = mat4(1);
@@ -31,4 +34,28 @@ void Line::debugDraw(Gizmos *gizmos)
         gizmos->drawCube(getPointPosition(i), 0.01f, COLOR::WHITE);
         gizmos->drawLine(getPointPosition(i), getPointPosition(i+1), vec4(.8, .8, .8, 1));
     }
+}
+
+Mesh* Line::wrapMeshAround(std::vector<vec3> *points)
+{
+    Mesh* mesh = new Mesh(0, 0);
+
+    vec3 oldPos = getPointPosition(0);
+    for (int i=0; i<=length; i++)
+    {
+        vec3 newPos = getPointPosition(i);
+        for (int j=0; j<points->size(); j++) {
+            vec4 a1 = lerpIndexed(i, 0) * vec4(points->at(j), 1);
+            vec4 a2 = lerpIndexed(i, 0) * vec4(points->at((j+1)%points->size()), 1);
+            vec4 b1 = lerpIndexed(i, 1) * vec4(points->at(j), 1);
+            vec4 b2 = lerpIndexed(i, 1) * vec4(points->at((j+1)%points->size()), 1);
+
+            mesh->vertices.insert(mesh->vertices.end(), {a1.x,a1.y,a1.z, a2.x,a2.y,a2.z, b1.x,b1.y,b1.z});
+            mesh->vertices.insert(mesh->vertices.end(), {b2.x,b2.y,b2.z, b1.x,b1.y,b1.z, a2.x,a2.y,a2.z});
+        }
+        oldPos = newPos;
+    }
+
+    mesh->nrOfVerts = mesh->vertices.size() / 3;
+    return mesh;
 }

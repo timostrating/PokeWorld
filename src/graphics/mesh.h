@@ -20,7 +20,7 @@ public:
     static Mesh* triangle();
     static Mesh* cube();
     static Mesh* skybox();
-    static Mesh* sphere();
+    static Mesh* sphere(int rings = 10, bool inverse = false);
 
     Mesh(unsigned int nrOfVerts, unsigned int nrOfIndices) : nrOfVerts(nrOfVerts), nrOfIndices(nrOfIndices) {};
 
