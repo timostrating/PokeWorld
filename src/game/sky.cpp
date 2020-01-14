@@ -17,5 +17,5 @@ void Sky::render()
             Camera::main->view[2][0], Camera::main->view[2][1], Camera::main->view[2][2], Camera::main->view[2][3],
                                    0,                        0,                        0, Camera::main->view[3][3]);
     glUniformMatrix4fv(MVPsky, 1, GL_FALSE, &(fixedPosition * rotate(transform, radians(rotation), VEC3::Y))[0][0]);
-    skybox->render();
+    skydome->render();
 }

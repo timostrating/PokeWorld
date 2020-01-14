@@ -17,7 +17,7 @@ Cubemap::Cubemap(std::vector<std::string> faces)
 {
     glGenTextures(1, &textureId);
     std::cout << "Cubemap " << textureId << " created\n";
-    bind(textureId); // TODO: test support multiple textures
+    bind(0); // TODO: test support multiple textures
 
     int width, height, nrChannels;
     for (unsigned int i = 0; i < faces.size(); i++)

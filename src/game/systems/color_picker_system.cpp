@@ -26,9 +26,10 @@ void ColorPickerSystem::update(float deltaTime) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     flatShader.use();
-    int i = 1;
+    int i = 0;
     for (auto &go : *gameObjects)
     {
+        i++;
         if (go->colorPickerData == nullptr)
             continue;
 
@@ -38,8 +39,6 @@ void ColorPickerSystem::update(float deltaTime) {
         glUniform4f(u_color, r/255.0f, g/255.0f, b/255.0f, 1);
         glUniformMatrix4fv(MVP, 1, GL_FALSE, &(Camera::main->combined * go->colorPickerData->transform)[0][0]);
         go->colorPickerData->selectionMesh->render();
-
-        i++;
     }
 
     /// https://www.opengl-tutorial.org/miscellaneous/clicking-on-objects/picking-with-an-opengl-hack/
@@ -61,7 +60,6 @@ void ColorPickerSystem::update(float deltaTime) {
             gameObjects->at(pickedID-1)->onClick();
             std::cout << "clicked on object "<< pickedID-1 <<"\n";
         }
-
     }
 
     fbo.unbind();

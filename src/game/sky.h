@@ -36,7 +36,7 @@ class Sky : public GameObject
             "../../../../assets/textures/test/skybox/back.jpg"
     };
     Cubemap* skycubemap = new Cubemap(faces);
-    SharedMesh skybox = SharedMesh(Mesh::sphere(10, true));
+    SharedMesh skydome = SharedMesh(Mesh::sphere(10, true));
     GLint MVPsky;
 
     SkySystem* skySystem = nullptr;
@@ -44,7 +44,7 @@ class Sky : public GameObject
 public:
     Sky(SkySystem* skySystem = nullptr) : skySystem(skySystem)
     {
-        VertexBuffer::uploadSingleMesh(skybox);
+        VertexBuffer::uploadSingleMesh(skydome);
 
         MVPsky = skyShader.uniformLocation("MVP");
     }
