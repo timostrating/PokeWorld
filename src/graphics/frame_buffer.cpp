@@ -6,12 +6,13 @@
 #include "frame_buffer.h"
 #include "../util/debug/nice_error.h"
 #include "../util/game.h"
+#include "camera.h"
 
 
 void FrameBuffer::unbindCurrent()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glViewport(0, 0, GAME::g_width, GAME::g_height);
+    glViewport(0, 0, Camera::main->width, Camera::main->height);
 }
 
 GLuint create()

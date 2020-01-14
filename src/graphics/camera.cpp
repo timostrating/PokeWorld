@@ -11,11 +11,6 @@
 
 using namespace glm;
 
-#define LOOP2D(N, X,Y, CODE) \
-    for (int X=0; x<N; X++) { \
-    for (int Y=0; y<N; Y++) { \
-        CODE \
-    }} \
 
 Camera *Camera::main = nullptr;
 
@@ -98,6 +93,12 @@ void Camera::debugDraw()
 
     for (int x=-10; x<=10; x++) { gizmos.drawLine(vec3(x, 0 ,-10), vec3(x, 0 ,10), vec4(1.0, 1.0, 1.0, 0.2f)); }
     for (int z=-10; z<=10; z++) { gizmos.drawLine(vec3(-10, 0 ,z), vec3(10, 0 ,z), vec4(1.0, 1.0, 1.0, 0.2f)); }
+}
+
+void Camera::resize(int newWidth, int newHeight)
+{
+    width = newWidth;
+    height = newHeight;
 }
 
 void Camera::invertPitch()

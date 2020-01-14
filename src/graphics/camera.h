@@ -59,10 +59,7 @@ public:
     void debugDraw();
 
 
-    void resize(int newWidth, int newHeight) {
-        width = newWidth;
-        height = newHeight;
-    }
+    void resize(int newWidth, int newHeight);
 
     void invertPitch();
 };

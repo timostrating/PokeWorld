@@ -51,7 +51,7 @@ class WaterSystem : public System
 
 
 public:
-    WaterSystem() : reflectionFbo(GAME::g_width, GAME::g_height), refractionFbo(GAME::g_width, GAME::g_height)
+    WaterSystem() : reflectionFbo(800, 800), refractionFbo(800, 800) // TODO: test out
     {
         MVP = waterTerrainShader.uniformLocation("MVP");
 

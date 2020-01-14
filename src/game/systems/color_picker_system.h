@@ -10,6 +10,7 @@
 #include "../../graphics/shader_program.h"
 #include "../../graphics/frame_buffer.h"
 #include "../../util/game.h"
+#include "../../graphics/camera.h"
 
 class ColorPickerSystem : public System
 {
@@ -21,7 +22,7 @@ class ColorPickerSystem : public System
 
 public:
     // TODO resize
-    ColorPickerSystem() : fbo(GAME::g_width, GAME::g_height)
+    ColorPickerSystem() : fbo(Camera::main->width, Camera::main->height)
     {
         fbo.addColorBuffer(GL_RGB);
         fbo.addDepthBuffer();

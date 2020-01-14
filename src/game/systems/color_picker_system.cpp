@@ -15,9 +15,9 @@ void ColorPickerSystem::setGameObjects(std::vector<GameObject *> *gameObjects_)
 
 void ColorPickerSystem::update(float deltaTime) {
     int x = INPUT::MOUSE::getMousePosX();
-    int y = GAME::g_height - INPUT::MOUSE::getMousePosY();
+    int y = Camera::main->height - INPUT::MOUSE::getMousePosY();
 
-    if (x == 0 || x == GAME::g_width || y == 0 || y == GAME::g_height) // TODO Mouse out of screen
+    if (x == 0 || x == Camera::main->width || y == 0 || y == Camera::main->height) // TODO Mouse out of screen
         return;
 
     fbo.bind();
