@@ -70,7 +70,7 @@ public:
     SkySystem* skySystem = new SkySystem();
 
     MarchingCubesTerrain* terrain = new MarchingCubesTerrain();
-    WaterPlane* waterplane = new WaterPlane(waterSystem);
+    WaterPlane* waterPlane = new WaterPlane(waterSystem);
 
     std::vector<GameObject*> gameObjects = {
         new Sky(skySystem),
@@ -145,7 +145,7 @@ public:
             go->render();
 
         waterSystem->update(deltaTime);
-        waterplane->render();
+        waterPlane->render();
 
 
 

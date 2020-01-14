@@ -22,7 +22,7 @@ class WaterPlane : public GameObject
     mat4 modelMatrix = rotate(scale(translate(mat4(1.0f), vec3(0,0,0)), vec3(20)), radians(-90.0f), VEC3::X);
 
     ShaderProgram waterShader = ShaderProgram::fromAssetFiles("shaders/water.vert", "shaders/water.frag");
-    Texture reflectionTexture = Texture::testCheckerboard();
+    Texture waterNormal = Texture::fromAssetFile("textures/water-dudv.jpg");
     GLuint mvpId;
 
     SharedMesh mesh = SharedMesh(Mesh::quad());

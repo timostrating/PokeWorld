@@ -41,11 +41,26 @@ vec3 mix3(vec3 a, vec3 b, vec3 c, float t) {
     return mix(b, c, (t-0.5)*2.0);
 }
 
-const vec3 color1 = vec3( 20.0/255.0,  15.0/255.0,  21.0/255.0);
+const vec3 color1 = vec3(108.0/255.0, 130.0/255.0, 169.0/255.0);
 const vec3 color2 = vec3(100.0/255.0,  66.0/255.0, 101.0/255.0);
-const vec3 color3 = vec3(108.0/255.0, 130.0/255.0, 169.0/255.0);
+const vec3 color3 = vec3( 20.0/255.0,  15.0/255.0,  21.0/255.0);
+
+const vec3 route1 = vec3(171.0/255.0, 130.0/255.0, 111.0/255.0);
+const vec3 route2 = vec3(193.0/255.0, 166.0/255.0, 146.0/255.0);
+
+const vec3 grass1 = vec3(112.0/255.0, 139.0/255.0,  70.0/255.0);
+const vec3 grass2 = vec3( 50.0/255.0,  86.0/255.0,  49.0/255.0);
 
 void main() {
-    float noise = noise(v_pos * 2.0);
-    outputColor = vec4(mix3(color3, color2, color1, noise), 1.0);
+    float v = noise(v_pos * 2.0);
+
+    if (v_pos.y < 9.0)
+        outputColor = vec4(mix3(color1, color2, color3, v), 1.0);
+    else {
+        if (noise(v_pos * .3) < 0.7)
+            outputColor = vec4(mix(grass1, grass2, v), 1.0);
+        else
+            outputColor = vec4(mix(route1, route2, v), 1.0);
+    }
+
 }

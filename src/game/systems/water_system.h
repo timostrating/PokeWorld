@@ -47,6 +47,9 @@ class WaterSystem : public System
     ShaderProgram waterTerrainShader = ShaderProgram(vertSource, fragSource);
     GLuint MVP;
 
+    float time = 0;
+
+
 public:
     WaterSystem() : reflectionFbo(GAME::g_width, GAME::g_height), refractionFbo(GAME::g_width, GAME::g_height)
     {

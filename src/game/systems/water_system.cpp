@@ -15,6 +15,8 @@ void WaterSystem::setGameObjects(std::vector<GameObject *> *gameObjects_, Marchi
 
 void WaterSystem::update(float deltaTime)
 {
+    time += deltaTime;
+
     Camera::main->position.y -= 2 * Camera::main->position.y; // TODO: underwater
     Camera::main->invertPitch();
     Camera::main->update();
@@ -31,9 +33,9 @@ void WaterSystem::update(float deltaTime)
     Camera::main->invertPitch();
     Camera::main->update();
 
-    float tmp = Camera::main->farClippingPlane;
-    Camera::main->farClippingPlane = 100;
-    Camera::main->update();
+//    float tmp = Camera::main->farClippingPlane;
+//    Camera::main->farClippingPlane = 100;
+//    Camera::main->update();
     refractionFbo.bind();
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -43,8 +45,8 @@ void WaterSystem::update(float deltaTime)
         terrain->mesh->render();
 
     refractionFbo.unbind();
-    Camera::main->farClippingPlane = tmp;
-    Camera::main->update();
+//    Camera::main->farClippingPlane = tmp;
+//    Camera::main->update();
 
 }
 
@@ -52,6 +54,7 @@ void WaterSystem::bindTexture(ShaderProgram &shader)
 {
     reflectionFbo.colorTexture->bind(0, shader, "u_reflectionTexture");
     refractionFbo.colorTexture->bind(1, shader, "u_refractionTexture");
+    glUniform1f(shader.uniformLocation("u_time"), time);
 }
 
 void WaterSystem::renderGUI()

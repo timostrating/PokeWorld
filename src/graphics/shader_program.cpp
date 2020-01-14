@@ -21,6 +21,7 @@ void validateShader(GLint shaderId)
         std::vector<char> logText(logLength+1);
         glGetShaderInfoLog(shaderId, logLength, NULL, &logText[0]);
         std::cout << "validateShader() ERROR: isCompiled = "<< ((isCompiled)?"TRUE":"FALSE") <<"; log = " << &logText[0] << "\n";
+        throw nice_error("Shader error");
     }
 }
 
@@ -35,6 +36,7 @@ void validateProgram(GLint programId)
         std::vector<char> logText(logLength+1);
         glGetProgramInfoLog(programId, logLength, NULL, &logText[0]);
         std::cout << "validateProgram() ERROR: isCompiled = "<< ((isCompiled)?"TRUE":"FALSE") <<"; log = '" << &logText[0] << "'\n";
+        throw nice_error("ShaderProgram error");
     }
 }
 
