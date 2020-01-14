@@ -83,7 +83,7 @@ public:
         VertexBuffer::uploadSingleMesh(cube);
 
         colorPickerSystem->setGameObjects(&gameObjects);
-        waterSystem->setGameObjects(&gameObjects);
+        waterSystem->setGameObjects(&gameObjects, terrain);
 
 //        glEnable(GL_CLIP_DISTANCE0);
 //        glEnable( CLIP_DISTANCE0_EXT );

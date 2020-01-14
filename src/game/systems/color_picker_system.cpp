@@ -30,15 +30,15 @@ void ColorPickerSystem::update(float deltaTime) {
     for (auto &go : *gameObjects)
     {
         i++;
-        if (go->canBeSelected == false)
+        if (go->colorPickerData == nullptr)
             continue;
 
         int r = (i & 0x000000FF) >>  0;
         int g = (i & 0x0000FF00) >>  8;
         int b = (i & 0x00FF0000) >> 16;
         glUniform4f(u_color, r/255.0f, g/255.0f, b/255.0f, 1);
-        glUniformMatrix4fv(MVP, 1, GL_FALSE, &(Camera::main->combined * *(go->transform))[0][0]);
-        go->mesh->render();
+        glUniformMatrix4fv(MVP, 1, GL_FALSE, &(Camera::main->combined * go->colorPickerData->transform)[0][0]);
+        go->colorPickerData->selectionMesh->render();
     }
 
     /// https://www.opengl-tutorial.org/miscellaneous/clicking-on-objects/picking-with-an-opengl-hack/

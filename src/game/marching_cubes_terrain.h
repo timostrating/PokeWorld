@@ -21,18 +21,19 @@ private:
     Gizmos gizmos;
     float falloff = 0.9f;
 
-    SharedMesh mesh = SharedMesh(new Mesh(0, 0)); // Internal variables are our JOB
-
     ShaderProgram terrainShader = ShaderProgram::fromAssetFiles("shaders/terrain.vert", "shaders/terrain.frag");
 //    Texture test = Texture::fromAssetFile("textures/rocks1.jpg");
     GLuint mvpId;
 
     float modelScale = 5.0f;
     vec3 position = vec3(-5, -9.5, -5);
-    mat4 modelMatrix = scale(translate(mat4(1.0f), vec3(position.x * modelScale, position.y * modelScale +1, position.z * modelScale)), vec3(modelScale));
 
 
 public:
+    SharedMesh mesh = SharedMesh(new Mesh(0, 0)); // Internal variables are our JOB
+    mat4 transform = scale(translate(mat4(1.0f), vec3(position.x * modelScale, position.y * modelScale +1, position.z * modelScale)), vec3(modelScale));
+
+
     MarchingCubesTerrain();
 
     void render();
