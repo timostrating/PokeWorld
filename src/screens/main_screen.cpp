@@ -84,9 +84,6 @@ public:
 
         colorPickerSystem->setGameObjects(&gameObjects);
         waterSystem->setGameObjects(&gameObjects, terrain);
-
-//        glEnable(GL_CLIP_DISTANCE0);
-//        glEnable( CLIP_DISTANCE0_EXT );
     }
 
     void setup(GLFWwindow* window)

@@ -19,12 +19,14 @@ class ColorPickerSystem : public System
     GLint u_color, MVP;
     FrameBuffer fbo;
 
+    static const int fboWidth = 800, fboHeight = 800;
+
 
 public:
     // TODO resize
-    ColorPickerSystem() : fbo(Camera::main->width, Camera::main->height)
+    ColorPickerSystem() : fbo(fboWidth, fboHeight)
     {
-        fbo.addColorBuffer(GL_RGB);
+        fbo.addColorTexture(GL_RGB, GL_REPEAT, GL_LINEAR);
         fbo.addDepthBuffer();
 
         u_color = flatShader.uniformLocation("u_color");

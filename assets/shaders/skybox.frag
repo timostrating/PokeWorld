@@ -35,6 +35,8 @@ float noise(vec3 p){
     return o4.y * d.y + o4.x * (1.0 - d.y);
 }
 
+float clamp01(float v) { return clamp(v, 0.0, 1.0); }
+
 
 const vec4 nightColor1 = vec4(  1.0/255.0,  65.0/255.0, 134.0/255.0, 1.0);
 const vec4 nightColor2 = vec4(  0.0/255.0,   0.0/255.0,  36.0/255.0, 1.0);
@@ -55,7 +57,7 @@ void main() {
     night = mix(nightColor1, nightColor2, t);
     float v = noise(TexCoords * 100.0); // stars
     if (v > 0.98)
-        night = mix(nightColor1, vec4(v,v,v,1.0), t - dayTime);
+        night = mix(night, vec4(v,v,v,1.0), clamp01(t - dayTime));
 
 
     day = mix(dayColor1, dayColor2, t);
