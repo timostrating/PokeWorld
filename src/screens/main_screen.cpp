@@ -105,7 +105,8 @@ public:
     }
 
     float time = 0;
-    bool anyKeyPressed = false;
+    bool debug = false;
+    bool renderGUI = false;
 
     void render(double deltaTime)
     {
@@ -118,15 +119,16 @@ public:
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////// CAMERA
 
-        if (anyKeyPressed) {
+        if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB)) debug = true;
+        if (INPUT::KEYBOARD::pressed(GLFW_KEY_1)) renderGUI = true;
+
+        if (debug) {
             camera.update(deltaTime);
             camera.debugDraw();
             for (auto &go : gameObjects)
                 go->debugRender();
 
         } else {
-            if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB))
-                anyKeyPressed = true;
 //            camera.position = vec3(sin(time * 0.5) *30,  15,  cos(time * 0.5) *30);
             camera.position = vec3(-12, 4, 8);
             camera.lookAt(vec3(-20, 1.5, 20));
@@ -153,7 +155,7 @@ public:
         flatShader.use();
         VertexBuffer::bindDefault();
 
-        if (anyKeyPressed == false) { return; }
+        if (renderGUI == false) { return; }
 
         // Feed inputs to dear imgui, start new frame
         ImGui_ImplOpenGL3_NewFrame();
