@@ -126,9 +126,10 @@ public:
                 go->debugRender();
 
         } else {
-//            camera.position = vec3(sin(time * 0.5) *30,  15,  cos(time * 0.5) *30);
-            camera.position = vec3(-12, 4, 8);
-            camera.lookAt(vec3(-20, 1.5, 20));
+            camera.position = vec3(sin(time * 0.5) *100,  0,  cos(time * 0.5) *100);
+            camera.lookAt(vec3(0, -15, 0));
+//            camera.position = vec3(-12, 4, 8);
+//            camera.lookAt(vec3(-20, 1.5, 20));
             camera.Camera::update();
         }
 
@@ -166,6 +167,8 @@ public:
         ImGui::End();
 
         ImGui::Begin("GameObjects");
+            terrain->renderGui();
+            waterPlane->renderGui();
             for (auto &go : gameObjects) {
                 go->renderGui();
                 ImGui::Separator();

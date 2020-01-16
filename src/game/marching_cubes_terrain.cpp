@@ -2,6 +2,7 @@
 // Created by sneeuwpop on 14-10-19.
 //
 
+#include <imgui.h>
 #include "marching_cubes_terrain.h"
 #include "marching_cube.hpp"
 #include "../util/math/math.h"
@@ -18,7 +19,8 @@
 
 MarchingCubesTerrain::MarchingCubesTerrain()
 {
-    mvpId = terrainShader.uniformLocation("MVP");
+    MVP = terrainShader.uniformLocation("MVP");
+    u_gradient = terrainShader.uniformLocation("u_gradient");
 
     LOOP3D(size, x,y,z,
         noisefield[x][y][z] = (x==0 || x == size-1 || y==0 || y == size-1 || z==0 || z == size-1)? 1 : MATH::random() - ((y-size+3)*0.09); // remove some, based on y coordinate
@@ -79,7 +81,17 @@ void MarchingCubesTerrain::render()
 //    debugRender();
     terrainShader.use();
 //    test.bind(0, terrainShader, "tex0");
-
-    glUniformMatrix4fv(mvpId, 1, GL_FALSE, &(Camera::main->combined * transform)[0][0]);
+    glUniformMatrix4fv(MVP, 1, GL_FALSE, &(Camera::main->combined * transform)[0][0]);
+    glUniformMatrix4fv(u_gradient, 1, GL_FALSE, &(gradient)[0][0]);
     mesh->render();
+}
+
+void MarchingCubesTerrain::renderGui()
+{
+    ImGui::Text("ColorPickerSystem:");
+    ImGui::Text("");
+    ImGui::ColorEdit4("color1", &(gradient)[0][0]);
+    ImGui::ColorEdit4("color2", &(gradient)[1][0]);
+    ImGui::ColorEdit4("color3", &(gradient)[2][0]);
+    ImGui::ColorEdit4("color4", &(gradient)[3][0]);
 }

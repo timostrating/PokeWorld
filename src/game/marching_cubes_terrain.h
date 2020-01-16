@@ -23,7 +23,13 @@ private:
 
     ShaderProgram terrainShader = ShaderProgram::fromAssetFiles("shaders/terrain.vert", "shaders/terrain.frag");
 //    Texture test = Texture::fromAssetFile("textures/rocks1.jpg");
-    GLuint mvpId;
+    GLuint MVP, u_gradient;
+    mat4 gradient = mat4(
+        20.0/255.0,  15.0/255.0,  21.0/255.0, 0.3,
+        100.0/255.0,  66.0/255.0, 101.0/255.0, 0.7,
+        108.0/255.0, 130.0/255.0, 169.0/255.0, 1.0,
+        0, 0, 0, 0
+    );
 
     float modelScale = 5.0f;
     vec3 position = vec3(-5, -9.5, -5);
@@ -38,6 +44,7 @@ public:
 
     void render();
     void debugRender();
+    void renderGui();
 
     int getCubeIndex(int x, int y, int z, float falloff);
 };
