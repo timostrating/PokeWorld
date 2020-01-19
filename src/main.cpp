@@ -10,6 +10,7 @@
 #include "screens/tree_screen.cpp"
 #include "screens/everyday_screen.cpp"
 #include "screens/main_screen.cpp"
+#include "screens/color_test_screen.cpp"
 #include "util/game.h"
 
 #include "util/external/unit_test.hpp"
