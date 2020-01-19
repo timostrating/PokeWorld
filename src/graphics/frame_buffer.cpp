@@ -51,6 +51,10 @@ FrameBuffer::~FrameBuffer()
 
 void FrameBuffer::bind()
 {
+    GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if (status != GL_FRAMEBUFFER_COMPLETE)
+        throw nice_error("status: "+status);
+
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, id);
     glViewport(0, 0, width, height);
@@ -73,12 +77,12 @@ void FrameBuffer::unbind()
     unbindCurrent();
 }
 
-void FrameBuffer::addColorTexture(GLuint format, GLuint magFilter, GLuint minFilter)
+void FrameBuffer::addColorTexture(GLuint textureFormat, GLuint magFilter, GLuint minFilter)
 {
     if (sampled)
     {
-        addColorBuffer(format);
-        sampled->addColorTexture(format, magFilter, minFilter);
+            addColorBuffer();
+        sampled->addColorTexture(textureFormat, magFilter, minFilter);
         colorTexture = sampled->colorTexture;
         return;
     }
@@ -88,7 +92,7 @@ void FrameBuffer::addColorTexture(GLuint format, GLuint magFilter, GLuint minFil
     GLuint texId;
     glGenTextures(1, &texId);
     glBindTexture(GL_TEXTURE_2D, texId);
-    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, NULL);
+    glTexImage2D(GL_TEXTURE_2D, 0, textureFormat, width, height, 0, textureFormat, GL_UNSIGNED_BYTE, NULL);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);

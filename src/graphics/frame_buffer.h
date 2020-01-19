@@ -31,13 +31,17 @@ public:
 
     void unbind();
 
-    // format can be GL_RGB or GL_RGBA. magFilter and minFilter can be GL_LINEAR for example.
-    void addColorTexture(GLuint format, GLuint magFilter, GLuint minFilter);
+    /// \param textureFormat  GL_DEPTH_COMPONENT, GL_DEPTH_STENCIL, GL_RED, GL_RG, GL_RGB, GL_RGBA
+    /// \param magFilter GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR
+    /// \param minFilter GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR
+    void addColorTexture(GLuint textureFormat = GL_RGB, GLuint magFilter = GL_LINEAR, GLuint minFilter = GL_LINEAR);
+    /// \param format GL_RGBA4, GL_RGB565, GL_RGB5_A1, GL_DEPTH_COMPONENT16, or GL_STENCIL_INDEX8
+    void addColorBuffer(GLuint format = GL_RGBA4);
 
-    void addColorBuffer(GLuint format);
 
-    void addDepthTexture(GLuint magFilter, GLuint minFilter);
-
+    /// \param magFilter GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR
+    /// \param minFilter GL_NEAREST, GL_LINEAR, GL_NEAREST_MIPMAP_NEAREST, GL_LINEAR_MIPMAP_NEAREST, GL_NEAREST_MIPMAP_LINEAR, GL_LINEAR_MIPMAP_LINEAR
+    void addDepthTexture(GLuint magFilter = GL_LINEAR, GLuint minFilter = GL_LINEAR);
     void addDepthBuffer();
 
     void renderGUI();

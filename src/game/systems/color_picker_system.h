@@ -26,8 +26,7 @@ public:
     // TODO resize
     ColorPickerSystem() : fbo(fboWidth, fboHeight)
     {
-//        fbo.addColorTexture(GL_RGB, GL_REPEAT, GL_LINEAR);
-        fbo.addColorBuffer(GL_RGB);
+        fbo.addColorBuffer();
         fbo.addDepthBuffer();
 
         u_color = flatShader.uniformLocation("u_color");

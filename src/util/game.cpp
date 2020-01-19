@@ -89,7 +89,7 @@ namespace GAME {
         INPUT::KEYBOARD::setup(g_window);
         INPUT::MOUSE::setup(g_window);
 
-//        GL_DEBUG::enableGLDebug();
+        GL_DEBUG::enableGLDebug();
         GL_DEBUG::printContext();
 
         return true;

@@ -49,9 +49,9 @@ namespace GL_DEBUG
 
     void enableGLDebug()
     {
-        glEnable(GL_DEBUG_OUTPUT);
         if (glDebugMessageCallback)
         {
+            glEnable(GL_DEBUG_OUTPUT);
             glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
             glDebugMessageCallback(openglCallbackFunction, nullptr);
             glDebugMessageControl(GL_DONT_CARE, // all sources

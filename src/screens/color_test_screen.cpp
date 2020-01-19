@@ -77,6 +77,7 @@ class ColorTestScreen : public Screen
 
         uniform sampler2D u_texture;
         uniform sampler2D u_depth;
+        uniform vec2 u_resolution;
 
         const mat3 sy = mat3(
             3.0, 10.0, 3.0,
@@ -88,6 +89,7 @@ class ColorTestScreen : public Screen
             10.0, 0.0, -10.0,
             3.0, 0.0, -3.0
         );
+        const vec2 size = vec2(800.0, 800.0);
 
         void main()
         {
@@ -95,7 +97,7 @@ class ColorTestScreen : public Screen
             mat3 A;
             for (int i=0; i<3; i++) {
                 for (int j=0; j<3; j++) {
-                    A[i][j] = length(texelFetch(u_depth, ivec2(gl_FragCoord) + ivec2(i-1,j-1), 0 ).rgb);
+                    A[i][j] = length(texelFetch(u_depth, ivec2(vec2(gl_FragCoord) / u_resolution * size) + ivec2(i-1,j-1), 0 ).rgb);
                 }
             }
 
@@ -129,8 +131,8 @@ class ColorTestScreen : public Screen
 public:
     ColorTestScreen()
     {
-        fbo.addColorTexture(GL_RGB, GL_LINEAR, GL_NEAREST);
-        fbo.addDepthTexture(GL_LINEAR, GL_NEAREST);
+        fbo.addColorTexture();
+        fbo.addDepthTexture();
         fbo.unbind();
 
         shader.use();
@@ -163,12 +165,12 @@ public:
             camera.Camera::update();
         }
 
-        if (INPUT::KEYBOARD::pressed(GLFW_KEY_O)) a += 0.01;
-        if (INPUT::KEYBOARD::pressed(GLFW_KEY_I)) a -= 0.01;
-        if (INPUT::KEYBOARD::pressed(GLFW_KEY_L)) b += 0.01;
-        if (INPUT::KEYBOARD::pressed(GLFW_KEY_K)) b -= 0.01;
+//        if (INPUT::KEYBOARD::pressed(GLFW_KEY_O)) a += 0.01;
+//        if (INPUT::KEYBOARD::pressed(GLFW_KEY_I)) a -= 0.01;
+//        if (INPUT::KEYBOARD::pressed(GLFW_KEY_L)) b += 0.01;
+//        if (INPUT::KEYBOARD::pressed(GLFW_KEY_K)) b -= 0.01;
 
-        std::cout << a << ", " << b << "\n";
+//        std::cout << a << ", " << b << "\n";
         /////////////////////////////////////////////////////////////////////////////////////////////////////////// TEST
 
         fbo.bind();
@@ -194,9 +196,10 @@ public:
         camera.Camera::update();
 
         flatTextureShader.use();
-        glUniformMatrix4fv(flatTextureShader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined)[0][0]);
+        glUniformMatrix4fv(flatTextureShader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined * scale(mat4(1), vec3(camera.width / static_cast<float>(camera.height), 1.0, 1.0)))[0][0]);
         glUniform1f(flatTextureShader.uniformLocation("a"), a);
         glUniform1f(flatTextureShader.uniformLocation("b"), b);
+        glUniform2f(flatTextureShader.uniformLocation("u_resolution"), camera.width, camera.height);
         fbo.colorTexture->bind(0, flatTextureShader, "u_texture");
         fbo.depthTexture->bind(1, flatTextureShader, "u_depth");
         quad->render();

@@ -55,10 +55,10 @@ public:
     {
         MVP = waterTerrainShader.uniformLocation("MVP");
 
-        reflectionFbo.addColorTexture(GL_RGB, GL_REPEAT, GL_LINEAR);
+        reflectionFbo.addColorTexture();
         reflectionFbo.addDepthBuffer();
 
-        refractionFbo.addColorTexture(GL_RGB, GL_REPEAT, GL_LINEAR);
+        refractionFbo.addColorTexture();
         refractionFbo.addDepthBuffer();
     }
 
