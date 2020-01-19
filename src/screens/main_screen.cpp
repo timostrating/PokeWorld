@@ -126,10 +126,8 @@ public:
                 go->debugRender();
 
         } else {
-            camera.position = vec3(sin(time * 0.5) *100,  0,  cos(time * 0.5) *100);
-            camera.lookAt(vec3(0, -15, 0));
-//            camera.position = vec3(-12, 4, 8);
-//            camera.lookAt(vec3(-20, 1.5, 20));
+            camera.position = vec3(50,  20,  50);
+            camera.lookAt(vec3(0, 0, 0));
             camera.Camera::update();
         }
 
@@ -140,7 +138,7 @@ public:
         /////////////////////////////////////////////////////////////////////////////////////////////////// GAME OBJECTS
 
         flatShader.use();
-        terrain->render();
+        terrain->render(time);
         for (auto &go : gameObjects)
             go->render();
 

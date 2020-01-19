@@ -62,4 +62,9 @@ public:
     void resize(int newWidth, int newHeight);
 
     void invertPitch();
+
+    vec3 oldPos = position;
+    vec3 oldDirection = direction;
+    void saveState();
+    void restoreState();
 };

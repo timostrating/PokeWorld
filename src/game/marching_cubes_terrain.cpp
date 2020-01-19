@@ -76,13 +76,14 @@ void MarchingCubesTerrain::debugRender()
     )
 }
 
-void MarchingCubesTerrain::render()
+void MarchingCubesTerrain::render(float time)
 {
 //    debugRender();
     terrainShader.use();
 //    test.bind(0, terrainShader, "tex0");
     glUniformMatrix4fv(MVP, 1, GL_FALSE, &(Camera::main->combined * transform)[0][0]);
     glUniformMatrix4fv(u_gradient, 1, GL_FALSE, &(gradient)[0][0]);
+    glUniform1f(terrainShader.uniformLocation("u_time"), time);
     mesh->render();
 }
 

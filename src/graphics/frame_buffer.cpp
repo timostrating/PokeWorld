@@ -34,6 +34,9 @@ FrameBuffer::FrameBuffer(GLuint width, GLuint height, GLuint samples_)
 {
     std::cout << "FrameBuffer " << id << " created with " << samples << " samples\n";
 
+//    glFramebufferParameteri(GL_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_WIDTH, 800);
+//    glFramebufferParameteri(GL_FRAMEBUFFER, GL_FRAMEBUFFER_DEFAULT_HEIGHT, 800);
+
     if (samples) sampled = new FrameBuffer(width, height);
 }
 
@@ -161,6 +164,7 @@ void FrameBuffer::addDepthBuffer()
 
 void FrameBuffer::renderGUI()
 {
+    std::cout << (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) << "\n";
     ImGui::Text("Framebuffer %d", id);
     ImGui::Text("");
 

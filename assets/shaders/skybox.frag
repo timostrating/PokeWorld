@@ -47,7 +47,7 @@ const vec4 dayColor2 = vec4( 42.0/255.0,  99.0/255.0, 142.0/255.0, 1.0);
 
 
 void main() {
-    float dayTime = abs(sin(u_time * 0.3)); // 0 equals night,  1 equals day
+    float dayTime = 0.0; //abs(sin(u_time * 0.3)); // 0 equals night,  1 equals day
     vec4 night = vec4(1.0);
     vec4 day = vec4(1.0);
 

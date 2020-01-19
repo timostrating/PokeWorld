@@ -42,7 +42,7 @@ public:
 
     MarchingCubesTerrain();
 
-    void render();
+    void render(float time);
     void debugRender();
     void renderGui();
 

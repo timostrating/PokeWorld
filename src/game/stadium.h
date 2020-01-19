@@ -5,7 +5,6 @@
 #pragma once
 
 
-#include <jmorecfg.h>
 #include "../util/interfaces/game_object.h"
 #include "../util/splines/line.h"
 
@@ -28,7 +27,7 @@ class Stadium : public GameObject
     SharedMesh mesh = SharedMesh(line.wrapMeshAround(&points));
     GLuint MVP, u_color;
 
-    boolean hover;
+    bool hover;
 
 public:
     Stadium()

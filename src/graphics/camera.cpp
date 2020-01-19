@@ -105,3 +105,16 @@ void Camera::invertPitch()
 {
     direction.y *= -1;
 }
+
+void Camera::saveState()
+{
+    oldDirection = direction;
+    oldPos = position;
+}
+
+void Camera::restoreState()
+{
+    position = oldPos;
+    lookAt(position + oldDirection);
+    update();
+}
