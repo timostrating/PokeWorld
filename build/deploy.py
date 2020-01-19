@@ -12,7 +12,7 @@ import sys
 
 def shell(str):
     if os.system(str) != 0:
-        print("\n YOU MADE AN ERROR \n")
+        print("\n YOU MADE AN ERROR APPEAR ON THE SCREEN \n")
         os._exit(-1)
 
 
@@ -45,7 +45,7 @@ else:
     shell("cp emscripten/out/TinyPokemonWorld.wasm gh-pages/TinyPokemonWorld.wasm")
     shell("cp emscripten/out/TinyPokemonWorld.data gh-pages/TinyPokemonWorld.data")
 
-    shell("emrun gh-pages/index.html")
+    shell("emrun --serve_after_close gh-pages/index.html")
 
 
 
