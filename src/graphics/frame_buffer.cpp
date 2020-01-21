@@ -53,7 +53,7 @@ void FrameBuffer::bind()
 {
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (status != GL_FRAMEBUFFER_COMPLETE)
-        throw nice_error("status: "+status);
+        throw nice_error(std::to_string(status));
 
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, id);

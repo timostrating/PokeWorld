@@ -20,6 +20,8 @@ namespace GL_DEBUG
 
     // CREDITS TO: https://blog.nobel-joergensen.com/2013/02/17/debugging-opengl-part-2-using-gldebugmessagecallback/
     void APIENTRY openglCallbackFunction(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam){
+        if (severity != GL_DEBUG_SEVERITY_LOW && severity != GL_DEBUG_SEVERITY_MEDIUM && severity != GL_DEBUG_SEVERITY_HIGH)
+            return;
 
         std::cout << "---------------------opengl-callback-start------------" << std::endl;
         std::cout << "message: "<< message << std::endl;
@@ -54,12 +56,6 @@ namespace GL_DEBUG
             glEnable(GL_DEBUG_OUTPUT);
             glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
             glDebugMessageCallback(openglCallbackFunction, nullptr);
-            glDebugMessageControl(GL_DONT_CARE, // all sources
-                                  GL_DONT_CARE, // all types
-                                  GL_DONT_CARE, // all severity(ies)
-                                  0, // count
-                                  nullptr, // If count​ is zero then the value of ids​ is ignored
-                                  true); // enable or disable
         }
         else {
             std::cout << "_!_ glDebugMessageCallback not available _!_" << std::endl;

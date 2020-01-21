@@ -19,13 +19,14 @@ using namespace MATH;
 
 class WaterPlane : public GameObject
 {
-    mat4 modelMatrix = rotate(scale(translate(mat4(1.0f), vec3(0,0,0)), vec3(20)), radians(-90.0f), VEC3::X);
+    mat4 modelMatrix = scale(translate(mat4(1.0f), vec3(-10,-2.5,10)), vec3(10.99, 2.5, 10.99));
 
     ShaderProgram waterShader = ShaderProgram::fromAssetFiles("shaders/water.vert", "shaders/water.frag");
+    ShaderProgram flatShader = ShaderProgram::fromAssetFiles("shaders/lib/default.vert", "shaders/lib/default.frag");
     Texture waterNormal = Texture::fromAssetFile("textures/water-dudv.jpg");
     GLuint mvpId;
 
-    SharedMesh mesh = SharedMesh(Mesh::quad());
+    SharedMesh cube = SharedMesh(Mesh::cube());
     WaterSystem* waterSystem;
 
 public:
@@ -36,7 +37,9 @@ public:
 
 //        reflectionTexture.bind(0, waterShader, "u_reflectionTexture");
 
-        VertexBuffer::uploadSingleMesh(mesh);
+        VertexBuffer::uploadSingleMesh(cube);
+
+        flatShader.use();
     }
 
     void render();

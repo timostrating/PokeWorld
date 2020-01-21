@@ -22,10 +22,16 @@ namespace MATH
     const float GOLDEN_RATIO = (sqrt(5.0f) + 1.0f) / 2.0f;
 
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////// REMAP
+    inline float remap (float value, float from1, float to1, float from2, float to2) {
+        return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////// RANDOM
     inline float random()
     {
-        return static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+        return drand48();
+//        return static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
     }
 
     inline vec2 randomVec2() { return vec2(random(), random()); }
@@ -34,7 +40,8 @@ namespace MATH
 
     inline float random(const float min, const float max)
     {
-        return min + static_cast <float> (rand()) /  static_cast <float> (RAND_MAX / (max - min));
+        return remap(random(), 0, 1, min, max);
+        //min + static_cast <float> (rand()) /  static_cast <float> (RAND_MAX / (max - min));
     }
 
     inline vec2 randomVec2(const float min, const float max) { return vec2(random(min, max), random(min, max)); }
@@ -68,12 +75,6 @@ namespace MATH
 
     inline float randomGoldenRatio(int i) {
         return fmod(i * GOLDEN_RATIO, 1.0f);
-    }
-
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////////////////// REMAP
-    inline float remap (float value, float from1, float to1, float from2, float to2) {
-        return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
     }
 }
 

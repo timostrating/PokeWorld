@@ -140,6 +140,8 @@ namespace GAME {
         g_width = width;
         g_height = height;
 
+        std::cout << "resize: ("<< width <<" " << height << ")\n";
+
         glViewport(0, 0, width, height);
         if (screen)
             screen->resize(width, height);

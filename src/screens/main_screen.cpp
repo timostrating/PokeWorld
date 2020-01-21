@@ -23,13 +23,14 @@
 #include "../game/systems/color_picker_system.h"
 #include "../game/systems/water_system.h"
 #include "../game/stadium.h"
+#include "../util/input/mouse.h"
 
 using namespace glm;
 
 class Tmp : public GameObject {
 public:
     SharedMesh sphere = SharedMesh(Mesh::sphere());
-    mat4 transform = scale(translate(mat4(1), vec3(-20, 1, 20)), MATH::random(0.1, 0.3) * vec3(1));
+    mat4 transform = scale(translate(mat4(1), vec3(-15, 1, 15)), MATH::random(0.1, 0.3) * vec3(1));
     ShaderProgram flatShader = ShaderProgram::fromAssetFiles("shaders/lib/default.vert", "shaders/lib/default.frag");
 
     float color = 1;
@@ -84,6 +85,10 @@ public:
 
         colorPickerSystem->setGameObjects(&gameObjects);
         waterSystem->setGameObjects(&gameObjects, terrain);
+
+        camera.position = vec3(50,  20,  50);
+        camera.lookAt(vec3(0, 0, 0));
+        camera.Camera::update();
     }
 
     void setup(GLFWwindow* window)
@@ -105,6 +110,19 @@ public:
     bool debug = false;
     bool renderGUI = false;
 
+    float s = 0;
+    float t = 1;
+
+    float velocityX = 0;
+    int oldX = INPUT::MOUSE::getMousePosX();
+    int newX = oldX;
+
+    float velocityY = 0;
+    int oldY = INPUT::MOUSE::getMousePosY();
+    int newY = oldY;
+
+    float r = 50.0;
+
     void render(double deltaTime)
     {
         time += deltaTime;
@@ -122,11 +140,45 @@ public:
         if (debug) {
             camera.update(deltaTime);
             camera.debugDraw();
+            terrain->debugRender();
             for (auto &go : gameObjects)
                 go->debugRender();
 
         } else {
-            camera.position = vec3(50,  20,  50);
+
+            velocityX -= 0.5f * deltaTime;
+            if (velocityX < 0.0f) velocityX = 0.0f;
+
+            velocityY -= 0.5f * deltaTime;
+            if (velocityY < 0.0f) velocityY = 0.0f;
+
+
+            newX = INPUT::MOUSE::getMousePosX();
+            if (INPUT::MOUSE::leftClick())
+                velocityX = (oldX - newX) / static_cast<float>(camera.width);
+            s += velocityX * PI;
+            oldX = newX;
+
+            newY = INPUT::MOUSE::getMousePosY();
+            if (INPUT::MOUSE::leftClick())
+                velocityY = (oldY - newY) / static_cast<float>(camera.width);
+            t += velocityY * PI;
+            t = clamp(t, 0.01f, 0.99f * PI);
+            oldY = newY;
+
+#ifdef __EMSCRIPTEN__
+            r += INPUT::MOUSE::getScrollDelta() * 5.0;
+#else
+            r -= INPUT::MOUSE::getScrollDelta() * 5.0;
+#endif
+            r = clamp(r, 20.0f, 100.0f);
+
+
+            camera.position = vec3(
+                    sin(s) * sin(t) * r,  // y
+                    cos(t) * r,           // z
+                    cos(s) * sin(t) * r   // x
+                );
             camera.lookAt(vec3(0, 0, 0));
             camera.Camera::update();
         }

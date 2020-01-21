@@ -50,8 +50,9 @@ void ColorPickerSystem::update(float deltaTime) {
 
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-        float data[3];
-        glReadPixels(x, y, 1,1, GL_RGB, GL_FLOAT, data);
+        unsigned char data[4];
+        glReadPixels(x, y, 1,1, GL_RGBA, GL_UNSIGNED_BYTE, data);
+//        int pickedID = static_cast<int>(data[0]* 255.0)  + static_cast<int>(data[1]* 255.0) * 256 + static_cast<int>(data[2]* 255.0) * 256*256;
         int pickedID = data[0] + data[1] * 256 + data[2] * 256*256;
 
         if (pickedID != 0 && pickedID <= gameObjects->size())

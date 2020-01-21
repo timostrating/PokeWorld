@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
     if (!GAME::init())
         return -1;
 
-    ColorTestScreen screen;
+    MainScreen screen;
     GAME::setScreen(&screen);
 
     GAME::run();
