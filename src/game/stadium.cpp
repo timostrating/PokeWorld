@@ -9,8 +9,10 @@ void Stadium::render()
 {
     shader.use();
     glUniformMatrix4fv(MVP, 1, GL_FALSE, &(Camera::main->combined * transform)[0][0]);
-    if(hover) glUniform4f(u_color, 0.7, 0.6, 0.5, 1.0);
-    else      glUniform4f(u_color, 0.6, 0.5, 0.4, 1.0);
+    if(hover) glUniform3f(u_color, 0.7, 0.6, 0.5);
+    else      glUniform3f(u_color, 0.6, 0.5, 0.4);
+
+    glUniform1f(shader.uniformLocation("u_time"), MATH::random(0.1, 0.8));
     mesh->render();
 
     hover = false;

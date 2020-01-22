@@ -7,13 +7,8 @@
 #include <string>
 #include <vector>
 #include "mesh.h"
+#include "vert_attributes.h"
 
-
-//enum VertexAttribute
-//{
-//    POSITION = 0,
-//    NORMAL = 0,
-//};
 
 class Mesh;
 typedef std::shared_ptr<Mesh> SharedMesh;
@@ -28,15 +23,17 @@ private:
 
     unsigned int totalNrOfVerts = 0;
     unsigned int totalNrOfIndicies = 0;
+    unsigned int vertSize = 0;
 
-    int VERTSIZE = 3;  // TODO: using vertex Attributes
+    VertAttributes vertAttributes;
+
 
 public:
     // try not to use this. It is more efficient to put more meshes (with the same VertAttributes) in 1 VertBuffer
     static void uploadSingleMesh(SharedMesh mesh);
 
-    static VertexBuffer* with();
-    VertexBuffer()
+    static VertexBuffer* with(VertAttributes &vertAttributes);
+    VertexBuffer(VertAttributes &vertAttributes) : vertAttributes(vertAttributes), vertSize(vertAttributes.getVertSize())
     {
         glGenVertexArrays(1, &vaoId);
     }

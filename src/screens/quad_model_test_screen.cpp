@@ -43,7 +43,7 @@ public:
         mesh->indicies.insert(mesh->indicies.begin(), /*{0,1,2}*/ {2, 1, 0, 0, 3, 2});
 
         // Vertex Buffer
-        VertexBuffer vertexBuffer = VertexBuffer();
+        VertexBuffer vertexBuffer = VertexBuffer(VA_POSITION);
         vertexBuffer.add(mesh);
         vertexBuffer.upload();
 

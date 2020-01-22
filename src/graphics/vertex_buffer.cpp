@@ -35,9 +35,9 @@ void glBufferSubData_test(GLenum target, long targetSize)
     }
 }
 
-VertexBuffer *VertexBuffer::with()
+VertexBuffer *VertexBuffer::with(VertAttributes &vertAttributes)
 {
-    return new VertexBuffer();
+    return new VertexBuffer(vertAttributes);
 }
 
 // static
@@ -58,7 +58,7 @@ void VertexBuffer::bind()
     }
 }
 
-void VertexBuffer::uploadSingleMesh(SharedMesh mesh) { with()->add(mesh)->upload(); }
+void VertexBuffer::uploadSingleMesh(SharedMesh mesh) { with(mesh->attributes)->add(mesh)->upload(); }
 void VertexBuffer::upload()
 {
     bind();
@@ -66,7 +66,7 @@ void VertexBuffer::upload()
     // Vertex Buffer
     glGenBuffers(1, &vboId);
     glBindBuffer(GL_ARRAY_BUFFER, vboId);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GL_FLOAT) * totalNrOfVerts * VERTSIZE, NULL, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * totalNrOfVerts * vertSize, NULL, GL_STATIC_DRAW);
 
     // Index Buffer
     glGenBuffers(1, &iboId);
@@ -74,32 +74,42 @@ void VertexBuffer::upload()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * totalNrOfIndicies, NULL, GL_STATIC_DRAW);
 
     // Vertex Buffer
+    GLuint vertsOffset = 0, indicesOffset = 0;
     for (const std::weak_ptr<Mesh>& m : meshes)
     {
         if (m.expired())
             throw nice_error("Trying to upload a VertBuffer whose Meshes are already destroyed");
 
         SharedMesh mesh = m.lock();
+        GLuint
+                meshVertSize = mesh->nrOfVerts * sizeof(float) * vertSize,
+                meshIndicesSize = mesh->nrOfIndices * sizeof(unsigned short);
 
-        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(GL_FLOAT) * mesh->nrOfVerts * VERTSIZE, mesh->vertices.data());
-        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, sizeof(unsigned short) * mesh->nrOfIndices, mesh->indicies.data());
+        glBufferSubData(GL_ARRAY_BUFFER, vertsOffset, meshVertSize, mesh->vertices.data());
+        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, indicesOffset, meshIndicesSize, mesh->indicies.data());
+
+        vertsOffset += meshVertSize;
+        indicesOffset += meshIndicesSize;
     }
 
-    glBufferSubData_test(GL_ARRAY_BUFFER, sizeof(GL_FLOAT) * totalNrOfVerts * VERTSIZE);
-    glBufferSubData_test(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * totalNrOfIndicies);
+//    glBufferSubData_test(GL_ARRAY_BUFFER, sizeof(GL_FLOAT) * totalNrOfVerts * vertSize);
+//    glBufferSubData_test(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned short) * totalNrOfIndicies);
 
 
-    // TODO: FOR EACH ATTIBUTE ...
-    glVertexAttribPointer(
-            0,              // must match the layout in the shader.
-            VERTSIZE,       // size
-            GL_FLOAT,       // type
-            GL_FALSE,       // normalized?
-            0,              // stride
-            (void*)0        // array buffer offset
-    );
-    glEnableVertexAttribArray(0);
-    // END FOR EACH
+    GLint offset = 0;
+    for (int i = 0; i < vertAttributes.nrOfAttributes(); i++) {
+        VertAttr &attr = vertAttributes.get(i);
+        glVertexAttribPointer(
+            i,                               // must match the layout in the shader.
+            attr.size,                       // size
+            GL_FLOAT,                        // type
+            attr.normalized,                 // normalized?
+            vertSize * sizeof(float),        // stride
+            (void *)(uintptr_t)offset        // array buffer offset
+        );
+        glEnableVertexAttribArray(i);
+        offset += attr.size * sizeof(float);
+    }
 
 }
 
