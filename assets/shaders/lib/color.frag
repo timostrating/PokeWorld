@@ -18,5 +18,5 @@ void main() {
     vec3 light_pos = vec3(sin(u_time) * 3.0, 5.0, cos(u_time) * 3.0);
     float NdotL1 = dot(normalize(v_normal), normalize(light_pos));
 
-    outputColor =  vec4(mix(u_color, shadowColor(u_color), smoothstep(0.0, -0.05, NdotL1)), 1.0);
+    outputColor =  vec4(mix(u_color, shadowColor(u_color), smoothstep(0.5, 0.4, NdotL1)), 1.0);
 }

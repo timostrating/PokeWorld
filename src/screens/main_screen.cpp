@@ -179,7 +179,9 @@ public:
                     cos(t) * r,           // z
                     cos(s) * sin(t) * r   // x
                 );
-            camera.lookAt(vec3(0, 0, 0));
+            camera.lookAt(vec3(0, 1, 0));
+//            camera.position = vec3(10 + sin(time*0.5) * 15, 5, 10 +cos(time*0.5) * 15);
+//            camera.lookAt(vec3(10, 1, 10));
             camera.Camera::update();
         }
 

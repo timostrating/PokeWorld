@@ -12,7 +12,7 @@ void Stadium::render()
     if(hover) glUniform3f(u_color, 0.7, 0.6, 0.5);
     else      glUniform3f(u_color, 0.6, 0.5, 0.4);
 
-    glUniform1f(shader.uniformLocation("u_time"), MATH::random(0.1, 0.8));
+    glUniform1f(shader.uniformLocation("u_time"), 0.6);
     mesh->render();
 
     hover = false;

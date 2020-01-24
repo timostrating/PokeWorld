@@ -6,6 +6,7 @@ out vec4 outputColor;
 uniform sampler2D tex0;
 
 in vec3 v_pos;
+in vec3 v_normal;
 
 
 float mod289(float x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
@@ -74,7 +75,7 @@ vec3 gradient(float t) {
 float clamp01(float v) { return clamp(v, 0.0, 1.0); }
 
 
-const int FBM_OCTAVES = 7;
+const int FBM_OCTAVES = 3;
 const float H = 1.5;
 
 // http://iquilezles.org/www/articles/fbm/fbm.htm
@@ -103,6 +104,8 @@ float pattern( in vec3 p )
 //vec3 green1 = vec3(159.0/255.0, 169.0/255.0, 49.0/255.0);
 //vec3 green2 = vec3( 41.0/255.0, 129.0/255.0, 24.0/255.0);
 
+const float u_time = 0.6;
+
 void main() {
     float a = pattern(v_pos);
     float b = pattern(v_pos * 5.0);
@@ -112,4 +115,11 @@ void main() {
     vec3 grass = mix(grass1, grass2*0.8, r);
 
     outputColor = vec4(mix(ground, grass, smoothstep(9.2, 9.79, v_pos.y + a)), 1.0);
+
+
+    vec3 light_pos = vec3(sin(u_time) * 3.0, 5.0, cos(u_time) * 3.0);
+    float NdotL1 = dot(normalize(v_normal), normalize(light_pos));
+
+    if(NdotL1 < 0.0)
+        outputColor.xyz *= 0.5;// vec4(mix(rock1, rock2, smoothstep(0.0, -0.05, NdotL1)), 1.0);
 }
