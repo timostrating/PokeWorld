@@ -4,6 +4,7 @@
 
 #include <glad/glad.h>
 #include <iostream>
+#include "gl_debug.h"
 
 
 namespace GL_DEBUG
@@ -59,6 +60,17 @@ namespace GL_DEBUG
         }
         else {
             std::cout << "_!_ glDebugMessageCallback not available _!_" << std::endl;
+        }
+    }
+
+    void debugVertexNormals(SharedMesh mesh, mat4 transform, Gizmos *gizmos)
+    {
+        int size = mesh->attributes.getVertSize();
+        for (int i=0; i<mesh->nrOfVerts * size; i+=size)
+        {
+            vec4 from = transform * vec4(mesh->vertices[i], mesh->vertices[i+1], mesh->vertices[i+2], 1.0);
+            vec4 to = from + vec4(mesh->vertices[i+3], mesh->vertices[i+4], mesh->vertices[i+5], 1.0);
+            gizmos->drawLine(from, to, COLOR::WHITE);
         }
     }
 }

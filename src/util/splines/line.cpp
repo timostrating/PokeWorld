@@ -47,7 +47,7 @@ vec3 calculateNormal(vec3 a, vec3 b, vec3 c) {
     return normalize(cross(u, v));
 }
 
-Mesh* Line::wrapMeshAround(std::vector<vec3> *points, bool positionAndNormals)
+Mesh* Line::wrapMeshAround(std::vector<vec3> *points, bool positionAndNormals, bool smooth)
 {
     Mesh* mesh = (positionAndNormals)? new Mesh(0, 0, VA_POSITION_NORMAL) : new Mesh(0, 0, VA_POSITION);
 
@@ -62,22 +62,29 @@ Mesh* Line::wrapMeshAround(std::vector<vec3> *points, bool positionAndNormals)
             vec4 b1 = lerpIndexed(i, 1) * vec4(points->at(j), 1);
             vec4 b2 = lerpIndexed(i, 1) * vec4(points->at((j+1)%points->size()), 1);
 
-            if (positionAndNormals == false) {
+                if (positionAndNormals == false) {
                 //                                           POSITION        POSITION        POSITION
                 mesh->vertices.insert(mesh->vertices.end(), {a1.x,a1.y,a1.z, a2.x,a2.y,a2.z, b1.x,b1.y,b1.z});
                 mesh->vertices.insert(mesh->vertices.end(), {b2.x,b2.y,b2.z, b1.x,b1.y,b1.z, a2.x,a2.y,a2.z});
-            } else {
-                vec3 na1 = normalize(vec3(a1)-mida),  na2 = normalize(vec3(a2)-mida),  nb1 = normalize(vec3(b1)-midb),  nb2 = normalize(vec3(b2)-midb);
-                //                                           POSITION        NORMAL              POSITION        NORMAL              POSITION        NORMAL
-                mesh->vertices.insert(mesh->vertices.end(), {a1.x,a1.y,a1.z, na1.x,na1.y,na1.z,  a2.x,a2.y,a2.z, na2.x,na2.y,na2.z,  b1.x,b1.y,b1.z, nb1.x,nb1.y,nb1.z,  });
-                mesh->vertices.insert(mesh->vertices.end(), {b2.x,b2.y,b2.z, nb2.x,nb2.y,nb2.z,  b1.x,b1.y,b1.z, nb1.x,nb1.y,nb1.z,  a2.x,a2.y,a2.z, na2.x,na2.y,na2.z,  });
 
-//                vec3 n1 = calculateNormal(a1, a2, b1);
-//                vec3 n2 = calculateNormal(b2, b1, a2);
-//
-//                //                                           POSITION        NORMAL              POSITION        NORMAL              POSITION        NORMAL
-//                mesh->vertices.insert(mesh->vertices.end(), {a1.x,a1.y,a1.z, n1.x,n1.y,n1.z,  a2.x,a2.y,a2.z, n1.x,n1.y,n1.z,  b1.x,b1.y,b1.z, n1.x,n1.y,n1.z,  });
-//                mesh->vertices.insert(mesh->vertices.end(), {b2.x,b2.y,b2.z, n2.x,n2.y,n2.z,  b1.x,b1.y,b1.z, n2.x,n2.y,n2.z,  a2.x,a2.y,a2.z, n2.x,n2.y,n2.z,  });
+            } else { // add normals too
+                if (smooth) // smooth normal based on the displacement of the line
+                {
+                    vec3 na1 = normalize(vec3(a1)-mida),  na2 = normalize(vec3(a2)-mida),  nb1 = normalize(vec3(b1)-midb),  nb2 = normalize(vec3(b2)-midb);
+                    //                                           POSITION        NORMAL              POSITION        NORMAL              POSITION        NORMAL
+                    mesh->vertices.insert(mesh->vertices.end(), {a1.x,a1.y,a1.z, na1.x,na1.y,na1.z,  a2.x,a2.y,a2.z, na2.x,na2.y,na2.z,  b1.x,b1.y,b1.z, nb1.x,nb1.y,nb1.z,  });
+                    mesh->vertices.insert(mesh->vertices.end(), {b2.x,b2.y,b2.z, nb2.x,nb2.y,nb2.z,  b1.x,b1.y,b1.z, nb1.x,nb1.y,nb1.z,  a2.x,a2.y,a2.z, na2.x,na2.y,na2.z,  });
+
+                } else { // normal of the triangle is the normal of every vertex.
+
+                    vec3 n1 = calculateNormal(a1, a2, b1);
+                    vec3 n2 = calculateNormal(b2, b1, a2);
+
+                    //                                           POSITION        NORMAL              POSITION        NORMAL              POSITION        NORMAL
+                    mesh->vertices.insert(mesh->vertices.end(), {a1.x,a1.y,a1.z, n1.x,n1.y,n1.z,  a2.x,a2.y,a2.z, n1.x,n1.y,n1.z,  b1.x,b1.y,b1.z, n1.x,n1.y,n1.z,  });
+                    mesh->vertices.insert(mesh->vertices.end(), {b2.x,b2.y,b2.z, n2.x,n2.y,n2.z,  b1.x,b1.y,b1.z, n2.x,n2.y,n2.z,  a2.x,a2.y,a2.z, n2.x,n2.y,n2.z,  });
+                }
+
             }
         }
     }
