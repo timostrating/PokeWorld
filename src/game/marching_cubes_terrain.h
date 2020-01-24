@@ -36,7 +36,7 @@ private:
 
 
 public:
-    SharedMesh mesh = SharedMesh(new Mesh(0, 0)); // Internal variables are our JOB
+    SharedMesh mesh = SharedMesh(new Mesh(0, 0, VA_POSITION_NORMAL)); // Internal variables are our JOB
     mat4 transform = scale(translate(mat4(1.0f), vec3(position.x * modelScale, position.y * modelScale +1, position.z * modelScale)), vec3(modelScale));
 
 

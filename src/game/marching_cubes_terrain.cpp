@@ -3,11 +3,14 @@
 //
 
 #include <imgui.h>
+#include <iterator>
+#include <map>
 #include "marching_cubes_terrain.h"
 #include "marching_cube.hpp"
 #include "../util/math/math.h"
 #include "../graphics/camera.h"
 #include "../graphics/texture.h"
+#include "../util/debug/gl_debug.h"
 
 #define LOOP3D(N, X,Y,Z, CODE) \
     for (int X=0; x<N; X++) { \
@@ -16,6 +19,38 @@
         CODE \
     }}} \
 
+
+SharedMesh smoothAndIndexify(SharedMesh mesh)
+{
+    std::vector<float> tmp;
+    mesh->vertices.swap(tmp);
+
+    std::unordered_map<int, unsigned short> memory;
+
+    unsigned short index = 0;
+    for (int i=0; i<mesh->nrOfVerts * mesh->attributes.getVertSize(); i+=mesh->attributes.getVertSize())
+    {
+        float a=tmp[i + 0], b=tmp[i + 1], c=tmp[i + 2];
+        int v = static_cast<int>(a * pow(2.0f*15.0f, 3.0) + b * pow(2.0f*15.0f, 2.0) + c * 2.0f*15.0f);
+        bool inMemory = memory.find(v) != memory.end();
+
+        if (inMemory) {
+            mesh->vertices[mesh->attributes.getVertSize() * memory.find(v)->second +3] += tmp[i+3];
+            mesh->vertices[mesh->attributes.getVertSize() * memory.find(v)->second +4] += tmp[i+4];
+            mesh->vertices[mesh->attributes.getVertSize() * memory.find(v)->second +5] += tmp[i+5];
+            mesh->indicies.insert(mesh->indicies.end(), {memory.find(v)->second});
+        } else {
+            mesh->vertices.insert(mesh->vertices.end(), {a,b,c, tmp[i+3], tmp[i+4], tmp[i+5]});
+            mesh->indicies.insert(mesh->indicies.end(), {index});
+            memory.insert(std::pair<int, unsigned short>(v, index));
+            index++;
+        }
+    }
+
+    mesh->nrOfVerts = mesh->vertices.size() / mesh->attributes.getVertSize();
+    mesh->nrOfIndices = mesh->indicies.size();
+    return mesh;
+}
 
 MarchingCubesTerrain::MarchingCubesTerrain()
 {
@@ -50,11 +85,13 @@ MarchingCubesTerrain::MarchingCubesTerrain()
             vec3 p1 = vec3(x, y, z) + EDGE_POINTS[TRI_TABLE[cubeIndex][i + 0]];
             vec3 p2 = vec3(x, y, z) + EDGE_POINTS[TRI_TABLE[cubeIndex][i + 1]];
             vec3 p3 = vec3(x, y, z) + EDGE_POINTS[TRI_TABLE[cubeIndex][i + 2]];
-            mesh->vertices.insert(mesh->vertices.end(), {p1.x, p1.y, p1.z,  p2.x, p2.y, p2.z,  p3.x, p3.y, p3.z});
+            vec3 n = normalize(cross(p2-p1, p3-p1));  // POSITION        NORMAL        POSITION        NORMAL        POSITION        NORMAL
+            mesh->vertices.insert(mesh->vertices.end(), {p1.x,p1.y,p1.z, n.x,n.y,n.z,  p2.x,p2.y,p2.z, n.x,n.y,n.z,  p3.x,p3.y,p3.z, n.x,n.y,n.z});
             mesh->nrOfVerts += 3;
         }
     )
 
+    mesh = smoothAndIndexify(mesh);
     VertexBuffer::uploadSingleMesh(mesh);
 }
 
@@ -98,6 +135,8 @@ void MarchingCubesTerrain::render(float time)
     glUniformMatrix4fv(u_gradient, 1, GL_FALSE, &(gradient)[0][0]);
     glUniform1f(terrainShader.uniformLocation("u_time"), time);
     mesh->render();
+
+//    GL_DEBUG::debugVertexNormals(mesh, transform, &gizmos);
 }
 
 void MarchingCubesTerrain::renderGui()
