@@ -37,7 +37,7 @@ void main()
     float g = sqrt(pow(gx, 2.0)+pow(gy, 2.0));
     //            float gradientDirection = atan(gy/gx);
 
-    g = smoothstep(0.0, 0.01, g);
+    g = smoothstep(0.0, 0.02, g);
 
-    outputColor = vec4(mix(diffuse, vec3(0.05), g), 1.);
+    outputColor = vec4(mix(diffuse, diffuse * vec3(0.05), g), 1.);
 }

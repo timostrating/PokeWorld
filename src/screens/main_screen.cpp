@@ -180,9 +180,9 @@ public:
         if (debug) {
             camera.debugUpdate(deltaTime);
             camera.debugDraw();
-            terrain->debugRender();
             for (auto &go : gameObjects)
                 go->debugRender();
+            terrain->debugRender();
         } else {
             camera.update(deltaTime);
         }

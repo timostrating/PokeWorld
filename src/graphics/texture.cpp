@@ -12,6 +12,7 @@
 
 Texture Texture::fromAssetFile(const char *imgPath, GLint a, GLint b)
 {
+    std::cout << " -- Are You sure about this? We stoped using textures.";
     return Texture((&std::string("../../../../assets/").append(imgPath))->c_str(), a, b);
 }
 
@@ -51,7 +52,7 @@ Texture::Texture(const char *imgPath, GLint textureWrapping, GLint textureInterp
         unsigned char *imagePtr = stbi_load(imgPath, &width, &height, &n, 0);
 
         if (imagePtr == nullptr)
-            nice_error("Image loading error: image URI or file format is probably wrong.");
+            nice_error("Image loading error: image URI or file format is probably wrong. URL: "+std::string(imgPath));
 
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, imagePtr);
         stbi_image_free(imagePtr);
