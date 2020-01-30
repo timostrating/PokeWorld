@@ -62,6 +62,8 @@ public:
 
 };
 
+
+
 class Tmp : public GameObject
 {
 public:
@@ -92,6 +94,9 @@ public:
 };
 
 
+
+
+
 class MainScreen : public Screen
 {
 
@@ -115,6 +120,12 @@ public:
         new Tree(translate(mat4(1), vec3(0,1,0))),
     };
 
+    ShaderProgram postProcessingShader = ShaderProgram::fromAssetFiles("shaders/postprocessing.vert", "shaders/postprocessing.frag");
+    GLuint MVP, u_resolution;
+    SharedMesh quad = SharedMesh(Mesh::quad());
+    FrameBuffer screenFbo = FrameBuffer(1600, 1600);
+
+
     MainScreen()
     {
         colorPickerSystem->setGameObjects(&gameObjects);
@@ -123,6 +134,13 @@ public:
         camera.position = vec3(50,  20,  50);
         camera.lookAt(vec3(0, 0, 0));
         camera.Camera::update();
+
+        MVP = postProcessingShader.uniformLocation("MVP");
+        u_resolution = postProcessingShader.uniformLocation("u_resolution");
+        VertexBuffer::uploadSingleMesh(quad);
+        screenFbo.addColorTexture();
+        screenFbo.addDepthTexture();
+        screenFbo.unbind();
     }
 
     void setup(GLFWwindow* window)
@@ -146,12 +164,13 @@ public:
 
     void render(double deltaTime)
     {
-        time += deltaTime;
+        time += deltaTime * 0.2;
 
         colorPickerSystem->update(deltaTime);
 
-        glClearColor(0/255.0, 10/255.0, 0/255.0, 1.0f);
+        glClearColor(0/255.0, 0/255.0, 0/255.0, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////// CAMERA
 
@@ -168,15 +187,40 @@ public:
             camera.update(deltaTime);
         }
 
-        /////////////////////////////////////////////////////////////////////////////////////////////////// GAME OBJECTS
 
-        flatShader.use();
-        terrain->render(time);
-        for (auto &go : gameObjects)
-            go->render(time);
+        //////////////////////////////////////////////////////////////////////////////////////////////////////// SYSTEMS
 
         waterSystem->update(deltaTime);
-        waterPlane->render(time);
+
+
+        /////////////////////////////////////////////////////////////////////////////////////////////////// GAME OBJECTS
+
+        screenFbo.bind();
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            flatShader.use();
+            terrain->render(time);
+            for (auto &go : gameObjects)
+                go->render(time);
+
+            waterPlane->render(time);
+        screenFbo.unbind();
+
+
+        //////////////////////////////////////////////////////////////////////////////////////////////// POST PROCESSING
+
+        camera.saveState();
+        camera.position = vec3(0, 0, 1 / tan(radians(camera.fov * 0.5)));
+        camera.lookAt(vec3(0, 0, 0));
+        camera.Camera::update();
+//
+        postProcessingShader.use();
+        glUniformMatrix4fv(MVP, 1, GL_FALSE, &(camera.combined * scale(mat4(1), vec3(camera.width / static_cast<float>(camera.height), 1.0, 1.0)))[0][0]);
+        glUniform2f(u_resolution, camera.width, camera.height);
+        screenFbo.colorTexture->bind(0, postProcessingShader, "u_texture");
+        screenFbo.depthTexture->bind(1, postProcessingShader, "u_depth");
+        quad->render();
+        camera.restoreState();
 
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////// GUI
