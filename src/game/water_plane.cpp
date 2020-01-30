@@ -5,13 +5,14 @@
 #include "water_plane.h"
 #include "../graphics/camera.h"
 
-void WaterPlane::render()
+void WaterPlane::render(float time)
 {
     waterShader.use();
     waterSystem->bindTexture(waterShader);
     waterNormal.bind(3, waterShader, "u_dudvTexture");
 
     glUniformMatrix4fv(mvpId, 1, GL_FALSE, &(Camera::main->combined * modelMatrix)[0][0]);
+    glUniform1f(u_time, time);
     cube->render();
 
 //    glUniformMatrix4fv(mvpId, 1, GL_FALSE, &(Camera::main->combined * scale(translate(mat4(1), vec3(0,-2,20)), vec3(20, 2, 1)))[0][0]);

@@ -37,7 +37,7 @@ public:
         colorPickerData = new ColorPickerData {cube, transform};
     }
 
-    void render() {
+    void render(float time) {
         flatShader.use();
         glUniformMatrix4fv(flatShader.uniformLocation("MVP"), 1, GL_FALSE, &(Camera::main->combined * transform)[0][0]);
         if (clicked)
@@ -130,7 +130,7 @@ public:
 
         flatShader.use();
         for (auto &go : gameObjects)
-            go->render();
+            go->render(time);
 
 //        flatShader.use();
 //        srand(0); // trees

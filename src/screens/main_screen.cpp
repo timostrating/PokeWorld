@@ -16,18 +16,54 @@
 #include "../graphics/shader_program.h"
 #include "../graphics/flying_camera.h"
 #include "../util/input/keyboard.h"
-#include "../graphics/cubemap.h"
 #include "../game/marching_cubes_terrain.h"
 #include "../game/water_plane.h"
 #include "../game/sky.h"
 #include "../game/systems/color_picker_system.h"
 #include "../game/systems/water_system.h"
 #include "../game/stadium.h"
-#include "../util/input/mouse.h"
+#include "../game/tree.h"
 
 using namespace glm;
 
-class Tmp : public GameObject {
+
+class Tmp2 : public GameObject
+{
+public:
+    mat4 transform = scale(translate(mat4(1), vec3(1, 1, 1)), 0.1f * vec3(1));
+    ShaderProgram flatShader = ShaderProgram::fromAssetFiles("shaders/lib/default.vert", "shaders/lib/default.frag");
+
+    Line line = Line({scale(translate(mat4(1), vec3( 0,  0,  0)), 1.0f * VEC3::ONE),
+                      scale(translate(mat4(1), vec3(-1,  8, -1)), 0.8f * VEC3::ONE),
+                      scale(translate(mat4(1), vec3(-1, 12, -1)), 0.1f * VEC3::ONE)});
+
+    Line line2= Line({scale(translate(mat4(1), vec3( 0,  0,  0)), 1.2f * VEC3::ONE),
+                      scale(translate(mat4(1), vec3(2,  7, 2)), 0.9f * VEC3::ONE),
+                      scale(translate(mat4(1), vec3(2, 13, 2)), 0.2f * VEC3::ONE)});
+
+    std::vector<vec3> points = {vec3(-1,0,0), vec3(0,0,1), vec3(1,0,0)};
+
+    SharedMesh mesh = SharedMesh(line.wrapMeshAround(&points, false, false));
+    SharedMesh mesh2 = SharedMesh(line2.wrapMeshAround(&points, false, false));
+
+    Tmp2() {
+        VertexBuffer::uploadSingleMesh(mesh);
+        VertexBuffer::uploadSingleMesh(mesh2);
+    }
+
+    void render(float time) {
+        flatShader.use();
+        glUniformMatrix4fv(flatShader.uniformLocation("MVP"), 1, GL_FALSE, &(Camera::main->combined * transform)[0][0]);
+        glUniform4f(flatShader.uniformLocation("u_color"), 0, 0.3, 0, 1);
+
+        mesh->render();
+        mesh2->render();
+    }
+
+};
+
+class Tmp : public GameObject
+{
 public:
     SharedMesh sphere = SharedMesh(Mesh::sphere());
     mat4 transform = scale(translate(mat4(1), vec3(-15, 1, 15)), MATH::random(0.1, 0.3) * vec3(1));
@@ -41,7 +77,7 @@ public:
         colorPickerData = new ColorPickerData {sphere, transform};
     }
 
-    void render() {
+    void render(float time) {
         flatShader.use();
         glUniformMatrix4fv(flatShader.uniformLocation("MVP"), 1, GL_FALSE, &(Camera::main->combined * transform)[0][0]);
         if (clicked)
@@ -64,25 +100,23 @@ public:
     ShaderProgram flatShader = ShaderProgram::fromAssetFiles("shaders/lib/default.vert", "shaders/lib/default.frag");
 
     Gizmos gizmos;
-    SharedMesh cube = SharedMesh(Mesh::cube());
 
     ColorPickerSystem* colorPickerSystem = new ColorPickerSystem();
     WaterSystem* waterSystem = new WaterSystem();
-    SkySystem* skySystem = new SkySystem();
 
     MarchingCubesTerrain* terrain = new MarchingCubesTerrain();
     WaterPlane* waterPlane = new WaterPlane(waterSystem);
 
     std::vector<GameObject*> gameObjects = {
-        new Sky(skySystem),
+        new Sky(),
         new Stadium(),
         new Tmp(),
+        new Tmp2(),
+        new Tree(translate(mat4(1), vec3(0,1,0))),
     };
 
     MainScreen()
     {
-        VertexBuffer::uploadSingleMesh(cube);
-
         colorPickerSystem->setGameObjects(&gameObjects);
         waterSystem->setGameObjects(&gameObjects, terrain);
 
@@ -110,26 +144,13 @@ public:
     bool debug = false;
     bool renderGUI = false;
 
-    float s = 0;
-    float t = 1;
-
-    float velocityX = 0;
-    int oldX = INPUT::MOUSE::getMousePosX();
-    int newX = oldX;
-
-    float velocityY = 0;
-    int oldY = INPUT::MOUSE::getMousePosY();
-    int newY = oldY;
-
-    float r = 50.0;
-
     void render(double deltaTime)
     {
         time += deltaTime;
 
         colorPickerSystem->update(deltaTime);
 
-        glClearColor(0/255.0, 0/255.0, 0/255.0, 1.0f);
+        glClearColor(0/255.0, 10/255.0, 0/255.0, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////// CAMERA
@@ -138,70 +159,28 @@ public:
         if (INPUT::KEYBOARD::pressed(GLFW_KEY_1)) renderGUI = true;
 
         if (debug) {
-            camera.update(deltaTime);
+            camera.debugUpdate(deltaTime);
             camera.debugDraw();
             terrain->debugRender();
             for (auto &go : gameObjects)
                 go->debugRender();
-
         } else {
-
-            velocityX -= 0.5f * deltaTime;
-            if (velocityX < 0.0f) velocityX = 0.0f;
-
-            velocityY -= 0.5f * deltaTime;
-            if (velocityY < 0.0f) velocityY = 0.0f;
-
-
-            newX = INPUT::MOUSE::getMousePosX();
-            if (INPUT::MOUSE::leftClick())
-                velocityX = (oldX - newX) / static_cast<float>(camera.width);
-            s += velocityX * PI;
-            oldX = newX;
-
-            newY = INPUT::MOUSE::getMousePosY();
-            if (INPUT::MOUSE::leftClick())
-                velocityY = (oldY - newY) / static_cast<float>(camera.width);
-            t += velocityY * PI;
-            t = clamp(t, 0.01f, 0.99f * PI);
-            oldY = newY;
-
-#ifdef __EMSCRIPTEN__
-            r += INPUT::MOUSE::getScrollDelta() * 5.0;
-#else
-            r -= INPUT::MOUSE::getScrollDelta() * 5.0;
-#endif
-            r = clamp(r, 20.0f, 100.0f);
-
-
-            camera.position = vec3(
-                    sin(s) * sin(t) * r,  // y
-                    cos(t) * r,           // z
-                    cos(s) * sin(t) * r   // x
-                );
-            camera.lookAt(vec3(0, 1, 0));
-//            camera.position = vec3(10 + sin(time*0.5) * 15, 5, 10 +cos(time*0.5) * 15);
-//            camera.lookAt(vec3(10, 1, 10));
-            camera.Camera::update();
+            camera.update(deltaTime);
         }
-
-        //////////////////////////////////////////////////////////////////////////////////////////////////////// SYSTEMS
-
-        skySystem->update(deltaTime);
 
         /////////////////////////////////////////////////////////////////////////////////////////////////// GAME OBJECTS
 
         flatShader.use();
         terrain->render(time);
         for (auto &go : gameObjects)
-            go->render();
+            go->render(time);
 
         waterSystem->update(deltaTime);
-        waterPlane->render();
-
+        waterPlane->render(time);
 
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////// GUI
+
         flatShader.use();
         VertexBuffer::bindDefault();
 

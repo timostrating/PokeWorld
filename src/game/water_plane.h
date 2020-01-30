@@ -24,7 +24,7 @@ class WaterPlane : public GameObject
     ShaderProgram waterShader = ShaderProgram::fromAssetFiles("shaders/water.vert", "shaders/water.frag");
     ShaderProgram flatShader = ShaderProgram::fromAssetFiles("shaders/lib/default.vert", "shaders/lib/default.frag");
     Texture waterNormal = Texture::fromAssetFile("textures/water-dudv.jpg");
-    GLuint mvpId;
+    GLuint mvpId, u_time;
 
     SharedMesh cube = SharedMesh(Mesh::cube());
     WaterSystem* waterSystem;
@@ -34,6 +34,7 @@ public:
     {
         waterShader.use();
         mvpId = waterShader.uniformLocation("MVP");
+        u_time = waterShader.uniformLocation("u_time");
 
 //        reflectionTexture.bind(0, waterShader, "u_reflectionTexture");
 
@@ -42,7 +43,7 @@ public:
         flatShader.use();
     }
 
-    void render();
+    void render(float time);
 };
 
 

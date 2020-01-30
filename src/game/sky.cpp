@@ -6,10 +6,8 @@
 #include "../util/math/math.h"
 #include "../graphics/camera.h"
 
-void Sky::render()
+void Sky::render(float time)
 {
-    float time = (skySystem == nullptr) ? 0 : skySystem->time;
-
     skyShader.use();
     mat4 fixedPosition = Camera::main->projection * mat4(
             Camera::main->view[0][0], Camera::main->view[0][1], Camera::main->view[0][2], Camera::main->view[0][3],

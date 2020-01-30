@@ -43,14 +43,14 @@ public:
 
         vec3 n1 = cross(a2-a1, b1-a1),  n2 = cross(a2-b1, b2-b1);
         mesh->vertices.insert(mesh->vertices.end(), {a1.x,a1.y,a1.z, n1.x,n1.y,n1.z, a2.x,a2.y,a2.z, n1.x,n1.y,n1.z, b1.x,b1.y,b1.z, n1.x,n1.y,n1.z,   b1.x,b1.y,b1.z, n2.x,n2.y,n2.z, a2.x,a2.y,a2.z, n2.x,n2.y,n2.z, b2.x,b2.y,b2.z, n2.x,n2.y,n2.z,});
-        mesh->nrOfVerts += 12; // TODO not hardcode this here
+        mesh->nrOfVerts += 6; // TODO not hardcode this here
 
         VertexBuffer::uploadSingleMesh(mesh);
 
         colorPickerData = new ColorPickerData{mesh, transform};
     }
 
-    void render();
+    void render(float time);
     void onHover();
     void onClick();
 

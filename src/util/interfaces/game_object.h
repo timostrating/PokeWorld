@@ -20,7 +20,7 @@ class GameObject
 public:
     ColorPickerData *colorPickerData = nullptr;
 
-    virtual void render() {}
+    virtual void render(float time) {}
     virtual void debugRender() {}
     virtual void renderGui() {}
 

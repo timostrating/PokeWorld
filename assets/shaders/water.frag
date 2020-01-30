@@ -43,4 +43,16 @@ void main() {
 
     if (v_pos.y < 0.99)
         outputColor = mix(mix(reflection, refraction * color1, 0.5), outputColor, clamp(v_pos.y, 0.0, 1.0));
+
+
+
+    vec3 highlight = mix(vec3(245.0/255.0, 230.0/255.0, 221.0/255.0), vec3(10.0/255.0,  65.0/255.0, 134.0/255.0), abs(sin(u_time *0.5)));
+    vec3 shadows =   mix(vec3(157.0/255.0, 142.0/255.0, 134.0/255.0), vec3(10.0/255.0,  10.0/255.0,  36.0/255.0), abs(sin(u_time *0.5)));
+
+    vec3 light_pos = vec3(sin(u_time), cos(u_time), 0.0);
+    float NdotL1 = dot(normalize(vec3(0.0, 1.0, 0.0)), normalize(light_pos));
+    vec3 ambiend = mix(highlight, shadows, smoothstep(0.0, -0.20, NdotL1));
+
+    outputColor.xyz = ambiend * outputColor.xyz;
+    outputColor.w = 1.0;
 }

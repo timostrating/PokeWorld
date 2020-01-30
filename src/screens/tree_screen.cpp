@@ -29,7 +29,7 @@ class TreeScreen : public Screen
 public:
     FlyingCamera camera = FlyingCamera();
     GLint MVPLocation;
-    ShaderProgram defaultShaderProgram = ShaderProgram::fromAssetFiles("shaders/default.vert", "shaders/default.frag");
+    ShaderProgram defaultShaderProgram = ShaderProgram::fromAssetFiles("shaders/lib/default.vert", "shaders/lib/default.frag");
 
     Gizmos gizmos;
 
@@ -137,8 +137,8 @@ public:
                 case '-': direction = glm::rotate(direction, -angle, VEC3::Z); break;
                 case '/': direction = glm::rotate(direction, angle, VEC3::X); break;
                 case '\\': direction = glm::rotate(direction, -angle, VEC3::X); break;
-                case '!': direction = twoD ? vec3(plusCache[i % cacheSize].x, plusCache[i % cacheSize].y, 0) : plusCache[i % cacheSize]; break;
-                case '&': direction = twoD ? vec3(minCache[i % cacheSize].x, minCache[i % cacheSize].y, 0) : minCache[1 % cacheSize]; break;
+                case '!': direction += twoD ? vec3(plusCache[i % cacheSize].x, plusCache[i % cacheSize].y, 0) : plusCache[i % cacheSize]; break;
+                case '&': direction += twoD ? vec3(minCache[i % cacheSize].x, minCache[i % cacheSize].y, 0) : minCache[i % cacheSize]; break;
                 case '[': memory.push(curPoint); memory.push(direction); break;
                 case ']':
                     if (memory.empty()) break;

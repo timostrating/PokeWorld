@@ -62,7 +62,7 @@ Mesh* Line::wrapMeshAround(std::vector<vec3> *points, bool positionAndNormals, b
             vec4 b1 = lerpIndexed(i, 1) * vec4(points->at(j), 1);
             vec4 b2 = lerpIndexed(i, 1) * vec4(points->at((j+1)%points->size()), 1);
 
-                if (positionAndNormals == false) {
+            if (positionAndNormals == false) {
                 //                                           POSITION        POSITION        POSITION
                 mesh->vertices.insert(mesh->vertices.end(), {a1.x,a1.y,a1.z, a2.x,a2.y,a2.z, b1.x,b1.y,b1.z});
                 mesh->vertices.insert(mesh->vertices.end(), {b2.x,b2.y,b2.z, b1.x,b1.y,b1.z, a2.x,a2.y,a2.z});
@@ -84,7 +84,6 @@ Mesh* Line::wrapMeshAround(std::vector<vec3> *points, bool positionAndNormals, b
                     mesh->vertices.insert(mesh->vertices.end(), {a1.x,a1.y,a1.z, n1.x,n1.y,n1.z,  a2.x,a2.y,a2.z, n1.x,n1.y,n1.z,  b1.x,b1.y,b1.z, n1.x,n1.y,n1.z,  });
                     mesh->vertices.insert(mesh->vertices.end(), {b2.x,b2.y,b2.z, n2.x,n2.y,n2.z,  b1.x,b1.y,b1.z, n2.x,n2.y,n2.z,  a2.x,a2.y,a2.z, n2.x,n2.y,n2.z,  });
                 }
-
             }
         }
     }

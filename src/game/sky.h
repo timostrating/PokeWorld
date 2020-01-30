@@ -11,15 +11,7 @@
 #include "../graphics/mesh.h"
 #include "../util/interfaces/game_object.h"
 #include "../util/math/math.h"
-
-class SkySystem : public System
-{
-
-public:
-    float time = 0;
-    void update(float deltatime) { time += deltatime; }
-};
-
+#include "../graphics/camera.h"
 
 
 class Sky : public GameObject
@@ -39,10 +31,9 @@ class Sky : public GameObject
     SharedMesh skydome = SharedMesh(Mesh::sphere(10, true));
     GLint MVP, u_time;
 
-    SkySystem* skySystem = nullptr;
 
 public:
-    Sky(SkySystem* skySystem = nullptr) : skySystem(skySystem)
+    Sky()
     {
         VertexBuffer::uploadSingleMesh(skydome);
 
@@ -50,7 +41,7 @@ public:
         u_time = skyShader.uniformLocation("u_time");
     }
 
-    void render();
+    void render(float time);
 };
 
 
