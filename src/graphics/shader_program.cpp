@@ -78,7 +78,7 @@ ShaderProgram::ShaderProgram(const char *vertexSource, const char *fragSource)
 ShaderProgram ShaderProgram::fromAssetFiles(const char *vertPath, const char *fragPath)
 {
     std::string vertCode = File::readAssetAsString(vertPath);
-    std::string fragCode = File::readAssetAsString(fragPath);
+    std::string fragCode = std::string("#version 300 es\nprecision mediump float;").append(File::readAssetAsString("shaders/lib/SHARED.frag")).append(File::readAssetAsString(fragPath));
     return ShaderProgram(vertCode.c_str(), fragCode.c_str());
 }
 

@@ -1,6 +1,3 @@
-#version 300 es
-precision mediump float;
-
 in vec3 v_normal;
 out vec4 outputColor;
 
