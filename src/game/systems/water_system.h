@@ -47,8 +47,6 @@ class WaterSystem : public System
     ShaderProgram waterTerrainShader = ShaderProgram(vertSource, fragSource);
     GLuint MVP;
 
-    float time = 0;
-
 
 public:
     WaterSystem() : reflectionFbo(800, 800), refractionFbo(800, 800) // TODO: test out
