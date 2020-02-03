@@ -36,7 +36,7 @@ class WaterSystem : public System
         in vec3 v_pos;
 
         void main() {
-            float v = (v_pos.y - 8.0) * 0.5;
+            float v = (v_pos.y + 0.75);
             outputColor = vec4(v, v, v, 1.0);
         })glsl";
 

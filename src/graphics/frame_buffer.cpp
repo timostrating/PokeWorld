@@ -168,7 +168,6 @@ void FrameBuffer::addDepthBuffer()
 
 void FrameBuffer::renderGUI()
 {
-    std::cout << (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE) << "\n";
     ImGui::Text("Framebuffer %d", id);
     ImGui::Text("");
 

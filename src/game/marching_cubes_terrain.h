@@ -31,13 +31,9 @@ private:
         0, 0, 0, 0
     );
 
-    float modelScale = 5.0f;
-    vec3 position = vec3(-5, -9.5, -5);
-
-
 public:
     SharedMesh mesh = SharedMesh(new Mesh(0, 0, VA_POSITION_NORMAL)); // Internal variables are our JOB
-    mat4 transform = scale(translate(mat4(1.0f), vec3(position.x * modelScale, position.y * modelScale +1, position.z * modelScale)), vec3(modelScale));
+    mat4 transform = mat4(1.0f);
 
 
     MarchingCubesTerrain();

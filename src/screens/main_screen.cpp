@@ -23,6 +23,7 @@
 #include "../game/systems/water_system.h"
 #include "../game/stadium.h"
 #include "../game/tree.h"
+#include "../game/route.h"
 
 using namespace glm;
 
@@ -211,7 +212,8 @@ public:
         new Stadium(),
         new Tmp(),
         new Tmp2(),
-//        new Tree(translate(mat4(1), vec3(0,1,0))),
+        new Route(),
+        new Tree(translate(mat4(1), vec3(-2,1,0))),
     };
 
     ShaderProgram postProcessingShader = ShaderProgram::fromAssetFiles("shaders/postprocessing.vert", "shaders/postprocessing.frag");
@@ -258,7 +260,7 @@ public:
 
     void render(double deltaTime)
     {
-        time += deltaTime * 0.5;
+        time += deltaTime * 0.1;
 
         colorPickerSystem->update(deltaTime);
 
@@ -271,15 +273,8 @@ public:
         if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB)) debug = true;
         if (INPUT::KEYBOARD::pressed(GLFW_KEY_1)) renderGUI = true;
 
-        if (debug) {
-            camera.debugUpdate(deltaTime);
-            camera.debugDraw();
-            for (auto &go : gameObjects)
-                go->debugRender();
-            terrain->debugRender();
-        } else {
-            camera.update(deltaTime);
-        }
+        if (debug) { camera.debugUpdate(deltaTime); }   // free camera
+        else       { camera.update(deltaTime);}         // normal camera
 
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////// SYSTEMS
@@ -292,12 +287,21 @@ public:
         screenFbo.bind();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
             flatShader.use();
             terrain->render(time);
             for (auto &go : gameObjects)
                 go->render(time);
 
             waterPlane->render(time);
+
+
+            if (debug) {
+                camera.debugDraw();
+                for (auto &go : gameObjects)
+                    go->debugRender();
+                terrain->debugRender();
+            }
         screenFbo.unbind();
 
 

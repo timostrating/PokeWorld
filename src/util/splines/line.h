@@ -26,7 +26,7 @@ public:
 
     void debugDraw(Gizmos* gizmos);
 
-    Mesh* wrapMeshAround(std::vector<vec3> *points, bool positionAndNormals = false, bool smooth = false);
+    Mesh* wrapMeshAround(std::vector<vec3> *points, bool positionAndNormals = false, bool smooth = false, bool loop = true);
 };
 
 

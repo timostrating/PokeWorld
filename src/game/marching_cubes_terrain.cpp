@@ -82,9 +82,9 @@ MarchingCubesTerrain::MarchingCubesTerrain()
         int cubeIndex = getCubeIndex(x,y,z, falloff);
         for (int i = 0; i < 15; i += 3) {
             if (TRI_TABLE[cubeIndex][i] == -1) break;
-            vec3 p1 = vec3(x, y, z) + EDGE_POINTS[TRI_TABLE[cubeIndex][i + 0]];
-            vec3 p2 = vec3(x, y, z) + EDGE_POINTS[TRI_TABLE[cubeIndex][i + 1]];
-            vec3 p3 = vec3(x, y, z) + EDGE_POINTS[TRI_TABLE[cubeIndex][i + 2]];
+            vec3 p1 = 5.0f * (vec3(-5, -9.5 + 0.2, -5) + vec3(x, y, z) + EDGE_POINTS[TRI_TABLE[cubeIndex][i + 0]]);
+            vec3 p2 = 5.0f * (vec3(-5, -9.5 + 0.2, -5) + vec3(x, y, z) + EDGE_POINTS[TRI_TABLE[cubeIndex][i + 1]]);
+            vec3 p3 = 5.0f * (vec3(-5, -9.5 + 0.2, -5) + vec3(x, y, z) + EDGE_POINTS[TRI_TABLE[cubeIndex][i + 2]]);
             vec3 n = normalize(cross(p2-p1, p3-p1));  // POSITION        NORMAL        POSITION        NORMAL        POSITION        NORMAL
             mesh->vertices.insert(mesh->vertices.end(), {p1.x,p1.y,p1.z, n.x,n.y,n.z,  p2.x,p2.y,p2.z, n.x,n.y,n.z,  p3.x,p3.y,p3.z, n.x,n.y,n.z});
             mesh->nrOfVerts += 3;
@@ -141,10 +141,11 @@ void MarchingCubesTerrain::render(float time)
 
 void MarchingCubesTerrain::renderGui()
 {
-    ImGui::Text("ColorPickerSystem:");
-    ImGui::Text("");
-    ImGui::ColorEdit4("color1", &(gradient)[0][0]);
-    ImGui::ColorEdit4("color2", &(gradient)[1][0]);
-    ImGui::ColorEdit4("color3", &(gradient)[2][0]);
-    ImGui::ColorEdit4("color4", &(gradient)[3][0]);
+    // TODO: something like ClipDistance is still required to make the reflections work correctly
+//    ImGui::Text("MarchingCubesTerrain:");
+//    ImGui::Text("");
+//    ImGui::ColorEdit4("color1", &(gradient)[0][0]);
+//    ImGui::ColorEdit4("color2", &(gradient)[1][0]);
+//    ImGui::ColorEdit4("color3", &(gradient)[2][0]);
+//    ImGui::ColorEdit4("color4", &(gradient)[3][0]);
 }

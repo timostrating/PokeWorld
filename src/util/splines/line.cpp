@@ -47,11 +47,11 @@ vec3 calculateNormal(vec3 a, vec3 b, vec3 c) {
     return normalize(cross(u, v));
 }
 
-Mesh* Line::wrapMeshAround(std::vector<vec3> *points, bool positionAndNormals, bool smooth)
+Mesh* Line::wrapMeshAround(std::vector<vec3> *points, bool positionAndNormals, bool smooth, bool loop)
 {
     Mesh* mesh = (positionAndNormals)? new Mesh(0, 0, VA_POSITION_NORMAL) : new Mesh(0, 0, VA_POSITION);
 
-    for (int i=0; i<=length; i++)
+    for (int i=0; i<length - ((loop)? 0 : 1); i++)
     {
         vec3 mida = getPointPosition(i);
         vec3 midb = getPointPosition(i+1);
