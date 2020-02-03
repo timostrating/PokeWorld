@@ -36,14 +36,14 @@ public:
 
         std::stack<vec3> memory = std::stack<vec3>();
 
-        lSystem.applyNtimes(5);
+        lSystem.applyNtimes(3);
         std::string str = lSystem.getStr();
         for (int i = 0; i < str.length(); i++) {
             switch (toupper(str[i])) {
                 case 'F': oldPoint = vec3(curPoint); curPoint += (curDirection);
                     lines.insert(lines.end(), {Line({
-                        rotate(scale(translate(mat4(1), oldPoint), 0.1f * vec3(8.0 - sqrt(pow(oldPoint.x, 2.0) + pow(oldPoint.y, 2.0) + pow(oldPoint.z, 2.0)))), radians(30.0f), oldDirection) ,
-                        rotate(scale(translate(mat4(1), curPoint), 0.1f * vec3(8.0 - sqrt(pow(curPoint.x, 2.0) + pow(curPoint.y, 2.0) + pow(curPoint.z, 2.0)))), radians(30.0f), curDirection)
+                        rotate(scale(translate(mat4(1), oldPoint), 0.1f * vec3(5.0 - sqrt(pow(oldPoint.x, 2.0) + pow(oldPoint.y, 2.0) + pow(oldPoint.z, 2.0)))), radians(30.0f), oldDirection) ,
+                        rotate(scale(translate(mat4(1), curPoint), 0.1f * vec3(5.0 - sqrt(pow(curPoint.x, 2.0) + pow(curPoint.y, 2.0) + pow(curPoint.z, 2.0)))), radians(30.0f), curDirection)
                     })});; break;
                 case '+': oldDirection = curDirection; curDirection = rotate(curDirection, angle, VEC3::Z); break;
                 case '-': oldDirection = curDirection; curDirection = rotate(curDirection, -angle, VEC3::Z); break;

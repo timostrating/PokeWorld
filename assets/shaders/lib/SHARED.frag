@@ -88,7 +88,7 @@ float fbm(vec3 x)
     return t;
 }
 
-float pattern( in vec3 p )
+float pattern( vec3 p )
 {
     vec3 q = vec3( fbm( p + vec3(0.0, 0.0, 0.0) ), fbm( p + vec3(5.2,1.3,2.5) ), fbm(vec3(3.4,2.1,7.1) ) );
 
