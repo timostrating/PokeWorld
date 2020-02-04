@@ -82,7 +82,6 @@ public:
         new Stadium(),
         new Tmp(),
         new Route(),
-        new Tree(translate(mat4(1), vec3(-2,1,0)), "F[-x/[+!+x]+\\&x]"),
     };
 
     ShaderProgram postProcessingShader = ShaderProgram::fromAssetFiles("shaders/postprocessing.vert", "shaders/postprocessing.frag");
@@ -90,9 +89,25 @@ public:
     SharedMesh quad = SharedMesh(Mesh::quad());
     FrameBuffer screenFbo = FrameBuffer(1600, 1600);
 
+    vec3 randomPointOnMap() {
+        float x = random(-20,20);
+        float z = random(-20,20);
 
+        if (x<0 && z>-5) return randomPointOnMap(); // water
+        if (x>5 && x<17 && z>0 && z<17) return randomPointOnMap(); // stadium
+
+        return vec3(x,1,z);
+    }
     MainScreen()
     {
+        for (int i=0; i<100; i++) { gameObjects.insert(gameObjects.begin(), { new Tree(
+                scale(rotate(rotate(rotate(
+                        translate(mat4(1), randomPointOnMap()),
+                            radians(random(0.0f,15.0f)),  VEC3::X),
+                            radians(random(0.0f,360.0f)), VEC3::Y),
+                            radians(random(0.0f,15.0f)),  VEC3::Z),
+                                    randomVec3(0.9, 1.1)), "F[-x/[+!+x]+\\&x]") }); }
+
         colorPickerSystem->setGameObjects(&gameObjects);
         waterSystem->setGameObjects(&gameObjects, terrain);
 

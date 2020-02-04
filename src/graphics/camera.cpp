@@ -31,11 +31,6 @@ Camera::Camera()
 
 void Camera::update()
 {
-//    std::cout << "position " << VEC3::toString(position) << " \n";
-//    std::cout << "direction " << VEC3::toString(direction) << " \n";
-//    std::cout << "right " << VEC3::toString(right) << " \n";
-//    std::cout << "up " << VEC3::toString(up) << " \n\n\n";
-
     view = glm::lookAt(
             position,                 // camera position
             position + direction,     // camera looks at
@@ -104,6 +99,7 @@ void Camera::resize(int newWidth, int newHeight)
 void Camera::invertPitch()
 {
     direction.y *= -1;
+    lookAt(direction);
 }
 
 void Camera::saveState()

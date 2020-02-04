@@ -30,6 +30,9 @@ void main() {
     refractUV += distortion;
     refractUV = clamp(refractUV, 0.001, 0.999);
 
+    if (v_pos.y < 0.97)
+        reflectUV = vec2(clamp01(reflectUV.x), clamp01(reflectUV.y));
+
     vec4 reflection = texture(u_reflectionTexture, reflectUV);
     vec4 refraction = texture(u_refractionTexture, refractUV);
 
@@ -47,7 +50,7 @@ void main() {
         outputColor = mix(reflection * color1, (refraction + 0.34) * color1, 0.5);
 
     if (v_pos.y < 0.99) { // sides
-        outputColor = mix(mix(vec4(ambiend, 1.0) * color2 * 0.5, (refraction*(1.0-abs(cos(u_time *0.5)))*0.3) + color1 * 0.5, 0.5) * 0.8, outputColor, clamp01(0.25-abs(v_pos.y-0.95)));
+        outputColor = mix(reflection, (refraction*0.05), 0.5) * mix(color2, color1*1.5, clamp01(.9-abs(v_pos.y-0.95) * 0.5));
         outputColor.w = 0.97 - clamp((1.0 - v_mvpPos.w/15.0), 0.0, 0.02);
     }
 
