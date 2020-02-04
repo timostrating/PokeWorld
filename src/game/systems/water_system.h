@@ -49,6 +49,8 @@ class WaterSystem : public System
 
 
 public:
+    float time = 0.0;
+
     WaterSystem() : reflectionFbo(800, 800), refractionFbo(800, 800) // TODO: test out
     {
         MVP = waterTerrainShader.uniformLocation("MVP");

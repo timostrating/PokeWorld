@@ -8,10 +8,10 @@ uniform sampler2D u_refractionTexture;
 
 uniform float u_time;
 
-//const vec4 color1 =     vec4(  6.0/255.0,  77.0/255.0, 173.0/255.0, 1.0);
-//const vec4 colorDark =  vec4( 17.0/255.0,  33.0/255.0,  80.0/255.0, 1.0);
+const vec4 colorDark =  vec4( 17.0/255.0,  33.0/255.0,  80.0/255.0, 1.0); // shadows
 const vec4 color1 =     vec4( 34.0/255.0, 120.0/255.0, 190.0/255.0, 1.0);
-const vec4 colorLight = vec4(201.0/255.0, 216.0/255.0, 230.0/255.0, 1.0);
+const vec4 color2 =     vec4(  6.0/255.0,  77.0/255.0, 173.0/255.0, 1.0);
+const vec4 colorLight = vec4(201.0/255.0, 216.0/255.0, 230.0/255.0, 1.0); // refraction
 
 const float waveStrength = 0.02;
 const float tiling = 6.0;
@@ -33,16 +33,6 @@ void main() {
     vec4 reflection = texture(u_reflectionTexture, reflectUV);
     vec4 refraction = texture(u_refractionTexture, refractUV);
 
-    if (v_pos.y >= 0.99 && refraction.x > 0.64)
-        outputColor = colorLight;
-    else
-        outputColor = mix(reflection, (refraction + 0.34) * color1, 0.5);
-
-    if (v_pos.y < 0.99)
-        outputColor = mix(mix(reflection, refraction * color1, 0.5), outputColor, clamp(v_pos.y, 0.0, 1.0));
-
-
-
     vec3 highlight = mix(vec3(245.0/255.0, 230.0/255.0, 221.0/255.0), vec3(10.0/255.0,  65.0/255.0, 134.0/255.0), abs(sin(u_time *0.5)));
     vec3 shadows =   mix(vec3(157.0/255.0, 142.0/255.0, 134.0/255.0), vec3(10.0/255.0,  10.0/255.0,  36.0/255.0), abs(sin(u_time *0.5)));
 
@@ -50,6 +40,16 @@ void main() {
     float NdotL1 = dot(normalize(vec3(0.0, 1.0, 0.0)), normalize(light_pos));
     vec3 ambiend = mix(highlight, shadows, smoothstep(0.0, -0.20, NdotL1));
 
+
+    if (v_pos.y >= 0.99 && refraction.x > 0.64) // refraction
+        outputColor = colorLight;
+    else
+        outputColor = mix(reflection * color1, (refraction + 0.34) * color1, 0.5);
+
+    if (v_pos.y < 0.99) { // sides
+        outputColor = mix(mix(vec4(ambiend, 1.0) * color2 * 0.5, (refraction*(1.0-abs(cos(u_time *0.5)))*0.3) + color1 * 0.5, 0.5) * 0.8, outputColor, clamp01(0.25-abs(v_pos.y-0.95)));
+        outputColor.w = 0.97 - clamp((1.0 - v_mvpPos.w/15.0), 0.0, 0.02);
+    }
+
     outputColor.xyz = ambiend * outputColor.xyz;
-    outputColor.w = 1.0;
 }

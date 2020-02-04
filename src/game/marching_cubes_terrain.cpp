@@ -127,17 +127,19 @@ void MarchingCubesTerrain::debugRender(Gizmos* gizmos)
     )
 }
 
-void MarchingCubesTerrain::render(float time)
+void MarchingCubesTerrain::renderClipped(float time, float clipHeight)
 {
     terrainShader.use();
 //    test.bind(0, terrainShader, "tex0");
     glUniformMatrix4fv(MVP, 1, GL_FALSE, &(Camera::main->combined * transform)[0][0]);
     glUniformMatrix4fv(u_gradient, 1, GL_FALSE, &(gradient)[0][0]);
     glUniform1f(terrainShader.uniformLocation("u_time"), time);
+    glUniform1f(terrainShader.uniformLocation("u_clipHeight"), clipHeight);
     mesh->render();
-
-//    GL_DEBUG::debugVertexNormals(mesh, transform, &gizmos);
 }
+
+void MarchingCubesTerrain::renderReflection(float time) { renderClipped(time, -1); }
+void MarchingCubesTerrain::render(float time) { renderClipped(time, -999); }
 
 void MarchingCubesTerrain::renderGui()
 {

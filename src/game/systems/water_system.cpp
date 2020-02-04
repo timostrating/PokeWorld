@@ -23,8 +23,10 @@ void WaterSystem::update(float deltaTime)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         for (auto &go : *gameObjects) {
-            go->render(0.0); // TODO: I don't know if setting the time to 0 here actually works
+            go->render(time);
         }
+        terrain->renderReflection(time);
+
 
     reflectionFbo.unbind();
     Camera::main->position.y = -Camera::main->position.y;

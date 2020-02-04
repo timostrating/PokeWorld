@@ -19,9 +19,13 @@ const vec3 rock2 = vec3( 81.0/255.0,  17.0/255.0, 14.0/255.0);
 
 
 uniform float u_time;
+uniform float u_clipHeight;
 
 
 void main() {
+    if (v_pos.y < u_clipHeight)
+        discard;
+
     float a = pattern(v_pos * .125);
     float b = pattern(v_pos);
     float r = mix(0.5, mix(a, b, 0.4), 0.75);

@@ -37,6 +37,9 @@ public:
 
     MarchingCubesTerrain();
 
+    void renderClipped(float time, float clipHeight);
+    void renderReflection(float time);
+
     void render(float time);
     void debugRender(Gizmos* gizmos);
     void renderGui();
