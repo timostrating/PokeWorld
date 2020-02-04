@@ -12,8 +12,9 @@ const vec3 leaves2 = vec3( 17.0/255.0,  77.0/255.0,  24.0/255.0);
 
 
 void main() {
-    float dcenter = sqrt(pow(v_pos.x - u_treepos.x, 2.0) + pow(v_pos.y - u_treepos.y - 6.0, 2.0) + pow(v_pos.z - u_treepos.z, 2.0)) * 0.5 - 0.3 * noise(v_pos * 5.0);
-    outputColor.xyz = mix(leaves2, leaves1, clamp01(dcenter + noise(v_pos * vec3(3.3,7.7,5.5))));
+    float dcenter = sqrt(pow(v_pos.x - u_treepos.x, 2.0) + pow(v_pos.y - u_treepos.y - 6.0, 2.0) + pow(v_pos.z - u_treepos.z, 2.0)) * 0.45;
+    outputColor.xyz = mix(leaves2, leaves1, mix(noise(u_treepos),noise(dcenter * v_pos * 0.1 + v_pos * 3.0), 0.3));
+    dcenter -= 0.3 * noise(v_pos * 5.0 + vec3(sin(u_treepos.x + 20.0 * u_time)));
     outputColor.w = 1.0;
 
     if(1.0 - dcenter <= 0.0)

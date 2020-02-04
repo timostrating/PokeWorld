@@ -28,9 +28,10 @@ class Stadium : public GameObject
     GLuint MVP, u_color;
 
     bool hover = false;
+    bool *debug;
 
 public:
-    Stadium()
+    Stadium(bool *debug) : debug(debug)
     {
         shader.use();
         MVP = shader.uniformLocation("MVP");

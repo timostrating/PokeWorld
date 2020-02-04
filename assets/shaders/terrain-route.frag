@@ -40,5 +40,5 @@ void main() {
     outputColor.xyz = ambiend * mix(route, grass, clamp01(r+0.45));
     outputColor.w = 1.0;
 
-    gl_FragDepth = gl_FragCoord.z - 7.0/(255.0*255.0); // postprocessing hack
+    gl_FragDepth = gl_FragCoord.z - gl_FragCoord.w / (500.0) ;//- 7.0/(255.0*255.0); // postprocessing hack
 }

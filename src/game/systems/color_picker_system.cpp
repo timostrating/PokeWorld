@@ -13,6 +13,7 @@ void ColorPickerSystem::setGameObjects(std::vector<GameObject *> *gameObjects_)
     gameObjects = gameObjects_;
 }
 
+bool lastClickState = false;
 void ColorPickerSystem::update(float deltaTime) {
     int x = INPUT::MOUSE::getMousePosX();
     int y = (Camera::main->height - INPUT::MOUSE::getMousePosY());
@@ -59,12 +60,14 @@ void ColorPickerSystem::update(float deltaTime) {
         {
             gameObjects->at(pickedID-1)->onHover();
     //        std::cout << "HOVER: ("<<INPUT::MOUSE::getMousePosX() << "," << INPUT::MOUSE::getMousePosY() << ") " << pickedID-1 << "\n";
-            if (INPUT::MOUSE::leftClick())
+            if (lastClickState != INPUT::MOUSE::leftClick() && INPUT::MOUSE::leftClick())
             {
                 gameObjects->at(pickedID-1)->onClick();
-                std::cout << "clicked on object "<< pickedID-1 <<"\n";
+//                std::cout << "clicked on object "<< pickedID-1 <<"\n";
             }
         }
+
+    lastClickState = INPUT::MOUSE::leftClick();
 
     fbo.unbind();
 }

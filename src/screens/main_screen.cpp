@@ -77,9 +77,12 @@ public:
     MarchingCubesTerrain* terrain = new MarchingCubesTerrain();
     WaterPlane* waterPlane = new WaterPlane(waterSystem);
 
+    bool debug = false;
+
+
     std::vector<GameObject*> gameObjects = {
-        new Stadium(),
-        new Tmp(),
+        new Stadium(&debug),
+//        new Tmp(),
         new Route(),
     };
 
@@ -133,7 +136,6 @@ public:
     }
 
     float time = 0;
-    bool debug = false;
     bool renderGUI = false;
     float speed = 0.1;
 
@@ -156,9 +158,9 @@ public:
         if (INPUT::KEYBOARD::pressed(GLFW_KEY_5)) speed = 1.0;
         if (INPUT::KEYBOARD::pressed(GLFW_KEY_6)) speed = 0.1;
 
-        if (debug) { camera.debugUpdate(deltaTime); }   // free camera
-        else       { camera.update(deltaTime);}         // normal camera
-
+//        if (debug) { camera.debugUpdate(deltaTime); }   // free camera
+//        else       { camera.update(deltaTime);}         // normal camera
+        camera.update(deltaTime);
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////// SYSTEMS
 

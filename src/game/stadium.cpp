@@ -25,7 +25,7 @@ void Stadium::onHover()
 
 void Stadium::onClick()
 {
-    // TODO: fireworks
+    *debug = !(*debug);
 }
 
 void Stadium::debugRender(Gizmos* gizmos) {

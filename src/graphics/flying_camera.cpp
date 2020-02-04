@@ -77,7 +77,7 @@ void FlyingCamera::update(float deltaTime)
 #else
     r -= INPUT::MOUSE::getScrollDelta() * 5.0;
 #endif
-    r = clamp(r, 20.0f, 100.0f);
+    r = clamp(r, 20.0f, 150.0f);
 
 
     position = vec3(
