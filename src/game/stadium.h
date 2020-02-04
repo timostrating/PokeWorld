@@ -17,17 +17,17 @@ class Stadium : public GameObject
     mat4 transform = translate(mat4(1), vec3(10, 1.01, 10));
 
     float w=7, h=10;
-    Line line = Line({scale(rotate(translate(mat4(1), vec3(0-w*0.5, 0, 0-h*0.5)), radians((4-0) * 90 - 45.0f), VEC3::Y), VEC3::ONE),
-                      scale(rotate(translate(mat4(1), vec3(w-w*0.5, 0, 0-h*0.5)), radians((4-1) * 90 - 45.0f), VEC3::Y), VEC3::ONE),
-                      scale(rotate(translate(mat4(1), vec3(w-w*0.5, 0, h-h*0.5)), radians((4-2) * 90 - 45.0f), VEC3::Y), VEC3::ONE),
-                      scale(rotate(translate(mat4(1), vec3(0-w*0.5, 0, h-h*0.5)), radians((4-3) * 90 - 45.0f), VEC3::Y), VEC3::ONE)});
+    Line line = Line({scale(rotate(translate(mat4(1), vec3(0-w*0.5, 0, 0-h*0.5)), radians((4-0) * 90 - 45.0f), VEC3::Y), vec3(1.5, 1, 1.5)),
+                      scale(rotate(translate(mat4(1), vec3(w-w*0.5, 0, 0-h*0.5)), radians((4-1) * 90 - 45.0f), VEC3::Y), vec3(1.5, 1, 1.5)),
+                      scale(rotate(translate(mat4(1), vec3(w-w*0.5, 0, h-h*0.5)), radians((4-2) * 90 - 45.0f), VEC3::Y), vec3(1.5, 1, 1.5)),
+                      scale(rotate(translate(mat4(1), vec3(0-w*0.5, 0, h-h*0.5)), radians((4-3) * 90 - 45.0f), VEC3::Y), vec3(1.5, 1, 1.5))});
 
-    std::vector<vec3> points = {vec3(-1,0,0), vec3(0,1,0), vec3(1,0,0)};
+    std::vector<vec3> points = {vec3(-0.6,0,0), vec3(0,1.0,0), vec3(0.1,1.0,0), vec3(0.5,0.7,0), vec3(0.6,0.7,0), vec3(0.6,0.5,0), vec3(0.5,0.5,0), vec3(0.9,0.1,0), vec3(0.9,0.2,0), vec3(1,0.2,0), vec3(1,0,0)};
 
     SharedMesh mesh = SharedMesh(line.wrapMeshAround(&points, true));
     GLuint MVP, u_color;
 
-    bool hover;
+    bool hover = false;
 
 public:
     Stadium()
@@ -51,6 +51,7 @@ public:
     }
 
     void render(float time);
+    void renderReflection(float time) { bool tmp = hover; render(time); hover = tmp; }
     void debugRender(Gizmos* gizmos);
     void onHover();
     void onClick();

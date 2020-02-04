@@ -78,7 +78,6 @@ public:
     WaterPlane* waterPlane = new WaterPlane(waterSystem);
 
     std::vector<GameObject*> gameObjects = {
-        new Sky(),
         new Stadium(),
         new Tmp(),
         new Route(),
@@ -106,7 +105,8 @@ public:
                             radians(random(0.0f,15.0f)),  VEC3::X),
                             radians(random(0.0f,360.0f)), VEC3::Y),
                             radians(random(0.0f,15.0f)),  VEC3::Z),
-                                    randomVec3(0.9, 1.1)), "F[-x/[+!+x]+\\&x]") }); }
+                                    randomVec3(0.9, 1.1)), Tree::EXAMPLES[i % Tree::EXAMPLE_SIZE]) }); }
+        gameObjects.insert(gameObjects.begin(), {new Sky()});
 
         colorPickerSystem->setGameObjects(&gameObjects);
         waterSystem->setGameObjects(&gameObjects, terrain);
@@ -229,6 +229,8 @@ public:
         ImGui::NewFrame();
 
         ImGui::Begin("Systems");
+            screenFbo.renderGUI();
+            ImGui::Separator();
             waterSystem->renderGUI();
             ImGui::Separator();
             colorPickerSystem->renderGUI();

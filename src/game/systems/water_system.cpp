@@ -23,7 +23,7 @@ void WaterSystem::update(float deltaTime)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         for (auto &go : *gameObjects) {
-            go->render(time);
+            go->renderReflection(time);
         }
         terrain->renderReflection(time);
 

@@ -22,6 +22,7 @@ public:
     ColorPickerData *colorPickerData = nullptr;
 
     virtual void render(float time) {}
+    virtual void renderReflection(float time) { render(time); }
     virtual void debugRender(Gizmos* gizmos) {}
     virtual void renderGui() {}
 
