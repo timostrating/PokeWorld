@@ -27,7 +27,6 @@ class Route : public GameObject
 
     SharedMesh mesh = SharedMesh(line.wrapMeshAround(&points, true, true, false));
     GLuint MVP, u_time;
-    Gizmos gizmos;
 
 public:
     Route()
@@ -38,16 +37,16 @@ public:
 
         VertexBuffer::uploadSingleMesh(mesh);
 
-        colorPickerData = new ColorPickerData{mesh, transform};
+//        colorPickerData = new ColorPickerData{mesh, transform};
     }
 
     void render(float time);
-    void debugRender()
+    void debugRender(Gizmos* gizmos)
     {
         vec3 p1=vec3(a, 1.01, b), p2=vec3(c, 1.01, d), p3=vec3(e, 1.01, f), p4=vec3(g, 1.01, h);
-        gizmos.drawLine(p1, p2);
-        gizmos.drawLine(p2, p3);
-        gizmos.drawLine(p3, p4);
+        gizmos->drawLine(p1, p2);
+        gizmos->drawLine(p2, p3);
+        gizmos->drawLine(p3, p4);
     }
 
     void renderGui()

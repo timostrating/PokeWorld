@@ -17,7 +17,6 @@ public:
     mat4 transform;
     ShaderProgram flatShader = ShaderProgram::fromAssetFiles("shaders/tree.vert", "shaders/tree.frag");
     GLuint MVP, u_time;
-    Gizmos gizmos;
     const float angle = radians(15.f);
 
     std::vector<Line> lines;
@@ -72,7 +71,7 @@ public:
         VertexBuffer::uploadSingleMesh(tree);
     }
 
-    void debugRender();
+    void debugRender(Gizmos* gizmos);
 
     void render(float time);
 };

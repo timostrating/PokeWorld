@@ -117,7 +117,7 @@ public:
             camera.update(deltaTime);
             camera.debugDraw();
             for (auto &go : gameObjects)
-                go->debugRender();
+                go->debugRender(&gizmos);
 
         } else {
             if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB))

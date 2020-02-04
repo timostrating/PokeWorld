@@ -18,7 +18,6 @@ private:
     static const int size = 11;
     float noisefield[size][size][size] = {0};
 
-    Gizmos gizmos;
     float falloff = 0.9f;
 
     ShaderProgram terrainShader = ShaderProgram::fromAssetFiles("shaders/terrain.vert", "shaders/terrain.frag");
@@ -39,7 +38,7 @@ public:
     MarchingCubesTerrain();
 
     void render(float time);
-    void debugRender();
+    void debugRender(Gizmos* gizmos);
     void renderGui();
 
     int getCubeIndex(int x, int y, int z, float falloff);

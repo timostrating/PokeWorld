@@ -51,6 +51,7 @@ public:
     }
 
     void render(float time);
+    void debugRender(Gizmos* gizmos);
     void onHover();
     void onClick();
 

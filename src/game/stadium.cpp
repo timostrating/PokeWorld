@@ -27,3 +27,7 @@ void Stadium::onClick()
 {
     // TODO: fireworks
 }
+
+void Stadium::debugRender(Gizmos* gizmos) {
+    line.debugDraw(gizmos, transform);
+}

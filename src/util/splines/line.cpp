@@ -26,12 +26,12 @@ mat4 Line::lerpIndexed(const int i, const float t)
     return lerp(lineparts[i%length], lineparts[(i+1)%length], t);
 }
 
-void Line::debugDraw(Gizmos *gizmos)
+void Line::debugDraw(Gizmos *gizmos, mat4 transform)
 {
     for (int i=0; i<length; i++)
     {
-        gizmos->drawCube(getPointPosition(i), 0.01f, COLOR::WHITE);
-        gizmos->drawLine(getPointPosition(i), getPointPosition(i+1), vec4(.8, .8, .8, 1));
+        gizmos->drawCube(getPointPosition(i), 0.01f, COLOR::WHITE, transform);
+        gizmos->drawLine(getPointPosition(i), getPointPosition(i+1), vec4(.8, .8, .8, 1), transform);
     }
 }
 

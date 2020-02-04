@@ -53,11 +53,11 @@ void Gizmos::drawLine(const vec3 &from, const vec3 &to, const vec4 &color, const
     mesh->render();
 }
 
-void Gizmos::drawCube(const vec3 &pos, const float size, const vec4 &color) { drawBox(pos, vec3(size), color); }
-void Gizmos::drawBox(const vec3 &pos, const vec3 size, const vec4 &color)
+void Gizmos::drawCube(const vec3 &pos, const float size, const vec4 &color, const mat4 modelProjection) { drawBox(pos, vec3(size), color, modelProjection); }
+void Gizmos::drawBox(const vec3 &pos, const vec3 size, const vec4 &color, const mat4 modelProjection)
 {
     shaderProgram.use();
-    glUniformMatrix4fv(mvpId, 1, GL_FALSE, &Camera::main->combined[0][0]);
+    glUniformMatrix4fv(mvpId, 1, GL_FALSE, &(Camera::main->combined * modelProjection)[0][0]);
     glUniform4f(colorId, color.x, color.y, color.z, color.w);
 
     const static vec3 data[] = {

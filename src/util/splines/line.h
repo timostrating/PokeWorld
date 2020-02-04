@@ -24,7 +24,7 @@ public:
     vec3 getPointPosition(int i);
     mat4 lerpIndexed(const int i, const float t);
 
-    void debugDraw(Gizmos* gizmos);
+    void debugDraw(Gizmos* gizmos, mat4 transform = mat4(1));
 
     Mesh* wrapMeshAround(std::vector<vec3> *points, bool positionAndNormals = false, bool smooth = false, bool loop = true);
 };

@@ -168,14 +168,6 @@ public:
                 go->render(time);
 
             waterPlane->render(time);
-
-
-            if (debug) {
-                camera.debugDraw();
-                for (auto &go : gameObjects)
-                    go->debugRender();
-                terrain->debugRender();
-            }
         screenFbo.unbind();
 
 
@@ -193,6 +185,19 @@ public:
         screenFbo.depthTexture->bind(1, postProcessingShader, "u_depth");
         quad->render();
         camera.restoreState();
+
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////// GUI
+
+
+        if (debug) {
+            glDisable(GL_DEPTH_TEST);
+            camera.debugDraw();
+            for (auto &go : gameObjects)
+                go->debugRender(&gizmos);
+            terrain->debugRender(&gizmos);
+            glEnable(GL_DEPTH_TEST);
+        }
 
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////// GUI

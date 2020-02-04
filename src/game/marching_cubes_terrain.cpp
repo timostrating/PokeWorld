@@ -111,24 +111,24 @@ int MarchingCubesTerrain::getCubeIndex(int x, int y, int z, float falloff)
     return cubeIndex;
 }
 
-void MarchingCubesTerrain::debugRender()
+void MarchingCubesTerrain::debugRender(Gizmos* gizmos)
 {
-    LOOP3D(size, x,y,z, gizmos.drawCube(vec3(x,y,z), 0.1, vec4(noisefield[x][y][z], noisefield[x][y][z], noisefield[x][y][z], 0.3f)); )
+    mat4 transform = scale(translate(mat4(1), 5.0f * vec3(-5, -9.5 + 0.2, -5)), vec3(5.0f));
+    LOOP3D(size, x,y,z, gizmos->drawCube(vec3(x,y,z), 0.01, vec4(noisefield[x][y][z], noisefield[x][y][z], noisefield[x][y][z], 0.1f), transform); )
 
     LOOP3D(size-1, x,y,z,
         int cubeIndex = getCubeIndex(x,y,z, falloff);
         for (int i=0 ;; i += 3) {
             if (TRI_TABLE[cubeIndex][i] == -1) break;
-            gizmos.drawLine(vec3(x, y, z) + EDGE_POINTS[TRI_TABLE[cubeIndex][i + 0]], vec3(x, y, z) + EDGE_POINTS[TRI_TABLE[cubeIndex][i + 1]], COLOR::RED);
-            gizmos.drawLine(vec3(x, y, z) + EDGE_POINTS[TRI_TABLE[cubeIndex][i + 1]], vec3(x, y, z) + EDGE_POINTS[TRI_TABLE[cubeIndex][i + 2]], COLOR::RED);
-            gizmos.drawLine(vec3(x, y, z) + EDGE_POINTS[TRI_TABLE[cubeIndex][i + 2]], vec3(x, y, z) + EDGE_POINTS[TRI_TABLE[cubeIndex][i + 0]], COLOR::RED);
+            gizmos->drawLine(vec3(x, y, z) + EDGE_POINTS[TRI_TABLE[cubeIndex][i + 0]], vec3(x, y, z) + EDGE_POINTS[TRI_TABLE[cubeIndex][i + 1]], vec4(0,0,0, 0.2), transform);
+            gizmos->drawLine(vec3(x, y, z) + EDGE_POINTS[TRI_TABLE[cubeIndex][i + 1]], vec3(x, y, z) + EDGE_POINTS[TRI_TABLE[cubeIndex][i + 2]], vec4(0,0,0, 0.2), transform);
+            gizmos->drawLine(vec3(x, y, z) + EDGE_POINTS[TRI_TABLE[cubeIndex][i + 2]], vec3(x, y, z) + EDGE_POINTS[TRI_TABLE[cubeIndex][i + 0]], vec4(0,0,0, 0.2), transform);
         }
     )
 }
 
 void MarchingCubesTerrain::render(float time)
 {
-//    debugRender();
     terrainShader.use();
 //    test.bind(0, terrainShader, "tex0");
     glUniformMatrix4fv(MVP, 1, GL_FALSE, &(Camera::main->combined * transform)[0][0]);

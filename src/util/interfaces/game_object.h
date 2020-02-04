@@ -5,6 +5,7 @@
 #pragma once
 
 #include "../../graphics/mesh.h"
+#include "../debug/gizmos.h"
 #include <glm/glm.hpp>
 
 using namespace glm;
@@ -21,7 +22,7 @@ public:
     ColorPickerData *colorPickerData = nullptr;
 
     virtual void render(float time) {}
-    virtual void debugRender() {}
+    virtual void debugRender(Gizmos* gizmos) {}
     virtual void renderGui() {}
 
     virtual void onHover() {}

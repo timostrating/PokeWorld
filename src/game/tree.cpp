@@ -5,9 +5,9 @@
 #include "tree.h"
 #include "../graphics/camera.h"
 
-void Tree::debugRender()
+void Tree::debugRender(Gizmos* gizmos)
 {
-    for (auto l : lines) gizmos.drawLine(l.getPointPosition(0), l.getPointPosition(1), COLOR::WHITE);
+    for (auto l : lines) gizmos->drawLine(l.getPointPosition(0), l.getPointPosition(1), COLOR::WHITE, transform);
 }
 
 void Tree::render(float time)
