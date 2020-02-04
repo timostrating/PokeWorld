@@ -99,13 +99,7 @@ public:
     }
     MainScreen()
     {
-        for (int i=0; i<100; i++) { gameObjects.insert(gameObjects.begin(), { new Tree(
-                scale(rotate(rotate(rotate(
-                        translate(mat4(1), randomPointOnMap()),
-                            radians(random(0.0f,15.0f)),  VEC3::X),
-                            radians(random(0.0f,360.0f)), VEC3::Y),
-                            radians(random(0.0f,15.0f)),  VEC3::Z),
-                                    randomVec3(0.9, 1.1)), Tree::EXAMPLES[i % Tree::EXAMPLE_SIZE]) }); }
+        for (int i=0; i<100; i++) { gameObjects.insert(gameObjects.begin(), { new Tree(randomPointOnMap(), Tree::EXAMPLES[i % Tree::EXAMPLE_SIZE]) }); }
         gameObjects.insert(gameObjects.begin(), {new Sky()});
 
         colorPickerSystem->setGameObjects(&gameObjects);

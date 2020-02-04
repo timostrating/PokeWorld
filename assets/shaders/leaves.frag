@@ -1,18 +1,19 @@
 out vec4 outputColor;
 
 uniform float u_time;
+uniform vec3 u_treepos;
 
 in vec3 v_pos;
 in vec3 v_normal;
 
 
-const vec3 rock1 = vec3(189.0/255.0, 110.0/255.0, 86.0/255.0);
-const vec3 rock2 = vec3( 81.0/255.0,  17.0/255.0, 14.0/255.0);
-const vec3 grass2 = vec3( 50.0/255.0,  86.0/255.0,  49.0/255.0);
+const vec3 leaves1 = vec3( 38.0/255.0, 124.0/255.0,  44.0/255.0);
+const vec3 leaves2 = vec3( 17.0/255.0,  77.0/255.0,  24.0/255.0);
+
 
 void main() {
-    float dcenter = sqrt(pow(v_pos.x-2.5, 2.0) + pow(v_pos.y-12.5, 2.0)) * noise(v_pos);
-    outputColor.xyz = mix(grass2*0.8, grass2, dcenter);
+    float dcenter = sqrt(pow(v_pos.x - u_treepos.x, 2.0) + pow(v_pos.y - u_treepos.y - 6.0, 2.0) + pow(v_pos.z - u_treepos.z, 2.0)) * 0.5 - 0.3 * noise(v_pos * 5.0);
+    outputColor.xyz = mix(leaves2, leaves1, clamp01(dcenter + noise(v_pos * vec3(3.3,7.7,5.5))));
     outputColor.w = 1.0;
 
     if(1.0 - dcenter <= 0.0)
@@ -29,5 +30,5 @@ void main() {
     float NdotL1 = dot(normalize(v_normal), normalize(light_pos));
     vec3 ambiend = mix(highlight, shadows, smoothstep(0.0, -0.20, NdotL1));
 
-    outputColor.xyz = ambiend * outputColor.xyz;
+    outputColor.xyz = ambiend * ambiend * outputColor.xyz;
 }

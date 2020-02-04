@@ -143,11 +143,10 @@ void MarchingCubesTerrain::render(float time) { renderClipped(time, -999); }
 
 void MarchingCubesTerrain::renderGui()
 {
-    // TODO: something like ClipDistance is still required to make the reflections work correctly
-//    ImGui::Text("MarchingCubesTerrain:");
-//    ImGui::Text("");
-//    ImGui::ColorEdit4("color1", &(gradient)[0][0]);
-//    ImGui::ColorEdit4("color2", &(gradient)[1][0]);
-//    ImGui::ColorEdit4("color3", &(gradient)[2][0]);
-//    ImGui::ColorEdit4("color4", &(gradient)[3][0]);
+    ImGui::Text("MarchingCubesTerrain:");
+    ImGui::Text("");
+    ImGui::ColorEdit4("color1", &(gradient)[0][0]);
+    ImGui::ColorEdit4("color2", &(gradient)[1][0]);
+    ImGui::ColorEdit4("color3", &(gradient)[2][0]);
+    ImGui::ColorEdit4("color4", &(gradient)[3][0]);
 }

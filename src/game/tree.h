@@ -16,9 +16,10 @@ public:
     SharedMesh tree = SharedMesh(new Mesh(0,0, VA_POSITION_NORMAL));
     SharedMesh leaves = SharedMesh(new Mesh(0,0, VA_POSITION_NORMAL));
     mat4 transform;
+    vec3 position;
     ShaderProgram treeShader = ShaderProgram::fromAssetFiles("shaders/tree.vert", "shaders/tree.frag");
     ShaderProgram leavesShader = ShaderProgram::fromAssetFiles("shaders/leaves.vert", "shaders/leaves.frag");
-    GLuint treeMVP, treeu_time, leavesMVP, leavesu_time;
+    GLuint treeMVP, tree_time, leavesMVP, leaves_time, leaves_pos;
     const float angle = radians(15.f);
 
     std::vector<Line> lines;
@@ -28,13 +29,33 @@ public:
 
     std::string usedPattern;
 
-
-    Tree(mat4 transform, std::string pattern = "F[-x[+&x]!]") : transform(transform), usedPattern(pattern)
+    void addLeave(mat4 leave)
     {
+        vec3 a1 = transform * leave * vec4(-0.5 + random(-0.2, 0.2),  0.5 + random(-0.2, 0.2), 0 + random(-0.4, 0.4),  1.0);
+        vec3 a2 = transform * leave * vec4(-0.5 + random(-0.2, 0.2), -0.5 + random(-0.2, 0.2), 0 + random(-0.4, 0.4),  1.0);
+        vec3 b1 = transform * leave * vec4( 0.5 + random(-0.2, 0.2),  0.5 + random(-0.2, 0.2), 0 + random(-0.4, 0.4),  1.0);
+        vec3 b2 = transform * leave * vec4( 0.5 + random(-0.2, 0.2), -0.5 + random(-0.2, 0.2), 0 + random(-0.4, 0.4),  1.0);
+
+        vec3 n1 = cross(a2-a1, b1-a1),  n2 = cross(a2-b1, b2-b1);
+        leaves->vertices.insert(leaves->vertices.end(), {a1.x,a1.y,a1.z, n1.x,n1.y,n1.z, a2.x,a2.y,a2.z, n1.x,n1.y,n1.z, b1.x,b1.y,b1.z, n1.x,n1.y,n1.z,   b1.x,b1.y,b1.z, n2.x,n2.y,n2.z, a2.x,a2.y,a2.z, n2.x,n2.y,n2.z, b2.x,b2.y,b2.z, n2.x,n2.y,n2.z,});
+        leaves->nrOfVerts += 6; // TODO not hardcode this here
+    }
+
+
+    Tree(vec3 pos, std::string pattern = "F[-x[+&x]!]") : transform(
+            scale(rotate(rotate(rotate(
+                translate(mat4(1), pos),
+                    radians(random(0.0f,15.0f)),  VEC3::X),
+                    radians(random(0.0f,360.0f)), VEC3::Y),
+                    radians(random(0.0f,15.0f)),  VEC3::Z),
+            randomVec3(0.9, 1.1))), usedPattern(pattern), position(transform * vec4(0, 1.0, 0, 1))
+    {
+        position.y = random(-0.1, 2);
         treeMVP = treeShader.uniformLocation("MVP");
-        treeu_time = treeShader.uniformLocation("u_time");
+        tree_time = treeShader.uniformLocation("u_time");
         leavesMVP = leavesShader.uniformLocation("MVP");
-        leavesu_time = leavesShader.uniformLocation("u_time");
+        leaves_time = leavesShader.uniformLocation("u_time");
+        leaves_pos = leavesShader.uniformLocation("u_treepos");
 
         LSystem lSystem = LSystem("X");
         lSystem.addPattern('X', pattern);
@@ -75,17 +96,14 @@ public:
         {
             Mesh* _ = l.wrapMeshAround(&points, true, false);
             tree->vertices.insert(tree->vertices.end(), _->vertices.begin(), _->vertices.end());
+
+            vec3 pos = l.getPointPosition(1);
+            if (pos.y > 2.0)
+                addLeave(rotate(scale(translate(mat4(1), pos + vec3(random(-0.1, 0.1), 0.1, random(-0.1, 0.1))), randomVec3(3.5, 6.0)),radians(random(0, 50)), randomVec3(-1,1))); // random leave
         }
         tree->nrOfVerts = tree->vertices.size() / VA_POSITION_NORMAL.getVertSize();
 
-        vec3 a1 = 5.0f * vec3(1, 2+0, 0);
-        vec3 a2 = 5.0f * vec3(1, 2+1, 0);
-        vec3 b1 = 5.0f * vec3(0, 2+0, 0);
-        vec3 b2 = 5.0f * vec3(0, 2+1, 0);
-
-        vec3 n1 = cross(a2-a1, b1-a1),  n2 = cross(a2-b1, b2-b1);
-        leaves->vertices.insert(leaves->vertices.end(), {a1.x,a1.y,a1.z, n1.x,n1.y,n1.z, a2.x,a2.y,a2.z, n1.x,n1.y,n1.z, b1.x,b1.y,b1.z, n1.x,n1.y,n1.z,   b1.x,b1.y,b1.z, n2.x,n2.y,n2.z, a2.x,a2.y,a2.z, n2.x,n2.y,n2.z, b2.x,b2.y,b2.z, n2.x,n2.y,n2.z,});
-        leaves->nrOfVerts += 6; // TODO not hardcode this here
+        addLeave(scale(rotate(translate(mat4(1), vec3(0.0, 6.0, 0.0)), radians(90.0f), VEC3::X), vec3(5))); // leave midway to prevent strange top down look
 
 
         VertexBuffer::uploadSingleMesh(tree);

@@ -29,12 +29,13 @@ void Tree::render(float time)
 {
     treeShader.use();
     glUniformMatrix4fv(treeMVP, 1, GL_FALSE, &(Camera::main->combined * transform)[0][0]);
-    glUniform1f(treeu_time, time);
+    glUniform1f(tree_time, time);
     tree->render();
 
     leavesShader.use();
-    glUniformMatrix4fv(leavesMVP, 1, GL_FALSE, &(Camera::main->combined * transform)[0][0]);
-    glUniform1f(leavesu_time, time);
+    glUniformMatrix4fv(leavesMVP, 1, GL_FALSE, &(Camera::main->combined)[0][0]);
+    glUniform3f(leaves_pos, position.x, position.y, position.z);
+    glUniform1f(leaves_time, time);
     leaves->render();
 
 }
