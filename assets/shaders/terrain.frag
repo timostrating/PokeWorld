@@ -33,14 +33,6 @@ void main() {
     vec3 ground = mix(vec3(99.0/255.0, 57.0/255.0, 41.0/255.0) * 0.2, vec3(165.0/255.0, 123.0/255.0, 82.0/255.0) * 0.6, r);
     vec3 grass = mix(grass1, grass2, r);
 
-
-    vec3 highlight = mix(vec3(245.0/255.0, 230.0/255.0, 221.0/255.0), vec3(1.0/255.0,  65.0/255.0, 134.0/255.0), abs(sin(u_time *0.5)));
-    vec3 shadows =   mix(vec3(157.0/255.0, 142.0/255.0, 134.0/255.0), vec3(0.0/255.0,   10.0/255.0,  36.0/255.0), abs(sin(u_time *0.5)));
-
-    vec3 light_pos = vec3(sin(u_time), cos(u_time), 0.0);
-    float NdotL1 = dot(normalize(v_normal), normalize(light_pos));
-    vec3 ambiend = mix(highlight, shadows, smoothstep(0.0, -0.20, NdotL1));
-
-    outputColor.xyz = ambiend * mix(ground, grass, smoothstep(0.0, 1.0, v_pos.y + mix(a, b, 0.4)*7.0));
+    outputColor.xyz = smoothAmbiend(u_time, v_normal) * mix(ground, grass, smoothstep(0.0, 1.0, v_pos.y + mix(a, b, 0.4)*7.0));
     outputColor.w = 1.0;
 }
