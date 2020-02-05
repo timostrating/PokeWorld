@@ -28,5 +28,5 @@ private:
     int oldY = INPUT::MOUSE::getMousePosY();
     int newY = oldY;
 
-    float r = 50.0;
+    float r = 100.0;
 };

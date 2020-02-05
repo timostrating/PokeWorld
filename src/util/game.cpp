@@ -68,7 +68,7 @@ namespace GAME {
 
         glfwWindowHint(GLFW_RESIZABLE , 1);
         /* Create a windowed mode window and its OpenGL context */
-        g_window = glfwCreateWindow(g_width, g_height, "Hello World", NULL, NULL);
+        g_window = glfwCreateWindow(g_width, g_height, "PokeWorld", NULL, NULL);
         if (!g_window)
         {
             glfwTerminate();

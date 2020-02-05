@@ -24,22 +24,22 @@
 #include "../game/stadium.h"
 #include "../game/tree.h"
 #include "../game/route.h"
+#include "../game/example_tree.h"
 
 using namespace glm;
 
-
-
-class Tmp : public GameObject
+class Tmp2 : public GameObject
 {
 public:
     SharedMesh sphere = SharedMesh(Mesh::sphere());
-    mat4 transform = scale(translate(mat4(1), vec3(-15, 1, 15)), MATH::random(0.1, 0.3) * vec3(1));
+    mat4 transform = scale(translate(mat4(1), vec3(-16, 1, 16)), 0.7f * vec3(1));
     ShaderProgram flatShader = ShaderProgram::fromAssetFiles("shaders/lib/default.vert", "shaders/lib/default.frag");
 
-    float color = 1;
-    bool clicked = false;
+    bool hover = false;
+    bool* highSpeed;
 
-    Tmp() {
+    Tmp2(bool *highSpeed) : highSpeed(highSpeed)
+    {
         VertexBuffer::uploadSingleMesh(sphere);
         colorPickerData = new ColorPickerData {sphere, transform};
     }
@@ -47,15 +47,57 @@ public:
     void render(float time) {
         flatShader.use();
         glUniformMatrix4fv(flatShader.uniformLocation("MVP"), 1, GL_FALSE, &(Camera::main->combined * transform)[0][0]);
-        if (clicked)
-            glUniform4f(flatShader.uniformLocation("u_color"), 1, 0, 1, 1);
-        else
-            glUniform4f(flatShader.uniformLocation("u_color"), 0.2, color, 0.2, 1);
+        if (hover) {
+            if (*highSpeed)     {glUniform4f(flatShader.uniformLocation("u_color"), 0.4, 0.4, 1.0, 1);}
+            else                {glUniform4f(flatShader.uniformLocation("u_color"), 0.4, 0.4, 0.7, 1);}
+        } else {
+            if (*highSpeed)     {glUniform4f(flatShader.uniformLocation("u_color"), 0.2, 0.2, 0.8, 1);}
+            else                {glUniform4f(flatShader.uniformLocation("u_color"), 0.2, 0.2, 0.5, 1);}
+        }
         sphere->render();
+
+        hover = false;
+    }
+    void renderReflection(float time) { bool tmp = hover; render(time); hover = tmp; }
+
+    void onHover() { hover = true; }
+    void onClick() { *highSpeed = !(*highSpeed); }
+};
+
+class Tmp : public GameObject
+{
+public:
+    SharedMesh sphere = SharedMesh(Mesh::sphere());
+    mat4 transform = scale(translate(mat4(1), vec3(-4, 1, -1)), vec3(1));
+    ShaderProgram flatShader = ShaderProgram::fromAssetFiles("shaders/lib/default.vert", "shaders/lib/default.frag");
+
+    bool hover = false;
+    bool* renderTree;
+
+    Tmp(bool *renderTree) : renderTree(renderTree)
+    {
+        VertexBuffer::uploadSingleMesh(sphere);
+        colorPickerData = new ColorPickerData {sphere, transform};
     }
 
-    void onHover() { color = MATH::random(0.5, 1); }
-    void onClick() { clicked = true; }
+    void render(float time) {
+        flatShader.use();
+        glUniformMatrix4fv(flatShader.uniformLocation("MVP"), 1, GL_FALSE, &(Camera::main->combined * transform)[0][0]);
+        if (hover) {
+            if (*renderTree)    {glUniform4f(flatShader.uniformLocation("u_color"), 0.4, 1.0, 0.4, 1);}
+            else                {glUniform4f(flatShader.uniformLocation("u_color"), 0.4, 0.7, 0.4, 1);}
+        } else {
+            if (*renderTree)    {glUniform4f(flatShader.uniformLocation("u_color"), 0.2, 0.8, 0.2, 1);}
+            else                {glUniform4f(flatShader.uniformLocation("u_color"), 0.2, 0.5, 0.2, 1);}
+        }
+        sphere->render();
+
+        hover = false;
+    }
+    void renderReflection(float time) { bool tmp = hover; render(time); hover = tmp; }
+
+    void onHover() { hover = true; }
+    void onClick() { *renderTree = !(*renderTree); }
 };
 
 
@@ -78,11 +120,16 @@ public:
     WaterPlane* waterPlane = new WaterPlane(waterSystem);
 
     bool debug = false;
+    bool renderGUI = false;
+    bool renderTree = false;
+    bool highSpeed = false;
+    ExampleTree* exampleTree = new ExampleTree();
 
 
     std::vector<GameObject*> gameObjects = {
         new Stadium(&debug),
-//        new Tmp(),
+        new Tmp(&renderTree),
+        new Tmp2(&highSpeed),
         new Route(),
     };
 
@@ -102,7 +149,7 @@ public:
     }
     MainScreen()
     {
-        for (int i=0; i<100; i++) { gameObjects.insert(gameObjects.begin(), { new Tree(randomPointOnMap(), Tree::EXAMPLES[i % Tree::EXAMPLE_SIZE]) }); }
+        for (int i=0; i<60; i++) { gameObjects.insert(gameObjects.begin(), { new Tree(randomPointOnMap(), Tree::EXAMPLES[i % Tree::EXAMPLE_SIZE]) }); }
         gameObjects.insert(gameObjects.begin(), {new Sky()});
 
         colorPickerSystem->setGameObjects(&gameObjects);
@@ -136,12 +183,10 @@ public:
     }
 
     float time = 0;
-    bool renderGUI = false;
-    float speed = 0.1;
 
     void render(double deltaTime)
     {
-        time += deltaTime * speed;
+        time += deltaTime * ((highSpeed)? 1.0 : 0.1);
 
         colorPickerSystem->update(deltaTime);
 
@@ -151,12 +196,16 @@ public:
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////// CAMERA
 
-        if (INPUT::KEYBOARD::pressed(GLFW_KEY_1)) debug = true;
-        if (INPUT::KEYBOARD::pressed(GLFW_KEY_2)) debug = false;
-        if (INPUT::KEYBOARD::pressed(GLFW_KEY_3)) renderGUI = true;
-        if (INPUT::KEYBOARD::pressed(GLFW_KEY_4)) renderGUI = false;
-        if (INPUT::KEYBOARD::pressed(GLFW_KEY_5)) speed = 1.0;
-        if (INPUT::KEYBOARD::pressed(GLFW_KEY_6)) speed = 0.1;
+        if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB)) {
+            if (INPUT::KEYBOARD::pressed(GLFW_KEY_1)) debug = true;
+            if (INPUT::KEYBOARD::pressed(GLFW_KEY_2)) debug = false;
+            if (INPUT::KEYBOARD::pressed(GLFW_KEY_3)) renderGUI = true;
+            if (INPUT::KEYBOARD::pressed(GLFW_KEY_4)) renderGUI = false;
+            if (INPUT::KEYBOARD::pressed(GLFW_KEY_5)) highSpeed = true;
+            if (INPUT::KEYBOARD::pressed(GLFW_KEY_6)) highSpeed = false;
+            if (INPUT::KEYBOARD::pressed(GLFW_KEY_Q)) renderTree = true;
+            if (INPUT::KEYBOARD::pressed(GLFW_KEY_W)) renderTree = false;
+        }
 
 //        if (debug) { camera.debugUpdate(deltaTime); }   // free camera
 //        else       { camera.update(deltaTime);}         // normal camera
@@ -201,10 +250,15 @@ public:
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////// GUI
 
+        if (renderTree) {
+            glDisable(GL_DEPTH_TEST);
+            exampleTree->render();
+            glEnable(GL_DEPTH_TEST);
+        }
 
         if (debug) {
             glDisable(GL_DEPTH_TEST);
-            camera.debugDraw();
+//            camera.debugDraw();
             for (auto &go : gameObjects)
                 go->debugRender(&gizmos);
             terrain->debugRender(&gizmos);
@@ -217,29 +271,33 @@ public:
         flatShader.use();
         VertexBuffer::bindDefault();
 
-        if (renderGUI == false) { return; }
-
         // Feed inputs to dear imgui, start new frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::Begin("Systems");
-            screenFbo.renderGUI();
-            ImGui::Separator();
-            waterSystem->renderGUI();
-            ImGui::Separator();
-            colorPickerSystem->renderGUI();
-        ImGui::End();
+        if (renderTree) {
+            exampleTree->renderGui();
+        }
 
-        ImGui::Begin("GameObjects");
-            terrain->renderGui();
-            waterPlane->renderGui();
-            for (auto &go : gameObjects) {
-                go->renderGui();
+        if (renderGUI) {
+            ImGui::Begin("Systems");
+                screenFbo.renderGUI();
                 ImGui::Separator();
-            }
-        ImGui::End();
+                waterSystem->renderGUI();
+                ImGui::Separator();
+                colorPickerSystem->renderGUI();
+            ImGui::End();
+
+            ImGui::Begin("GameObjects");
+                terrain->renderGui();
+                waterPlane->renderGui();
+                for (auto &go : gameObjects) {
+                    go->renderGui();
+                    ImGui::Separator();
+                }
+            ImGui::End();
+        }
 
         // Render dear imgui into screen
         ImGui::Render();
