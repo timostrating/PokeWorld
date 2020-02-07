@@ -136,8 +136,8 @@ float gold_noise(in vec2 xy, in float seed){
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////// COLORS
 
 vec3 smoothAmbiend(float time, vec3 normal) {
-    vec3 highlight = mix(vec3(245.0/255.0, 230.0/255.0, 221.0/255.0), vec3(40.0/255.0,  75.0/255.0, 144.0/255.0), abs(sin(time *0.5)));
-    vec3 shadows =   mix(vec3(157.0/255.0, 142.0/255.0, 134.0/255.0), vec3(15.0/255.0,   30.0/255.0,  56.0/255.0), abs(sin(time *0.5)));
+    vec3 highlight = mix(vec3(245.0/255.0, 230.0/255.0, 221.0/255.0), vec3(1.0/255.0,  65.0/255.0, 134.0/255.0), abs(sin(time *0.5)));
+    vec3 shadows =   mix(vec3(157.0/255.0, 142.0/255.0, 134.0/255.0), vec3(0.0/255.0,   10.0/255.0,  36.0/255.0), abs(sin(time *0.5)));
 
     vec3 light_pos = vec3(sin(time), cos(time), 0.0);
     float NdotL1 = dot(normalize(normal), normalize(light_pos));

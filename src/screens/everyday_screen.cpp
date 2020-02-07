@@ -51,16 +51,16 @@ class EverydayScreen : public Screen
         uniform float u_time;
         uniform vec3 eye_position;
 
-        const vec3 DiffuseLight = vec3(0.25, 0.15, 0.1);
-        const vec3 RimColor  = 0.1 * vec3(0.15, 0.2, 0.25);
+        const vec3 DiffuseLight = vec3(0.25, 0.15, 0.0);
+        const vec3 RimColor  = vec3(0.2, 0.2, 0.2);
 
-        const float gamma = 1.0/0.6; //higher gamma to get a darker image
+//        const float gamma = 1.0/0.6; //higher gamma to get a darker image
 
         in vec3 world_pos;
         in vec3 world_normal;
 
         void main(){
-            vec3 light_position = vec3(sin(u_time), 2.0, cos(u_time));
+            vec3 light_position = vec3(sin(u_time), 12.0, cos(u_time));
             //get light an view directions
             vec3 L = normalize( light_position - world_pos);
             vec3 V = normalize( eye_position - world_pos);
@@ -75,10 +75,12 @@ class EverydayScreen : public Screen
 
             vec3 finalColor = finalRim + diffuse + vec3(110.0/255.0, 120.0/255.0, 130.0/255.0);
 
+            float gamma = 1.0 / (0.5 + 0.3 * sin(u_time));
             vec3 finalColorGamma = vec3(pow(finalColor.r, gamma), pow(finalColor.g, gamma), pow(finalColor.b, gamma));
 
             outputColor = vec4(finalColorGamma, 1);
 
+            outputColor.xyz += vec3(abs(sin(world_pos.x*3910.0))/255.0, abs(sin(world_pos.y*3891.0))/255.0, abs(sin(world_pos.z*4000.0))/255.0); // anti ditter
         })glsl";
 
     FlyingCamera camera = FlyingCamera();
