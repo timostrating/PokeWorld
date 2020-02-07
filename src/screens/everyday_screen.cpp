@@ -27,13 +27,18 @@ class EverydayScreen : public Screen
     constexpr static char vertSource[] = R"glsl(#version 300 es
         layout (location = 0) in vec3 a_pos;
 
-        uniform mat4 MVP;
+        uniform mat4 M;
+        uniform mat4 VP;
 
-        out vec3 v_pos;
+        out vec3 world_pos;
+        out vec3 world_normal;
 
         void main() {
-            v_pos = a_pos;
-            gl_Position = MVP * vec4(a_pos, 1.0);
+            vec3 in_normal = a_pos;  // HACK
+            world_pos = mat3(M) * a_pos; //careful here
+            world_normal = normalize(mat3(M) * in_normal);
+
+            gl_Position = M * VP * vec4(a_pos, 1.0);
         })glsl";
 
 
@@ -44,26 +49,41 @@ class EverydayScreen : public Screen
         out vec4 outputColor;
 
         uniform float u_time;
-        uniform vec3 u_camPos;
+        uniform vec3 eye_position;
 
-        in vec3 v_pos;
+        const vec3 DiffuseLight = vec3(0.25, 0.15, 0.1);
+        const vec3 RimColor  = 0.1 * vec3(0.15, 0.2, 0.25);
 
-        void main() {
-            vec3 light_pos = vec3(sin(u_time) * 3.0, 3.0, cos(u_time) * 3.0);
+        const float gamma = 1.0/0.6; //higher gamma to get a darker image
 
-            vec3 color1 = vec3(50.0/255.0, 165.0/255.0, 65.0/255.0);
-            vec3 color2 = vec3(28.0/255.0, 135.0/255.0, 80.0/255.0);
-            vec3 color3 = vec3(21.0/255.0, 50.0/255.0, 36.0/255.0);
+        in vec3 world_pos;
+        in vec3 world_normal;
 
-            vec3 color = mix(color2, color1, (v_pos.y - 1.) * 10.0);
+        void main(){
+            vec3 light_position = vec3(sin(u_time), 2.0, cos(u_time));
+            //get light an view directions
+            vec3 L = normalize( light_position - world_pos);
+            vec3 V = normalize( eye_position - world_pos);
 
-            outputColor = vec4(color, 1.0);
+            //diffuse lighting
+            vec3 diffuse = DiffuseLight * max(0.0, dot(L,world_normal));
+
+            //rim lighting
+            float rim = 1.0 - max(dot(V, world_normal), 0.0);
+            rim = smoothstep(0.6, 1.0, rim);
+            vec3 finalRim = RimColor * vec3(rim, rim, rim);
+
+            vec3 finalColor = finalRim + diffuse + vec3(110.0/255.0, 120.0/255.0, 130.0/255.0);
+
+            vec3 finalColorGamma = vec3(pow(finalColor.r, gamma), pow(finalColor.g, gamma), pow(finalColor.b, gamma));
+
+            outputColor = vec4(finalColorGamma, 1);
+
         })glsl";
 
     FlyingCamera camera = FlyingCamera();
 
     ShaderProgram shader = ShaderProgram(vertSource, fragSource);
-    ShaderProgram flatShader = ShaderProgram::fromAssetFiles("shaders/lib/default.vert", "shaders/lib/default.frag");
 //    Texture texture = Texture::fromAssetFile("textures/tur.jpg");
 
     Gizmos gizmos;
@@ -107,7 +127,7 @@ public:
         shader.use();
         glUniform1f(shader.uniformLocation("u_time"), time);
 
-        glClearColor(0/255.0, 0/255.0, 0/255.0, 1.0);
+        glClearColor(50/255.0, 50/255.0, 50/255.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if (anyKeyPressed) {
@@ -116,14 +136,19 @@ public:
         } else {
             if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB))
                 anyKeyPressed = true;
-            camera.position = vec3(1.5+ sin(time*0.6)*2, 2, 1.5+ cos(time*0.6)*2);
-            camera.lookAt(vec3(1.5, 1, 1.5));
+            camera.position = vec3(1.5, 2, 1.5);
+            camera.lookAt(vec3(0.0, 0.5, 0.0));
             camera.Camera::update();
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////////// TEST
 
-
+        shader.use();
+        glUniformMatrix4fv(shader.uniformLocation("M"), 1, GL_FALSE, &(translate(mat4(1), vec3(0,0,0)))[0][0]);
+        glUniformMatrix4fv(shader.uniformLocation("VP"), 1, GL_FALSE, &(Camera::main->combined)[0][0]);
+        glUniform1f(shader.uniformLocation("u_time"), time);
+        glUniform3f(shader.uniformLocation("eye_position"), camera.position.x, camera.position.y, camera.position.z);
+        sphere->render();
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////// GUI
 //        shader.use();

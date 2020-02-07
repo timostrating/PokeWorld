@@ -99,11 +99,11 @@ public:
 
             vec3 pos = l.getPointPosition(1);
             if (pos.y > 2.0)
-                addLeave(rotate(scale(translate(mat4(1), pos + randomVec3(-0.1, 0.1)), randomVec3(3.5, 4.0)),radians(random(0, 50)), randomVec3(-1,1))); // random leave
+                addLeave(rotate(scale(translate(mat4(1), pos + randomVec3(-0.1, 0.1)), randomVec3(1.0, 1.5)),radians(random(0, 50)), randomVec3(-1,1))); // random leave
         }
         tree->nrOfVerts = tree->vertices.size() / VA_POSITION_NORMAL.getVertSize();
 
-        addLeave(scale(rotate(translate(mat4(1), vec3(0.0, 6.0, 0.0)), radians(90.0f), VEC3::X), vec3(5))); // leave midway to prevent strange top down look
+//        addLeave(scale(rotate(translate(mat4(1), vec3(0.0, 6.0, 0.0)), radians(90.0f), VEC3::X), vec3(5))); // leave midway to prevent strange top down look
 
 
         VertexBuffer::uploadSingleMesh(tree);

@@ -186,7 +186,7 @@ public:
 
     void render(double deltaTime)
     {
-        time += deltaTime * ((highSpeed)? 1.0 : 0.1);
+        time += deltaTime * 0.2; //((highSpeed)? 1.0 : 0.1);
 
         colorPickerSystem->update(deltaTime);
 
