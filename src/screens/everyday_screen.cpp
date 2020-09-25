@@ -31,9 +31,11 @@ class EverydayScreen : public Screen
         uniform mat4 MVP;
 
         out vec3 v_pos;
+        out mat4 v_MVP;
 
         void main() {
             v_pos = a_pos;
+            v_MVP = MVP;
             gl_Position = MVP * vec4(a_pos, 1.0);
         })glsl";
 
@@ -45,81 +47,120 @@ class EverydayScreen : public Screen
         out vec4 outputColor;
 
         in vec3 v_pos;
+        in mat4 v_MVP;
         uniform float u_time;
 
         const vec2 u_resolution = vec2(800.0, 800.0);
 
+        float mod289(float x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
+        vec4 mod289(vec4 x){return x - floor(x * (1.0 / 289.0)) * 289.0;}
+        vec4 perm(vec4 x){return mod289(((x * 34.0) + 1.0) * x);}
 
-        float circle(vec2 samplePosition, float radius){
-            return length(samplePosition) - radius;
+        float noise(vec3 p){
+            vec3 a = floor(p);
+            vec3 d = p - a;
+            d = d * d * (3.0 - 2.0 * d);
+
+            vec4 b = a.xxyy + vec4(0.0, 1.0, 0.0, 1.0);
+            vec4 k1 = perm(b.xyxy);
+            vec4 k2 = perm(k1.xyxy + b.zzww);
+
+            vec4 c = k2 + a.zzzz;
+            vec4 k3 = perm(c);
+            vec4 k4 = perm(c + 1.0);
+
+            vec4 o1 = fract(k3 * (1.0 / 41.0));
+            vec4 o2 = fract(k4 * (1.0 / 41.0));
+
+            vec4 o3 = o2 * d.z + o1 * (1.0 - d.z);
+            vec2 o4 = o3.yw * d.x + o3.xz * (1.0 - d.x);
+
+            return o4.y * d.y + o4.x * (1.0 - d.y);
         }
 
-        float rectangle(vec2 samplePosition, vec2 halfSize){
-            vec2 componentWiseEdgeDistance = abs(samplePosition) - halfSize;
-            float outsideDistance = length(max(componentWiseEdgeDistance, 0.0));
-            float insideDistance = min(max(componentWiseEdgeDistance.x, componentWiseEdgeDistance.y), 0.0);
-            return outsideDistance + insideDistance;
+        float clamp01(float v) { return clamp(v, 0.0, 1.0); }
+
+        vec3 green = vec3(57.0/255.0, 109.0/255.0, 23.0/255.0);
+        vec3 between = vec3(148.0/255.0, 130.0/255.0, 19.0/255.0);
+        vec3 brown = vec3(115.0/255.0, 57.0/255.0, 28.0/255.0);
+
+
+        const int MAX_MARCHING_STEPS = 255;
+        const float MIN_DIST = 0.0;
+        const float MAX_DIST = 100.0;
+        const float EPSILON = 0.0001;
+
+        float sphereSDF(vec3 p) {
+            return length(p) - 0.3;
         }
 
-
-        vec2 rotate(vec2 samplePosition, float rotation){
-            float angle = rotation * PI * 2.0 * -1.0;
-            float sine = sin(angle);
-            float cosine = cos(angle);
-            return vec2(cosine * samplePosition.x + sine * samplePosition.y, cosine * samplePosition.y - sine * samplePosition.x);
+        float sceneSDF(vec3 samplePoint) {
+            return sphereSDF(samplePoint) - 0.2 * noise( vec3(u_time) + samplePoint * 3.0);
         }
 
-        vec2 translate(vec2 samplePosition, vec2 offset){
-            return samplePosition - offset;
+        vec3 estimateNormal(vec3 p) {
+            return normalize(vec3(
+                sceneSDF(vec3(p.x + EPSILON, p.y, p.z)) - sceneSDF(vec3(p.x - EPSILON, p.y, p.z)),
+                sceneSDF(vec3(p.x, p.y + EPSILON, p.z)) - sceneSDF(vec3(p.x, p.y - EPSILON, p.z)),
+                sceneSDF(vec3(p.x, p.y, p.z  + EPSILON)) - sceneSDF(vec3(p.x, p.y, p.z - EPSILON))
+            ));
         }
 
-        vec2 scale(vec2 samplePosition, float scale){
-            return samplePosition / scale;
+        float shortestDistanceToSurface(vec3 eye, vec3 marchingDirection, float start, float end) {
+            float depth = start;
+            for (int i = 0; i < MAX_MARCHING_STEPS; i++) {
+                float dist = sceneSDF(eye + depth * marchingDirection);
+                if (dist < EPSILON) {
+                    return depth;
+                }
+                depth += dist;
+                if (depth >= end) {
+                    return end;
+                }
+            }
+            return end;
         }
 
-        vec3 hsv2rgb_smooth( in vec3 c )
-        {
-            vec3 rgb = clamp( abs(mod(c.x*6.0+vec3(0.0,4.0,2.0),6.0)-3.0)-1.0, 0.0, 1.0 );
-
-            rgb = rgb*rgb*(3.0-2.0*rgb); // cubic smoothing
-
-            return c.z * mix( vec3(1.0), rgb, c.y);
+        vec3 rayDirection(float fieldOfView, vec2 size, vec2 fragCoord) {
+            vec2 xy = fragCoord - size / 2.0;
+            float z = size.y / tan(radians(fieldOfView) / 2.0);
+            return normalize(vec3(xy, -z));
         }
 
-        float f( float H, float Sl, float L, float n )
-        {
-            float k = mod((n + H/30.0), 30.0);
-            float a = Sl * min(L, 1.0-L);
-            return L - a * max(-1.0, min(min(k-3.0, 9.0-k), 1.0));
-        }
-
-        // https://en.wikipedia.org/wiki/HSL_and_HSV#HSL_to_RGB_alternative
-        vec3 hsl2rgb( in vec3 c )
-        {
-            float H = mod(c.x, 1.0) * 360.0;
-            float Sl = mod(c.y, 1.0);
-            float L = mod(c.z, 1.0);
-
-            float R = f(H,Sl,L, 0.0);
-            float G = f(H,Sl,L, 8.0);
-            float B = f(H,Sl,L, 4.0);
-
-            return vec3(R, G, B);
-        }
+        const vec3 lightColor = vec3(1.0);
+        const vec3 objectColor = vec3(0., 1., 0.);
+//        const vec3 ambient = vec3(0.1);
 
         void main( void )
         {
-            vec2 pos = gl_FragCoord.xy/vec2(800.0);
 
-            outputColor = vec4(hsl2rgb(vec3(pos + vec2(u_time, 0), (sin(u_time) + 1.0)*0.5)), 1.0);
+            vec3 dir = rayDirection(45.0, vec2(800.), gl_FragCoord.xy);
+            vec3 eye = vec3(0.0, 0.0, 5.0);
+            float dist = shortestDistanceToSurface(eye, dir, MIN_DIST, MAX_DIST);
+
+            if (dist > MAX_DIST - EPSILON) {
+                // Didn't hit anything
+                outputColor = vec4(0.1, 0.1, 0.1, 1.0);
+                return;
+            }
+
+            vec3 lightDir = vec3(sin(u_time * 0.5) * 3., 3., cos(u_time * 0.5) * 3.);
+            vec3 samplePoint = eye + dir * dist;
+            vec3 normal = estimateNormal(samplePoint);
+
+            float diffuse = max(dot(normal, lightDir), 0.0) * lightColor;
+            vec3 ambient = vec3(1. - noise( vec3(u_time) + samplePoint * 3.0));
+            vec3 result = (ambient + diffuse) * objectColor;
+
+            outputColor = vec4(result, 1.0);
         }
 
 )glsl";
 
     FlyingCamera camera = FlyingCamera();
 
-    ShaderProgram shader = ShaderProgram::fromAssetFiles("shaders/fire.vert", "shaders/fire.frag");
-    ShaderProgram fireShader = ShaderProgram(vertSource, fragSource);
+//    ShaderProgram shader = ShaderProgram::fromAssetFiles("shaders/fire.vert", "shaders/fire.frag");
+    ShaderProgram shader = ShaderProgram(vertSource, fragSource);
 
 //    Texture texture = Texture::fromAssetFile("textures/tur.jpg");
 
@@ -129,7 +170,7 @@ class EverydayScreen : public Screen
     SharedMesh sphere = SharedMesh(Mesh::sphere());
 
 //    ShaderProgram postProcessingShader = ShaderProgram::fromAssetFiles("shaders/postprocessing.vert", "shaders/postprocessing.frag");
-    GLuint MVP, u_resolution;
+    GLint MVP, u_resolution;
 //    FrameBuffer screenFbo = FrameBuffer(800, 800);
 
 
@@ -169,7 +210,7 @@ public:
     bool anyKeyPressed = false;
 
     void render(double deltaTime) {
-        time += deltaTime * 0.2;
+        time += deltaTime;
         shader.use();
         glUniform1f(shader.uniformLocation("u_time"), time);
 
@@ -182,8 +223,8 @@ public:
         } else {
             if (INPUT::KEYBOARD::pressed(GLFW_KEY_TAB))
                 anyKeyPressed = true;
-            camera.position = vec3(3, 3, 3);
-            camera.lookAt(vec3(0.0, 0.0, 0.0));
+            camera.position = vec3(5, 5, 5);
+            camera.lookAt(vec3(0.0, -0.2, 0.0));
             camera.Camera::update();
         }
 
@@ -192,32 +233,29 @@ public:
 //        screenFbo.bind();
 //        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-//            shader.use();
-//            glUniformMatrix4fv(shader.uniformLocation("M"), 1, GL_FALSE, &(translate(mat4(1), vec3(0,0,0)))[0][0]);
-//            glUniformMatrix4fv(shader.uniformLocation("VP"), 1, GL_FALSE, &(Camera::main->combined)[0][0]);
-//            glUniform1f(shader.uniformLocation("u_time"), time);
-//            glUniform3f(shader.uniformLocation("eye_position"), camera.position.x, camera.position.y, camera.position.z);
-//            cube->render();
-//            vec3 v = vec3(sin(time), cos(time), 0);
-//            gizmos.drawLine(1.5f * v, -1.5f * v, vec4(0.71, 0.1, 0.1, 1.0));
+            shader.use();
+            glUniformMatrix4fv(shader.uniformLocation("MVP"), 1, GL_FALSE, &(rotate(glm::scale(Camera::main->combined, vec3(2,2,2)), radians(static_cast<float>(time) * 15.0f), VEC3::Y))[0][0]);
+            cube->render();
 
 //        screenFbo.unbind();
 
+
+
         //////////////////////////////////////////////////////////////////////////////////////////////// POST PROCESSING
 
-        camera.saveState();
-        camera.position = vec3(0, 0, 1 / tan(radians(camera.fov * 0.5)));
-        camera.lookAt(vec3(0, 0, 0));
-        camera.Camera::update();
-//
-        fireShader.use();
-        glUniformMatrix4fv(fireShader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined)[0][0]);
-        glUniform1f(fireShader.uniformLocation("u_time"), time);
-//        glUniform2f(u_resolution, camera.width, camera.height);
-//        screenFbo.colorTexture->bind(0, postProcessingShader, "u_texture");
-//        screenFbo.depthTexture->bind(1, postProcessingShader, "u_depth");
-        quad->render();
-        camera.restoreState();
+//        camera.saveState();
+//        camera.position = vec3(0, 0, 1 / tan(radians(camera.fov * 0.5)));
+//        camera.lookAt(vec3(0, 0, 0));
+//        camera.Camera::update();
+////
+//        fireShader.use();
+//        glUniformMatrix4fv(fireShader.uniformLocation("MVP"), 1, GL_FALSE, &(camera.combined)[0][0]);
+//        glUniform1f(fireShader.uniformLocation("u_time"), time);
+////        glUniform2f(u_resolution, camera.width, camera.height);
+////        screenFbo.colorTexture->bind(0, postProcessingShader, "u_texture");
+////        screenFbo.depthTexture->bind(1, postProcessingShader, "u_depth");
+//        quad->render();
+//        camera.restoreState();
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////// GUI
 //        shader.use();
