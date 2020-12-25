@@ -17,17 +17,22 @@
 #include "../screens/main_screen.cpp"
 #include "../screens/tree_screen.cpp"
 #include "../screens/everyday_screen.cpp"
+#include "io/file_watch.h"
 #include "game.h"
-
-enum Constants { SCREENSHOT_MAX_FILENAME = 256 };
-static GLubyte *pixels = NULL;
-static unsigned int nframes = 0;
-static unsigned int g_width = 800;
-static unsigned int g_height = 800;
 
 namespace GAME {
     GLFWwindow *g_window;
     Screen *screen;
+
+#ifdef linux
+//    FileWatch fileWatch = FileWatch();
+
+    enum Constants { SCREENSHOT_MAX_FILENAME = 256 };
+    static GLubyte *pixels = NULL;
+    static unsigned int nframes = 0;
+    static unsigned int g_width = 800;
+    static unsigned int g_height = 800;
+#endif
 
     /* THIS IS A COPY FROM: https://stackoverflow.com/a/14324292/7217653
      *
@@ -56,6 +61,23 @@ namespace GAME {
         }
         fclose(f);
     }
+
+#ifdef linux
+    void debugInit() {
+//        fileWatch.addDirectoryToWatch("../assets/shaders", true);
+//        fileWatch.startWatchingSync();
+    }
+
+    void debugTick() {
+        if (INPUT::KEYBOARD::pressed(GLFW_KEY_F12)) {
+            char filename[SCREENSHOT_MAX_FILENAME];
+            snprintf(filename, SCREENSHOT_MAX_FILENAME, "tmp.%05d.ppm", nframes);
+            screenshot(filename, g_width, g_height, &pixels);
+            nframes++;
+//            todo: add a free(pixels); to the destructor
+        }
+    }
+#endif
 
     bool init()
     {
@@ -92,6 +114,10 @@ namespace GAME {
         GL_DEBUG::enableGLDebug();
         GL_DEBUG::printContext();
 
+#ifdef linux
+        debugInit();
+#endif
+
         return true;
     }
 
@@ -124,13 +150,9 @@ namespace GAME {
         INPUT::KEYBOARD::lateUpdate();
         INPUT::MOUSE::lateUpdate();
 
-        if (INPUT::KEYBOARD::pressed(GLFW_KEY_F12)) {
-            char filename[SCREENSHOT_MAX_FILENAME];
-            snprintf(filename, SCREENSHOT_MAX_FILENAME, "tmp.%05d.ppm", nframes);
-            screenshot(filename, g_width, g_height, &pixels);
-            nframes++;
-//            todo: add a free(pixels); to the destructor
-        }
+#ifdef linux
+        debugTick();
+#endif
 
         prevTime = curTime;
     }
