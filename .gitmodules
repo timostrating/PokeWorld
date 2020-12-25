@@ -13,3 +13,6 @@
 [submodule "external/glm"]
 	path = external/glm
 	url = git@github.com:g-truc/glm.git
+[submodule "imgui-node-editor"]
+	path = external/imgui-node-editor
+	url = git@github.com:thedmd/imgui-node-editor.git

@@ -1,5 +1,5 @@
 build/gh-pages
-/external/glad
+/external
 out
 CMakeFiles
 cmake-build-debug

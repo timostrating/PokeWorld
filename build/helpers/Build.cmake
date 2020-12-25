@@ -46,8 +46,12 @@ include_directories(${EXTERNAL_DIR}/glm/glm)
 
 # ---------------------------------------------------------ImGUI--------------------------------------------------------
 
+
 set(IMGUI_DIR ${EXTERNAL_DIR}/imgui)
 include_directories(${IMGUI_DIR})
+
+set(IMGUI_NODE_EDITOR_DIR ${EXTERNAL_DIR}/imgui-node-editor)
+include_directories(${IMGUI_NODE_EDITOR_DIR})
 
 if (NOT ${__EMSCRIPTEN__})
     add_definitions(-DIMGUI_IMPL_OPENGL_LOADER_GLAD) # IMGUI recuires that we say that we use glad on the desktop
@@ -70,7 +74,13 @@ add_executable(${PROJECT_NAME}
         ${IMGUI_DIR}/examples/imgui_impl_opengl3.cpp
         ${IMGUI_DIR}/imgui_draw.cpp
         ${IMGUI_DIR}/imgui_demo.cpp
-        ${IMGUI_DIR}/imgui_widgets.cpp)
+        ${IMGUI_DIR}/imgui_widgets.cpp
+        ${IMGUI_NODE_EDITOR_DIR}/crude_json.cpp
+        ${IMGUI_NODE_EDITOR_DIR}/imgui_node_editor_api.cpp
+        ${IMGUI_NODE_EDITOR_DIR}/imgui_canvas.cpp
+        ${IMGUI_NODE_EDITOR_DIR}/imgui_node_editor.cpp
+        ${IMGUI_NODE_EDITOR_DIR}/imgui_node_editor_api.cpp
+    )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
