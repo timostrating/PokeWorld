@@ -14,4 +14,5 @@ const vec3 grass2 = vec3( 50.0/255.0,  86.0/255.0,  49.0/255.0) * 0.8;
 
 void main() {
     outputColor = vec4(smoothAmbiend(u_time, v_normal) * mix(tree1, tree2, noise(v_pos * 3.0)), 1.0);
+    outputColor.xyz = gammaCorrection(outputColor.xyz);
 }

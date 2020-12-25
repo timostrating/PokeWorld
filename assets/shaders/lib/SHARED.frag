@@ -145,3 +145,8 @@ vec3 smoothAmbiend(float time, vec3 normal) {
 
     return ambiend;
 }
+
+const float gamma = 1.0 / 2.0;
+vec3 gammaCorrection(vec3 fragColor) {
+    return vec3(pow(fragColor.r, gamma), pow(fragColor.xyz.g, gamma), pow(fragColor.xyz.b, gamma));
+}

@@ -34,5 +34,6 @@ void main() {
     vec3 grass = mix(grass1, grass2, r);
 
     outputColor.xyz = smoothAmbiend(u_time, v_normal) * mix(ground, grass, smoothstep(0.0, 1.0, v_pos.y + mix(a, b, 0.4)*7.0));
+    outputColor.xyz = gammaCorrection(outputColor.xyz);
     outputColor.w = 1.0;
 }

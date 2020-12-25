@@ -31,6 +31,7 @@ void main() {
     vec3 route = mix(route1, route2, r);
 
     outputColor.xyz = smoothAmbiend(u_time, v_normal) * mix(route, grass, clamp01(r+0.45));
+    outputColor.xyz = gammaCorrection(outputColor.xyz);
     outputColor.w = 1.0;
 
     gl_FragDepth = gl_FragCoord.z - gl_FragCoord.w / (500.0) ;//- 7.0/(255.0*255.0); // postprocessing hack

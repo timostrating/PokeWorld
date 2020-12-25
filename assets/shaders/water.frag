@@ -48,4 +48,5 @@ void main() {
     }
 
     outputColor.xyz = smoothAmbiend(u_time, vec3(0.0, 1.0, 0.0)) * outputColor.xyz;
+    outputColor.xyz = gammaCorrection(outputColor.xyz);
 }

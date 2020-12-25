@@ -21,5 +21,6 @@ void main() {
     else
         gl_FragDepth = gl_FragCoord.z; // postprocessing hack
 
-    outputColor = vec4(smoothAmbiend(u_time, v_normal) * smoothAmbiend(u_time, v_normal) * outputColor.xyz, 1.0);
+    outputColor = vec4(smoothAmbiend(u_time, v_normal) * outputColor.xyz, 1.0);
+    outputColor.xyz = gammaCorrection(outputColor.xyz);
 }

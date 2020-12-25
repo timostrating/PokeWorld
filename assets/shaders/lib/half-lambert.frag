@@ -12,9 +12,9 @@ vec3 hsv2rgb(vec3 c)
     return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 }
 void main() {
-    vec3 SurfaceColor = vec3(200.0/255., 200.0/255., 100.0/255.);         //objects color
-    vec3 LightColor = vec3(100.0/255., 100.0/255., 255.0/255.) * 0.7;           //lights color * intensity
-    float LightAttenuation = .3;      //value of light at point (shadow/falloff)
+    vec3 SurfaceColor = vec3(0.5);         //objects color
+    vec3 LightColor = hsv2rgb(vec3(sin(u_time *0.5)*0.5+0.5, 0.5, sin(u_time * 0.25)*0.25+0.75));           //lights color * intensity
+    float LightAttenuation = 0.95;      //value of light at point (shadow/falloff)
     vec3 lightDirection = vec3(sin(u_time*0.5), 1.0, cos(u_time*0.5));
 
     float wrapValue = 1.0; //abs(sin(u_time*0.2))*0.5 + 0.5;

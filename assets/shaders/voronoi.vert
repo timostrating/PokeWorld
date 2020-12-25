@@ -1,9 +1,10 @@
 #version 300 es
+
 layout (location = 0) in vec3 a_pos;
 
-out vec3 v_pos;
-
 uniform mat4 MVP;
+
+out vec3 v_pos;
 
 void main() {
     v_pos = a_pos;

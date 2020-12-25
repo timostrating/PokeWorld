@@ -4,8 +4,8 @@ in vec3 v_pos;
 
 uniform float u_time;
 
-const vec3 nightColor1 = vec3(  1.0/255.0,  35.0/255.0, 84.0/255.0);
-const vec3 nightColor2 = vec3(  0.0/255.0,   0.0/255.0,  36.0/255.0);
+const vec3 nightColor1 = vec3(  0.0/255.0,  70.0/255.0, 180.0/255.0);
+const vec3 nightColor2 = vec3(  0.0/255.0,  13.0/255.0, 120.0/255.0);
 
 const vec3 dayColor1 = vec3( 84.0/255.0, 172.0/255.0, 208.0/255.0);
 const vec3 dayColor2 = vec3( 42.0/255.0,  99.0/255.0, 142.0/255.0);
