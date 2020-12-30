@@ -70,10 +70,11 @@ target_include_directories(glad PUBLIC ${EXTERNAL_DIR}/glad/include/)
 add_executable(${PROJECT_NAME}
         ${source}
         ${IMGUI_DIR}/imgui.cpp
-        ${IMGUI_DIR}/examples/imgui_impl_glfw.cpp
-        ${IMGUI_DIR}/examples/imgui_impl_opengl3.cpp
-        ${IMGUI_DIR}/imgui_draw.cpp
+        ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
+        ${IMGUI_DIR}/backends/imgui_impl_opengl3.cpp
         ${IMGUI_DIR}/imgui_demo.cpp
+        ${IMGUI_DIR}/imgui_draw.cpp
+        ${IMGUI_DIR}/imgui_tables.cpp
         ${IMGUI_DIR}/imgui_widgets.cpp
         ${IMGUI_NODE_EDITOR_DIR}/crude_json.cpp
         ${IMGUI_NODE_EDITOR_DIR}/imgui_node_editor_api.cpp

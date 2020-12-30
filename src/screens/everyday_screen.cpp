@@ -7,8 +7,8 @@
 #include "glm/gtx/rotate_vector.hpp"
 #include <GLFW/glfw3.h>
 #include <imgui.h>
-#include <examples/imgui_impl_glfw.h>
-#include <examples/imgui_impl_opengl3.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
 
 #include "../util/interfaces/screen.h"
 #include "../graphics/shader_program.h"
