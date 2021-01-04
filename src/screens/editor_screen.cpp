@@ -7,6 +7,7 @@
 #include <glm/glm.hpp>
 #include "glm/gtx/rotate_vector.hpp"
 #include <GLFW/glfw3.h>
+#include <sstream>
 #include <imgui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
@@ -27,29 +28,7 @@ using namespace MATH;
 # include "../util/external/imgui_node_editor.hpp"
 namespace ed = ax::NodeEditor;
 
-struct EditorPin {
-    ed::PinId id;
-
-    EditorPin(int id):
-            id(id)
-    {
-    }
-};
-
-struct EditorNode
-{
-    ed::NodeId id;
-    const char *name;
-
-    std::vector<EditorPin> inputs;
-    std::vector<EditorPin> outputs;
-
-    EditorNode(int id, const char* name):
-            id(id), name(name)
-    {
-    }
-};
-
+class EditorNode;
 struct EditorLink
 {
     ed::LinkId id;
@@ -57,13 +36,180 @@ struct EditorLink
     ed::PinId  outputId;
 };
 
-static ed::EditorContext* g_Context = nullptr;
-static ImVector<EditorNode>    s_Nodes;
-static ImVector<EditorLink>    s_Links;
-static int                  g_NextLinkId = 100;     // Counter to help generate link ids. In real application this will probably based on pointer to user data structure.
-static bool firstTime = true;
 
-#define MULTILINE(...) #__VA_ARGS__
+static std::vector<EditorNode*> s_pin2Node;
+static int _nextId = 0;
+static int getId(EditorNode *node)
+{
+    s_pin2Node.emplace_back(node);
+    return _nextId++;
+}
+
+static ed::EditorContext* g_Context = nullptr;
+static ImVector<EditorNode*>    s_Nodes;
+static ImVector<EditorLink>    s_Links;
+
+
+struct EditorPin
+{
+    ed::PinId id;
+
+    EditorPin(int id): id(id)
+    {
+    }
+};
+
+
+
+class EditorNode
+{
+public:
+    ed::NodeId id;
+
+    std::vector<EditorNode*> inputs;
+    std::vector<EditorPin> pinsIn;
+    std::vector<EditorPin> pinsOut;
+
+    EditorNode()
+    {
+    }
+
+    virtual void preDefineFunction(std::stringstream *stream) {};
+    virtual void node2code(std::stringstream *stream) {};
+    virtual bool validCode() { return true; };
+    virtual void renderNode() {};
+};
+
+static const char* MathNodeOptions[] = { "sin", "cos", "tan", "min", "max" };
+class MathNode : public EditorNode
+{
+public:
+    int selected_option_id = 0;
+
+    MathNode()
+    {
+        inputs.emplace_back(nullptr);
+        id = getId(this);
+        pinsIn.emplace_back(getId(this));
+        pinsOut.emplace_back(getId(this));
+    }
+
+    void node2code(std::stringstream *stream) override
+    {
+        (*stream) << MathNodeOptions[selected_option_id] << "(";
+        if (inputs.at(0)) inputs.at(0)->node2code(stream);
+        (*stream) <<")";
+    }
+
+    bool validCode()
+    {
+        if (inputs.at(0))
+            return inputs.at(0)->validCode();
+        return false;
+    }
+
+    void renderNode() override
+    {
+        ImGui::PushItemWidth(200);
+        ed::BeginNode(id);
+        ImGui::Text("Math");
+
+        ImGui::Combo("", &selected_option_id, MathNodeOptions, IM_ARRAYSIZE(MathNodeOptions));
+
+        for (EditorPin& input : pinsIn)
+        {
+            ed::BeginPin(input.id, ed::PinKind::Input);
+                ImGui::Text("-> In");
+            ed::EndPin();
+        }
+        ImGui::SameLine(150);
+        for (EditorPin& output : pinsOut)
+        {
+            ed::BeginPin(output.id, ed::PinKind::Output);
+                ImGui::Text("Out ->");
+            ed::EndPin();
+        }
+        ed::EndNode();
+    }
+};
+
+class InputColorNode : public EditorNode
+{
+public:
+    ImVec4 color = ImVec4();
+
+    InputColorNode()
+    {
+        inputs.emplace_back(nullptr);
+        id = getId(this);
+        pinsOut.emplace_back(getId(this));
+    }
+
+    void node2code(std::stringstream *stream) override
+    {
+        (*stream) <<"vec4("<< color.x <<","<< color.y <<","<<color.z <<","<< color.w <<")";
+    }
+
+    void renderNode() override
+    {
+        ImGui::PushItemWidth(200);
+        ed::BeginNode(id);
+        ImGui::Text("Color input");
+
+        ImGui::ColorPicker4("", (float*)&color);
+
+        ImGui::Spacing();
+        ImGui::SameLine(180);
+        for (EditorPin& output : pinsOut)
+        {
+            ed::BeginPin(output.id, ed::PinKind::Output);
+            ImGui::Text("Out ->");
+            ed::EndPin();
+        }
+        ed::EndNode();
+    }
+};
+
+class OutputNode : public EditorNode
+{
+public:
+    OutputNode()
+    {
+        inputs.emplace_back(nullptr);
+        id = getId(this);
+        pinsIn.emplace_back(getId(this));
+    }
+
+    void node2code(std::stringstream *stream) override
+    {
+        (*stream) << "outputColor = ";
+        if (inputs.at(0)) inputs.at(0)->node2code(stream);
+        (*stream) <<";";
+    }
+
+    bool validCode() override
+    {
+        return inputs.at(0);
+    }
+
+    void renderNode() override
+    {
+        ImGui::PushItemWidth(200);
+        ed::BeginNode(id);
+            ImGui::Text("Output");
+            ImGui::Text("Waarom.......");
+
+            ed::BeginPin(pinsIn.front().id, ed::PinKind::Input);
+                ImGui::Text("-> In");
+            ed::EndPin();
+        ed::EndNode();
+    }
+};
+
+
+static OutputNode outputNode = OutputNode();
+
+
 
 static bool Splitter(bool split_vertically, float thickness, float* size1, float* size2, float min_size1, float min_size2, float splitter_long_axis_size = -1.0f)
 {
@@ -117,13 +263,11 @@ public:
 
         g_Context = ed::CreateEditor();
 
-        s_Nodes.push_back(EditorNode(0, "Output"));
-        s_Nodes.back().inputs.emplace_back(EditorPin(2));
+        s_Nodes.push_back(&outputNode);
     }
 
     double time = 0;
     bool anyKeyPressed = false;
-    bool connected = false;
     float colorData[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 
 
@@ -167,84 +311,92 @@ public:
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
+        ImVec4* colors = ImGui::GetStyle().Colors;
+        colors[ImGuiCol_Text]                   = ImVec4(0.92f, 0.90f, 0.85f, 1.00f);
+        colors[ImGuiCol_WindowBg]               = ImVec4(0.04f, 0.04f, 0.04f, 0.94f);
+        colors[ImGuiCol_Border]                 = ImVec4(1.00f, 1.00f, 1.00f, 0.16f);
+        colors[ImGuiCol_FrameBg]                = ImVec4(0.29f, 0.29f, 0.29f, 0.66f);
+        colors[ImGuiCol_FrameBgHovered]         = ImVec4(1.00f, 1.00f, 1.00f, 0.40f);
+        colors[ImGuiCol_FrameBgActive]          = ImVec4(0.98f, 0.26f, 0.26f, 0.67f);
+        colors[ImGuiCol_TitleBg]                = ImVec4(0.43f, 0.10f, 0.10f, 1.00f);
+        colors[ImGuiCol_TitleBgActive]          = ImVec4(0.49f, 0.09f, 0.09f, 1.00f);
+        colors[ImGuiCol_MenuBarBg]              = ImVec4(0.98f, 0.26f, 0.26f, 0.31f);
+        colors[ImGuiCol_ScrollbarBg]            = ImVec4(0.04f, 0.04f, 0.04f, 0.94f);
+        colors[ImGuiCol_ScrollbarGrab]          = ImVec4(1.00f, 1.00f, 1.00f, 0.37f);
+        colors[ImGuiCol_ScrollbarGrabHovered]   = ImVec4(1.00f, 1.00f, 1.00f, 0.67f);
+        colors[ImGuiCol_ScrollbarGrabActive]    = ImVec4(1.00f, 1.00f, 1.00f, 0.75f);
+        colors[ImGuiCol_CheckMark]              = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+        colors[ImGuiCol_SliderGrab]             = ImVec4(1.00f, 1.00f, 1.00f, 0.38f);
+        colors[ImGuiCol_SliderGrabActive]       = ImVec4(1.00f, 1.00f, 1.00f, 0.66f);
+        colors[ImGuiCol_Button]                 = ImVec4(0.98f, 0.26f, 0.26f, 0.31f);
+        colors[ImGuiCol_ButtonHovered]          = ImVec4(1.00f, 0.11f, 0.11f, 0.76f);
+        colors[ImGuiCol_ButtonActive]           = ImVec4(0.98f, 0.06f, 0.06f, 0.85f);
+        colors[ImGuiCol_Header]                 = ImVec4(0.98f, 0.26f, 0.26f, 0.31f);
+        colors[ImGuiCol_HeaderHovered]          = ImVec4(0.98f, 0.26f, 0.26f, 0.64f);
+        colors[ImGuiCol_HeaderActive]           = ImVec4(0.98f, 0.26f, 0.26f, 1.00f);
+        colors[ImGuiCol_SeparatorHovered]       = ImVec4(0.75f, 0.10f, 0.10f, 0.78f);
+        colors[ImGuiCol_SeparatorActive]        = ImVec4(0.75f, 0.10f, 0.10f, 1.00f);
+        colors[ImGuiCol_ResizeGrip]             = ImVec4(0.98f, 0.26f, 0.26f, 0.20f);
+        colors[ImGuiCol_ResizeGripHovered]      = ImVec4(0.98f, 0.26f, 0.26f, 0.67f);
+        colors[ImGuiCol_ResizeGripActive]       = ImVec4(0.98f, 0.26f, 0.26f, 0.95f);
+        colors[ImGuiCol_Tab]                    = ImVec4(1.00f, 0.03f, 0.03f, 0.12f);
+        colors[ImGuiCol_TabHovered]             = ImVec4(0.98f, 0.26f, 0.26f, 0.49f);
+        colors[ImGuiCol_TabActive]              = ImVec4(0.98f, 0.26f, 0.26f, 0.31f);
+        colors[ImGuiCol_TabUnfocused]           = ImVec4(0.15f, 0.07f, 0.07f, 0.97f);
+        colors[ImGuiCol_TabUnfocusedActive]     = ImVec4(0.42f, 0.14f, 0.14f, 1.00f);
+        colors[ImGuiCol_PlotLinesHovered]       = ImVec4(1.00f, 0.35f, 0.35f, 1.00f);
+        colors[ImGuiCol_TextSelectedBg]         = ImVec4(0.98f, 0.26f, 0.26f, 0.35f);
+        colors[ImGuiCol_DragDropTarget]         = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+        colors[ImGuiCol_NavHighlight]           = ImVec4(0.66f, 0.66f, 0.66f, 1.00f);
+
 
 
         auto& io = ImGui::GetIO();
-        if (ImGui::Button("load")) {
-            std::cout<< "Print";
-        }
-
-        bool tmp = false;
-        if (ImGui::BeginTable("split", 3))
-        {
-            ImGui::TableNextColumn(); ImGui::Checkbox("tmp", &tmp);
-            ImGui::TableNextColumn(); ImGui::Checkbox("tmp", &tmp);
-            ImGui::TableNextColumn(); ImGui::Checkbox("tmp", &tmp);
-            ImGui::TableNextColumn(); ImGui::Checkbox("tmp", &tmp);
-            ImGui::TableNextColumn(); ImGui::Checkbox("tmp", &tmp);
-            ImGui::TableNextColumn(); ImGui::Checkbox("tmp", &tmp);
-            ImGui::TableNextColumn(); ImGui::Checkbox("tmp", &tmp);
-            ImGui::TableNextColumn(); ImGui::Checkbox("tmp", &tmp);
-            ImGui::TableNextColumn(); ImGui::Checkbox("tmp", &tmp);
-            ImGui::TableNextColumn(); ImGui::Checkbox("tmp", &tmp);
-            ImGui::EndTable();
-        }
-
 
         ed::SetCurrentEditor(g_Context);
-        if (INPUT::KEYBOARD::pressed(GLFW_KEY_A)) {
-            firstTime = false;
-            s_Nodes.push_back(EditorNode(1, "Test Node"));
-            s_Nodes.back().outputs.emplace_back(EditorPin(3));
+
+        ImGui::SetWindowSize(ImVec2(200, 200));
+        ImGui::Begin("Example Output");
+            static std::stringstream shaderStream;
+            static ImGuiTextBuffer shaderTextBuffer;
+            static int magic = 0;
+            ImGui::TextUnformatted(shaderTextBuffer.begin(), shaderTextBuffer.end());
+        ImGui::End();
+
+
+        ImGui::SetWindowSize(ImVec2(520, 600));
+        ImGui::Begin("Shader Editor");
+        ImGui::BeginChild("Settings", ImVec2(100, ImGui::GetWindowHeight()));
+
+        if (ImGui::Button("generate"))
+        {
+            if (outputNode.validCode())
+            {
+                shaderTextBuffer.clear();
+                shaderStream.str("");
+                outputNode.node2code(&shaderStream);
+                std::cout << shaderStream.str().c_str() << "\n";
+                shaderTextBuffer.append(shaderStream.str().c_str());
+            }
         }
 
+        if (ImGui::Button("Add Math Node"))
+            s_Nodes.push_back(new MathNode());
+
+        if (ImGui::Button("Add Color Node"))
+            s_Nodes.push_back(new InputColorNode());
 
 
-        // Start interaction with editor.
-        ed::Begin("My Editor", ImVec2(0.0, 0.0f));
+        ImGui::EndChild();
 
+        ImGui::SameLine(120.0f);
 
-        ed::BeginNode(999);
-            ImGui::Text("Color");
+        ImGui::BeginChild("The editor");
+        ed::Begin("editor", ImVec2(0.0, 0.0f));
 
-//            ImGui::ColorPicker4("color Picker", colorData);
-
-            ImGui::Separator();
-
-            ImGui::SameLine(ImGui::GetWindowWidth()-30);
-
-            ImGui::BeginGroup();
-                ed::BeginPin(998, ed::PinKind::Output);
-                    ImGui::Text("Out ->");
-                ed::EndPin();
-            ImGui::EndGroup();
-        ed::EndNode();
-
-
-        for (EditorNode& node : s_Nodes) {
-
-            ed::BeginNode(node.id);
-                ImGui::Text(node.name);
-                ImGui::Separator();
-
-                ImGui::BeginGroup();
-                    for (EditorPin& input : node.inputs) {
-                        ed::BeginPin(input.id, ed::PinKind::Input);
-                            ImGui::Text("-> In");
-                        ed::EndPin();
-                    }
-                ImGui::EndGroup();
-                ImGui::SameLine();
-                ImGui::BeginGroup();
-                    for (EditorPin& output : node.outputs) {
-                        ed::BeginPin(output.id, ed::PinKind::Output);
-                            ImGui::Text("Out ->");
-                        ed::EndPin();
-                    }
-                ImGui::EndGroup();
-            ed::EndNode();
-        }
-
+        // Render node
+        for (auto& node : s_Nodes)
+            node->renderNode();
 
         // Submit Links
         for (EditorLink& link : s_Links)
@@ -278,8 +430,40 @@ public:
                     // ed::AcceptNewItem() return true when user release mouse button.
                     if (ed::AcceptNewItem())
                     {
+                        std::cout << "Lijntje\n"; // TODO: These 2 can be rotated around
+                        EditorNode* in = s_pin2Node.at(inputPinId.Get());
+                        EditorNode* out = s_pin2Node.at(outputPinId.Get());
+
+                        if (in && out) {
+                            int i = 0;
+                            bool foundPin = false;
+                            for (EditorPin& pin : in->pinsIn)
+                            {
+                                if (pin.id.Get() == inputPinId.Get())
+                                {
+                                    std::cout << "connected\n";
+                                    in->inputs[i] = out;
+                                    foundPin = true;
+                                }
+                                i++;
+                            }
+
+                            if (!foundPin) {
+                                i = 0;
+                                for (EditorPin& pin : out->pinsIn)
+                                {
+                                    if (pin.id.Get() == outputPinId.Get())
+                                    {
+                                        std::cout << "connected\n";
+                                        out->inputs[i] = in;
+                                    }
+                                    i++;
+                                }
+                            }
+                        }
+
                         // Since we accepted new link, lets add one to our list of links.
-                        s_Links.push_back({ ed::LinkId(g_NextLinkId++), inputPinId, outputPinId });
+                        s_Links.push_back({ ed::LinkId(getId(nullptr)), inputPinId, outputPinId });
 
                         // Draw new link.
                         ed::Link(s_Links.back().id, s_Links.back().inputId, s_Links.back().outputId);
@@ -325,6 +509,8 @@ public:
 
         // End of interaction with editor.
         ed::End();
+        ImGui::EndChild();
+        ImGui::End();
 
         ed::SetCurrentEditor(nullptr);
 
@@ -342,7 +528,8 @@ public:
     }
 
     // TODO: It is currently not possible to switch between the screens
-    void destroy() {
+    void destroy()
+    {
         ed::DestroyEditor(g_Context);
     }
 };
